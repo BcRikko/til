@@ -1,0 +1,50 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-05-30"
+updatedDate: "2024-04-25"
+title: "Popover API + Dialog"
+author: ダーシノ
+description: "{ページの概要}"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)がChrome114/Edge114にExperimentalとして実装された。
+
+Popover APIはセマンティクスを提供しない（あくまで属性のひとつ）。
+
+## Popover API
+
+```html
+<button popovertarget="my-popover">Popover</button>
+
+<div id="my-popover" popover>Popover Content</div>
+```
+
+- Popover Contentの外側をクリックすると閉じられる
+- JavaScriptで操作するときは`togglePopover`を使う
+- 用途: トースト通知、フォームのサジェストなど
+
+
+## Popover API + Dialog
+
+```html
+<button popovertarget="my-dialog">Dialog</button>
+
+<dialog id="my-dialog" popover>
+  Dialog
+  <button
+    popovertarget="my-dialog"
+    popovertargetaction="hide"
+  >Close</button>
+</dialog>
+```
+
+---
+
+## 追記: 2024-04-25
+
+Chrome114、Edge114に加え、[Safari 17.0](https://webkit.org/blog/14445/webkit-features-in-safari-17-0/)と[Firefox 125](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/125)にも実装されたことで、全主要ブラウザで利用可能になった。
