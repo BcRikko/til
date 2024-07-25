@@ -1,0 +1,13 @@
+.of-selector {
+  li:nth-child(odd)::after {
+    content: ': odd';
+  }
+
+  li:nth-child(3n + 1)::after {
+    content: ': 3n+1'
+  }
+
+  :nth-child(2n + 1 of .important)::after {
+    content: ': 2n+1 of .important'
+  }
+}

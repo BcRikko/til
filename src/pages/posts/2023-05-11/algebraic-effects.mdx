@@ -1,0 +1,63 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-05-11"
+updatedDate: "2023-05-11"
+title: "Algebraic Effects（代数的エフェクト） とは？"
+author: ダーシノ
+description: "2019年時点でAlgebraic Effectsをサポートした言語はごく一部で広く使えるものではない。"
+tags: ["Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2019年時点で[Algebraic Effects](https://overreacted.io/ja/algebraic-effects-for-the-rest-of-us/)をサポートした言語はごく一部で広く使えるものではない。
+
+## Algebraic Effectsの例
+
+1. 例外発生時、try/catchではできなかった「catch後に再開」ができる
+1. 奥深くにあるメソッドがPromiseを返すと呼び出し元のすべてのメソッドにasync/awaitがつくが、Algebraic Effectsではそうならない
+1. WhatとHowを明確に分けられる
+
+
+## PerformとHandleを行き来することで詳細な処理を分解する
+
+```js
+function createFile(content) {
+  // 2. どこに何を出力するかは知らない
+  perform Log('filename: ' + content.name)
+
+  // 4. OpenFileが非同期であっても resume が実行されるまで待つだけ
+  const file = perform OpenFile(content.name)
+
+  // 6. Writeが非同期であっても以下略
+  perform Write({ file, content })
+
+  // 8. どこに何を出力するかは知らない
+  perform Log('Done:')
+}
+
+function main() {
+  try {
+    // 1.
+    createFile(content)
+  } handle(effect) {
+    if (effect === Log) {
+      // 3., 9.
+      ログの出力()
+      resume // perform を実行したところに戻る
+    }
+    if (effect === OpenFile) {
+      // 5.
+      const file = await ファイルを開く()
+      resume with file
+    }
+    if (effect === Write) {
+      // 7.
+      await ファイルの書き込み()
+      resume
+    }
+  }
+}
+```

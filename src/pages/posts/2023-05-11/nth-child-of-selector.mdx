@@ -1,0 +1,63 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-05-11"
+updatedDate: "2023-05-11"
+title: ":nth-childのofセレクタ"
+author: ダーシノ
+description: ":nth-childのof SelectorがFirefox113に実装されたことで、全主要ブラウザで利用可能になった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import './_style.css'
+
+<Header {...frontmatter} />
+
+`:nth-child`の[of Selector](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child)がFirefox113に実装されたことで、全主要ブラウザで利用可能になった。
+
+```html
+<ul>
+  <li>one</li>
+  <li class="important">two</li>
+  <li>three</li>
+  <li class="important">four</li>
+  <li>five</li>
+  <li class="important">six</li>
+  <li>seven</li>
+  <li class="important">eight</li>
+  <li>nine</li>
+  <li class="important">ten</li>
+</ul>
+```
+
+```css
+/* 奇数(odd)、偶数(even) */
+li:nth-child(odd)::after {
+  content: ': odd';
+}
+
+/* 関数表記（数列） */
+li:nth-child(3n + 1)::after {
+  content: ': 3n+1'
+}
+
+/* .importantを持つ 2n+1 番目の要素 */
+:nth-child(2n + 1 of .important)::after {
+  content: ': 2n+1 of .important'
+}
+```
+
+## デモ
+
+<ul class="of-selector">
+  <li>one</li>
+  <li class="important">two</li>
+  <li>three</li>
+  <li class="important">four</li>
+  <li>five</li>
+  <li class="important">six</li>
+  <li>seven</li>
+  <li class="important">eight</li>
+  <li>nine</li>
+  <li class="important">ten</li>
+</ul>
