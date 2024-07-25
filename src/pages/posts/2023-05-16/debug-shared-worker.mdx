@@ -1,0 +1,19 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-05-16"
+updatedDate: "2023-05-16"
+title: "SharedWorkerのデバッグ方法"
+author: ダーシノ
+description: "SharedWorkerはそのままだとWorker内で発生したエラーやconsole.log()が見れない。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[SharedWorker](https://developer.mozilla.org/ja/docs/Web/API/SharedWorker)はそのままだとWorker内で発生したエラーや`console.log()`が見れない。
+
+`chrome://inspect/#workers`から対象のSharedWorkerを見つけ、`inspect`を押すことでWorkerのDevToolsを開くことができる。
+
+![chrome://inspect/#workersを開いたときの画像](./_sharedworker.png)
