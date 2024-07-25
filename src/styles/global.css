@@ -13,6 +13,11 @@ html {
   margin-inline: auto;
 }
 
+:where(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+  word-break: auto-phrase;
+}
+
 p {
   word-break: auto-phrase;
 }
