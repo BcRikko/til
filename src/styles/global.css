@@ -58,6 +58,17 @@ table {
   width: 100%;
   overflow-x: auto;
 }
+:where(th, td) {
+  padding: 0.3em;
+}
 tr:nth-child(2n) {
   background-color: #eeeeee;
+}
+
+@media (prefers-reduced-motion) {
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
