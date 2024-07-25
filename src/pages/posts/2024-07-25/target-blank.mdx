@@ -1,0 +1,41 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-07-25"
+updatedDate: "2024-07-25"
+title: 'target="_blank"とrel="noopener noreferrer"のいま'
+author: ダーシノ
+description: "rel="noopener noreferrer"を使うようになったのは2016年7月頃にtarget="_blank"のセキュリティリスクに関する記事を読んだからだ。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`rel="noopener noreferrer"`を使うようになったのは2016年7月頃に[`target="_blank"`のセキュリティリスクに関する記事](https://reisato.plala.jp/rsato/weblog/2016/07/19/0215.html)を読んだからだ。
+
+## `rel="noopener noreferrer"`をつけるようになった背景
+
+新しいウィンドウ/タブでURLを開いたときに`<a href="..." target="_blank">`のみだと遷移先で`window.opener.location`が書き換えられてしまい、元のタブが変わってしまうセキュリティリスクがあった。
+
+そのため、以下のように`rel="noopener noreferrer"`を追加していた。
+```html
+<a
+  href="https://example.com"
+  target="_blank"
+  rel="noopener noreferrer"
+>example.com</a>
+```
+
+
+## 2024年現在の状況
+
+### `rel="noopener"`は不要になった
+
+[target="_blank" implies rel="noopener" behavior](https://caniuse.com/mdn-html_elements_a_implicit_noopener)のように、`target="_blank"`で開いたらデフォルトで`rel="noopener"`の挙動になっている。
+
+そのため、`rel="noopener"`は不要になった。
+
+### `rel="noreferrer"`は用途を限定して使う
+
+`rel="noreferrer"`はアクセス解析に支障をきたすため、リファラ情報を遷移先に渡したくないときに限って使うのが良さそう。
