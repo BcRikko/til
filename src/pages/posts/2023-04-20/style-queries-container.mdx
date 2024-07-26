@@ -1,0 +1,79 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-20"
+updatedDate: "2023-04-20"
+title: "Style Queriesを使ってコンテナ要素のスタイルを評価する"
+author: ダーシノ
+description: "Chrome111/Edge111でStyle Queriesが使えるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import './_style.css'
+
+<Header {...frontmatter} />
+
+Chrome111/Edge111で[Style Queries](https://developer.chrome.com/blog/style-queries/)が使えるようになった。
+
+
+Style Queriesを使うことでコンテナ要素のスタイルを評価できる。
+
+```html
+<div class="container">
+  <div class="item"><span>Item</span></div>
+  <div class="item" style="--active: true"><div>Item</div></div>
+  <div class="item"><span>Item</span></div>
+</div>
+
+<style>
+.container {
+  container-type: inline-size;
+  container-name: container;
+}
+
+.item {
+  container-type: inline-size;
+  container-name: item;
+}
+
+/* Container Query */
+@container container (max-width: 300px) {
+  .item { ... }
+}
+
+/* Style Query */
+@container item style(--active: true) {
+  /* コンテナの --activeプロパティが true だったら以下のスタイルが適用される */
+  div {
+    background-color: #B4E5D9;
+  }
+}
+@container item not style(--active: true) { ... }
+</style>
+```
+
+## デモ
+
+<section>
+  <h3>inline-style</h3>
+  <div class="item" style="--active: false;">
+    <div>style="--active: false;"</div>
+  </div>
+  <div class="item" style="--active: true;">
+    <div>style="--active: true;"</div>
+  </div>
+</section>
+
+<section>
+  <h3>:hover</h3>
+  <div class="item">
+    <div>
+      <span>.item:hover `{ --active: true; }`</span>
+    </div>
+  </div>
+  <div class="item">
+    <div>
+      <span>.item:hover `{ --active: true; }`</span>
+    </div>
+  </div>
+</section>
