@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -77,3 +76,27 @@ Style Queriesを使うことでコンテナ要素のスタイルを評価でき�
     </div>
   </div>
 </section>
+
+
+<style>{`
+.item {
+  container-name: item;
+  border: 4px solid;
+  margin: 1rem;
+}
+
+.item:hover {
+  --active: true;
+}
+
+@container item style(--active: true) {
+  div {
+    background-color: #EFBBBE;
+  }
+}
+@container item not style(--active: true) {
+  div {
+    background-color: #eee;
+  }
+}
+`}</style>
