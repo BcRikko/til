@@ -1,0 +1,42 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-24"
+updatedDate: "2023-04-24"
+title: "CSSアニメーションでeasing-functionの細かく設定する"
+author: ダーシノ
+description: "アニメーションのeasing-functionでlinear()が使えるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import './_style.css'
+
+<Header {...frontmatter} />
+
+アニメーションの`easing-function`で[linear()](https://developer.mozilla.org/ja/docs/Web/CSS/easing-function)が使えるようになった。
+
+線形のアニメーションを、たとえば1秒で0〜25%まで、次の1秒で25〜100%までアニメーションするように設定できる。
+```css
+.linear {
+  /* 前も使えてたやつ */
+  animation: 2s move linear;
+
+  /* 新しく実装されたlinear() */
+  animation: 2s linear(0, 0.25, 1) move infinite;
+}
+
+@keyframes move {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}
+```
+
+## デモ
+
+<section id="easing-function">
+  <div class="box"></div>
+</section>

@@ -1,0 +1,23 @@
+#easing-function {
+  position: relative;
+
+  > .box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background-color: #F47B7B;
+
+    animation: 2s linear(0, 0.25, 1) move infinite;
+  }
+}
+
+@keyframes move {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}

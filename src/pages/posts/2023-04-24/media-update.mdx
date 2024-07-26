@@ -1,0 +1,35 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-24"
+updatedDate: "2023-04-24"
+title: "デバイスに合わせてスタイルを変更するupdateメディアクエリ"
+author: ダーシノ
+description: "@media (update: …)を使うことでユーザーの使用デバイスにあわせてアニメーションをリッチにしたり、止めたりできる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import './_style.css'
+
+<Header {...frontmatter} />
+
+[@media (update: ...)](https://developer.mozilla.org/ja/docs/Web/CSS/@media/update)を使うことでユーザーの使用デバイスにあわせてアニメーションをリッチにしたり、止めたりできる。
+
+スタイルを変更できるようになった。
+
+```css
+@media (update: fast) {
+  p {
+    animation: 1s jiggle linear alternate infinite;
+  }
+}
+```
+
+## updateが受け取れるキーワード
+
+- `@media (update: one)`: 紙に印刷する文章などいったん表示されたらレイアウトは更新されない用
+- `@media (update: slow)`: 電子書籍リーダーなどアニメーションを円滑に表示できない端末用
+- `@media (update: fast)`: アニメーションが利用できる端末用
+
+
+
