@@ -1,0 +1,28 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-07-26"
+updatedDate: "2024-07-26"
+title: "curlコマンドでPOST/PUTするときにJSONファイルを指定する"
+author: ダーシノ
+description: "コマンドラインからAPIを直接叩くときにcurlコマンドを使う"
+tags: []
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+コマンドラインからAPIを直接叩くときに[curlコマンド](https://curl.se/)を使う。
+
+`-d`オプションを使えばリクエストボディが設定できるのだが、そのままJSONを書くのは大変だからJSONファイルを指定したい。そんなときは`@`を使う。
+
+```sh
+# ボディにJSONを設定
+$ curl -X POST -d '{"key": "value"}' https://example.com
+
+# ボディにJSONファイルを設定
+$ ls
+data.json
+
+$ curl -X POST -d @data.json https://example.com
+```
