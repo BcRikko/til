@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-07-26"
+updatedDate: "2024-07-26"
+title: "MacOSにPython開発環境を構築する"
+author: ダーシノ
+description: "Pythonの開発環境を構築する機会があったのでメモとして残す。"
+tags: ["Python"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Pythonの開発環境を構築する機会があったのでメモとして残す。
+
+Pythonを主とした開発をする場合は、バージョン管理ツールを導入したほうがいいかも知れないが、当記事はとりあえず動けばいい人用。
+
+## 環境
+
+- macOS Sonoma 14.5
+- Homebrew 4.3.10
+- Python 3.9 （macにデフォルトで入っているもの）
+
+## インストール
+
+### Python3の最新版をインストール
+```sh
+$ which python3
+デフォルトのパス
+
+$ which python3
+Python 3.9.6
+```
+
+```sh
+$ brew install python3
+$ which python3.12
+/opt/homebrew/bin/python3.12
+
+$ python3.12 --version
+Python 3.12.4
+```
+
+### Pipenvのインストール
+```sh
+$ pip3 install pipenv
+```
