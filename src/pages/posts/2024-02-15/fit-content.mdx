@@ -11,7 +11,6 @@ tags: ["CSS"]
 import Header from '../../../components/Header.astro'
 
 <Header {...frontmatter} />
-import './_style.css'
 
 [fit-content](https://developer.mozilla.org/ja/docs/Web/CSS/fit-content)を使うことで、block要素でも中身のサイズに合わせて`width`が変わる。（FigmaのHugコンテンツ的な感じ、しらんけど）
 
@@ -46,3 +45,30 @@ block要素として使いたいけど、`width`は子要素によって変わ�
   <p class="block -min">min-content min-content min-content</p>
   <p class="block -fit">fit-content fit-content fit-content</p>
 </div>
+
+<style>{`
+.fit-section {
+  padding: 1em;
+  border: solid 4px;
+  resize: horizontal;
+  overflow: auto;
+  width: 100%;
+  height: auto;
+}
+
+.block {
+  border: solid 4px;
+}
+.-max {
+  /* コンテンツにフィットするけど幅は固定 */
+  width: max-content;
+}
+.-min {
+  /* 最小幅 */
+  width: min-content;
+}
+.-fit {
+  /* max-contentとmin-contentを組み合わせたような値 */
+  width: fit-content;
+}
+`}</style>

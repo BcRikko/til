@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -53,6 +52,17 @@ input要素に`id`や`name`などをつけると過去に入力した内容か�
     <input type="text" name="address2" autocomplete="shipping address-line2" />
   </label>
 </form>
+
+<style>{`
+:autofill {
+  border: 4px solid red;
+}
+
+.autofill-form {
+  display: flex;
+  flex-direction: column;
+}
+`}</style>
 
 ## 参考
 

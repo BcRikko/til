@@ -9,7 +9,6 @@ tags: ["HTML", "CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -66,6 +65,19 @@ document.getElementById('open').addEventListener('click', () => {
   document.querySelector('.panel').classList.toggle('expanded')
 })
 `}</script>
+
+<style>{`
+.panel {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s;
+  background-color: #eee;
+
+  &.expanded {
+    height: calc-size(auto);
+  }
+}
+`}</style>
 
 ----
 

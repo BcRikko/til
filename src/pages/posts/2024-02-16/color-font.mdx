@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -52,3 +51,25 @@ hover↓
 <h2 class="font-palette">font palette</h2>
 
 
+<style>{`
+/* フォント自体に色情報を持っているものを読み込む */
+@import url(https://fonts.googleapis.com/css2?family=Bungee+Spice);
+
+/* カスタムのフォントパレット */
+@font-palette-values --base {
+  font-family: "Bungee Spice";
+  override-colors: 0 red, 0 blue;
+}
+@font-palette-values --hovered {
+  font-family: "Bungee Spice";
+  override-colors: 0 green, 0 red;
+}
+
+.font-palette {
+  font-family: "Bungee Spice";
+  font-palette: --base;
+}
+.font-palette:hover {
+  font-palette: --hovered;
+}
+`}</style>

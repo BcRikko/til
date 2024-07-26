@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -61,3 +60,32 @@ import './_style.css'
     Content
   </div>
 </div>
+
+<style>{`
+.parent.ok {
+  --padding: 8px;
+  --radius: 24px;
+  
+  border-radius: var(--radius);
+  padding: var(--padding);
+  --nested-radius: calc(var(--radius) - var(--padding));
+}
+.child.ok {
+  border-radius: var(--nested-radius);
+}
+
+.parent.ng {
+  padding: 8px;
+  border-radius: 24px;
+}
+.child.ng {
+  border-radius: 24px;
+}
+
+.parent {
+  border: solid 4px blue;
+}
+.child {
+  border: solid 4px red;
+}
+`}</style>

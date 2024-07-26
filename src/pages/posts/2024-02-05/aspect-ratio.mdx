@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -55,3 +54,21 @@ Cardコンポーネントやタイル型UIで、width/heightに絶対値を指�
     <p>xxxxxxxxxxxxxxxxxx</p>
   </article>
 </section>
+
+<style>{`
+.hd, .sd {
+  display: flex;
+  gap: 1em;
+  
+  > article {
+    border: 4px solid;
+  }
+}
+
+.hd > article {
+  aspect-ratio: 16/9;
+}
+.sd > article {
+  aspect-ratio: 4/3;
+}
+`}</style>

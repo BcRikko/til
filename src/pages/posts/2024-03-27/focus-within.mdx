@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -52,3 +51,9 @@ label:has(+ input:focus) {
     <input id="two" />
   </div>
 </form>
+
+<style>{`
+.field:focus-within label {
+  font-weight: bold;
+}
+`}</style>

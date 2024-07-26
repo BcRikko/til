@@ -9,7 +9,6 @@ tags: ["HTML", "CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -83,3 +82,12 @@ Popover API + CSS Anchor Positioningでツールチップを表示する。
     <input id="name" type="text" />
   </div>
 </form>
+
+<style>{`
+.tooltip {
+  position: absolute;
+  margin: 0;
+  inset-area: top;
+  border: 2px solid;
+}
+`}</style>

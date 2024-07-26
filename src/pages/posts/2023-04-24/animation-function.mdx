@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -40,3 +39,29 @@ import './_style.css'
 <section id="easing-function">
   <div class="box"></div>
 </section>
+
+<style>{`
+#easing-function {
+  position: relative;
+
+  > .box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background-color: #F47B7B;
+
+    animation: 2s linear(0, 0.25, 1) move infinite;
+  }
+}
+
+@keyframes move {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}
+`}</style>

@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -53,3 +52,10 @@ import './_style.css'
   <p>モーダルの内容</p>
   <button type="button" popovertarget="dialog" popovertargetaction="hide">閉じる</button>
 </dialog>
+
+<style>{`
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+`}</style>

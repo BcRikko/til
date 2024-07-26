@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -49,6 +48,25 @@ html {
 
 <p class="verdana">Lorem ipsum dolor sit amet（Verdana）</p>
 <p class="times">Lorem ipsum dolor sit amet（Times）</p>
+
+<style>{`
+#adjust:checked ~ .times {
+  font-size-adjust: 0.5;
+}
+
+.verdana,
+.times {
+  font-size: 0.75rem;
+  border: solid 2px red;
+}
+
+.verdana {
+  font-family: Verdana, sans-serif;
+}
+.times {
+  font-family: Times, serif;
+}
+`}</style>
 
 ## 参考
 

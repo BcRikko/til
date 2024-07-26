@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -87,3 +86,9 @@ CSS Anchor Positioningを使うとターゲット要素（アンカー要素）�
   on <a href="https://codepen.io">CodePen</a>.</span>
 </p>
 <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
+
+<style>{`
+iframe {
+  height: 500px;
+}
+`}</style>

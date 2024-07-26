@@ -9,7 +9,6 @@ tags: ["CSS"]
 ---
 
 import Header from '../../../components/Header.astro'
-import './_style.css'
 
 <Header {...frontmatter} />
 
@@ -55,3 +54,27 @@ safeキーワードがない場合、あふれた文章の真ん中だけが表�
   <div class="item">safeキーワードをつけておくとコンテナから溢れたときにstartと同様の配置になる</div>
 </div>
 
+<style>{`
+.safe-container,
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 30ch;
+  border: 4px solid;
+  padding: 1em;
+
+  background-color: #eee;
+}
+
+.container {
+  align-items: center;
+}
+.safe-container {
+  align-items: safe center;
+}
+
+.item {
+  border: 4px solid;
+  white-space: nowrap;
+}
+`}</style>
