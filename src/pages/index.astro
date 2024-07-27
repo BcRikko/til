@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Article from "../components/Article.astro";
 const allPosts = await Astro.glob("../pages/posts/**/*.{md,mdx}");
 
 const title = "Today I learned.";
@@ -13,16 +14,33 @@ const tags = ["frontend", "web", "javascript", "html", "css"];
   <ul>
     {
       allPosts
-        .reverse()
-        .slice(0, 20)
+        .sort(
+          (a, b) =>
+            new Date(b.frontmatter.pubDate).getTime() -
+            new Date(a.frontmatter.pubDate).getTime(),
+        )
+        .slice(0, 7)
         .map((post) => (
           <li>
-            <time>{post.frontmatter.pubDate}</time>:{" "}
-            <a href={post.url}>{post.frontmatter.title}</a>
+            <Article
+              url={post.url}
+              title={post.frontmatter.title}
+              pubDate={post.frontmatter.pubDate}
+              updatedDate={post.frontmatter.updatedDate}
+              tags={post.frontmatter.tags}
+            />
           </li>
         ))
     }
   </ul>
 
-  <a href="/til/1">もっと読む</a>
+  <nav class="more">
+    <a href="/til/2">もっと読む</a>
+  </nav>
 </Layout>
+
+<style>
+  .more {
+    text-align: center;
+  }
+</style>

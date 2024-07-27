@@ -2,6 +2,7 @@
 import type { Page, GetStaticPaths } from "astro";
 
 import Layout from "../layouts/Layout.astro";
+import Article from "../components/Article.astro";
 
 const title = "Today I learned.";
 const description = "日々学んだことを公開するサイトです。";
@@ -17,7 +18,7 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   );
 
   return paginate(sortedPosts, {
-    pageSize: 20,
+    pageSize: 7,
   });
 };
 
@@ -31,8 +32,13 @@ const { page } = Astro.props as { page: Page };
     {
       page.data.map((post) => (
         <li>
-          <time>{post.frontmatter.pubDate}</time>:{" "}
-          <a href={post.url}>{post.frontmatter.title}</a>
+          <Article
+            url={post.url}
+            title={post.frontmatter.title}
+            pubDate={post.frontmatter.pubDate}
+            updatedDate={post.frontmatter.updatedDate}
+            tags={post.frontmatter.tags}
+          />
         </li>
       ))
     }

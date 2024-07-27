@@ -1,0 +1,53 @@
+---
+interface Props {
+  url: string;
+  title: string;
+  pubDate: string;
+  updatedDate: string;
+  tags: string[];
+}
+
+const { url, title, pubDate, updatedDate, tags } = Astro.props;
+---
+
+<article class="article">
+  <h2 class="title">
+    <a href={url}>{title}</a>
+  </h2>
+  <dl class="info">
+    <div>
+      <dt>公開日</dt>
+      <dd><time>{pubDate}</time></dd>
+    </div>
+    <div>
+      <dt>タグ</dt>
+      <dd>{tags.join(", ")}</dd>
+    </div>
+  </dl>
+</article>
+
+<style>
+  .title {
+    font-size: 1.25rem;
+    margin-bottom: 0.2em;
+    text-wrap: initial;
+  }
+
+  .info {
+    font-size: 0.8rem;
+    display: flex;
+    gap: 1em;
+    margin-block-start: 0em;
+
+    > div {
+      display: flex;
+    }
+
+    dt::after {
+      content: ":";
+    }
+    dd {
+      margin-inline-start: 0.5em;
+    }
+  }
+</style>
