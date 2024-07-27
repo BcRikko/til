@@ -1,0 +1,80 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-07-27"
+updatedDate: "2024-07-27"
+title: "Google Fontsのrender-blockingを解消する"
+author: ダーシノ
+description: "このページをLighthouseで計測すると、以下のような警告が表示される。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+このページをLighthouseで計測すると、以下のような警告が表示される。
+
+> Eliminate render-blocking resources Potential savings of 680 ms
+> 
+> Google Fonts [Cdn] 30.6 KiB 1,000 ms
+
+
+## TL;DR
+
+- 当ページでは[Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP)を使っており、レンダリングブロックが発生している
+- Google Fontsの「Embed code in the `<head>` of your html」からコピペしている場合、**やれることはほとんどない**
+
+
+## `dns-prefetch`や`preconnect`を使う
+
+Google Fontsは`https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap`から読み込んでいる。このURLには大量のCSSが含まれており、その中から`fonts.googleapis.com`や`https://fonts.gstatic.com`にアクセスしフォントをダウンロードしている。
+
+```css
+/* [0] */
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosansjp/xxx.0.woff2) format('woff2');
+  unicode-range: ...;
+}
+/* [1] */
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosansjp/xxx.1.woff2) format('woff2');
+  unicode-range: ...;
+}
+/* [2] */
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosansjp/xxx.2.woff2) format('woff2');
+  unicode-range: ...;
+}
+...
+```
+
+別オリジンのドメイン名からIPアドレスに名前解決する必要があり、時間を要してしまう。[rel="dns-prefetch"](https://developer.mozilla.org/ja/docs/Web/Performance/dns-prefetch)をすることで、あらかじめブラウザに名前解決をさせることで高速化できるというもの。
+
+さらに踏み込んで`rel="preconnect"`を使うと名前解決に加え、TCP接続の確立やTLSハンドシェイクを事前に行うことができる。別オリジンへのリクエストの遅延を最小化できる。
+
+```html
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin />
+<!-- or -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+```
+
+
+## その他の最適化方法
+
+- 使用するフォントの種類を減らす
+- `font-family`を最小限にする
+- ページと同じサーバ（同一オリジン）でフォントを提供する
