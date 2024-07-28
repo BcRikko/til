@@ -1,0 +1,80 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-11"
+updatedDate: "2023-04-11"
+title: "text-wrapプロパティでいい感じに文章を折り返す"
+author: ダーシノ
+description: "text-wrap: balanceを使うことで、<wbr>を使うことなく日本語をいい感じに折り返し処理してくれる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[text-wrap: balance](https://developer.mozilla.org/ja/docs/Web/CSS/text-wrap#balance)を使うことで、`<wbr>`を使うことなく日本語をいい感じに折り返し処理してくれる。
+
+```css
+.text-wrap {
+  text-wrap: balance;
+}
+```
+
+## Before
+
+```text
+Lorem ipsum dolor sit
+amet, consectetur adipiscing
+elit 
+```
+
+最後の行だけ微妙…
+
+
+## After
+
+```text
+Lorem ipsum dolor
+sit amet, consectetur
+adipiscing elit
+```
+
+その点、`text-wrap:balance`はすげぇよな。最後まで文字たっぷりだもん。
+
+
+## デモ
+
+<section id="demo">
+  <p class="none">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+  <p class="balance">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+</section>
+
+<style>{`
+#demo {
+  position: relative;
+  border: 4px solid;
+  resize: horizontal;
+  overflow: auto;
+  width: 100%;
+  height: auto;
+  padding: 1em;
+
+  &::after {
+    content: 'ドラッグでリサイズ↘';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  > p {
+    word-break: none;
+  }
+}
+
+.none {
+  text-wrap: initial;
+}
+.balance {
+  text-wrap: balance;
+}
+`}</style>

@@ -8,6 +8,10 @@ html {
   background-color: #fafafa;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :where(header, footer, main, aside) {
   max-width: 40ic;
   margin-inline: auto;
