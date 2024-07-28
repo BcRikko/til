@@ -1,0 +1,27 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-17"
+updatedDate: "2023-04-17"
+title: "translate属性で固有名詞を翻訳させない"
+author: ダーシノ
+description: "translate="no"をつけることで固有名詞やコードをページ翻訳の対象からはずせる。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[translate属性](https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes/translate)がFirefox 111で対応したことで、全主要ブラウザで利用可能になった。
+
+`translate="no"`をつけることで固有名詞やコードをページ翻訳の対象からはずせる。
+
+```html
+<html lang="en">
+  <head>...</head>
+  <body>
+    <p>This is translate attribute.</p>
+    <p>This is <span translate="no">translate</span> attribute.</p>
+  </body>
+</html>
+```

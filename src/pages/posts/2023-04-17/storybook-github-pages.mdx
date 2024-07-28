@@ -1,0 +1,29 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-17"
+updatedDate: "2023-04-17"
+title: "Storybookで生成したファイルをGitHub Pagesでホストするとエラーになる"
+author: ダーシノ
+description: "Storybookで生成したファイルをGitHub Pagesでホストするとエラーになる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Storybookで生成したファイルをGitHub Pagesでホストするとエラーになる。
+
+## 原因
+
+- Storybookで生成したファイルに`_commonjsHelpers-xxxxxx.js`のようにアンダースコアで始まるファイルがある
+- GitHub PagesのデフォルトのサイトジェネレータであるJekyllはアンダースコア始まりのファイルを無視する
+- 結果、必要なファイルが読み込めずにエラーになる
+
+## 解決策
+
+- Rootに`.nojekyll`という空ファイルを作って、Jekyllを無効化する
+
+## 参考
+
+- [I'm get a 404 "File not found" on my github pages for files starting with an underscore · community · Discussion \#23166](https://github.com/orgs/community/discussions/23166)
