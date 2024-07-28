@@ -18,7 +18,7 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   );
 
   return paginate(sortedPosts, {
-    pageSize: 7,
+    pageSize: 20,
   });
 };
 
