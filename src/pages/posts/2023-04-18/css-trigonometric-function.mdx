@@ -1,0 +1,94 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-18"
+updatedDate: "2023-04-18"
+title: "CSSで三角関数を使う"
+author: ダーシノ
+description: "いつも「将来使わないから学ぶ必要ない」と言われがちな三角関数がCSSで使えるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+いつも「将来使わないから学ぶ必要ない」と言われがちな[三角関数](https://developer.mozilla.org/en-US/docs/Web/CSS/sin)がCSSで使えるようになった。
+
+
+```html
+<div class="ball"></div>
+```
+
+```css
+.ball {
+  animation: rotate 3s linear infinite;
+  position: absolute;
+}
+
+@keyframes rotate {
+  0% {
+    top: calc(100px * sin(0deg));
+    left: calc(100px * cos(0deg));
+  }
+  25% {
+    top: calc(100px * sin(90deg));
+    left: calc(100px * cos(90deg));
+  }
+  50% {
+    top: calc(100px * sin(180deg));
+    left: calc(100px * cos(180deg));
+  }
+  75% {
+    top: calc(100px * sin(270deg));
+    left: calc(100px * cos(270deg));
+  }
+  100% {
+    top: calc(100px * sin(360deg));
+    left: calc(100px * cos(360deg));
+  }
+}
+```
+
+## デモ
+
+<section id="demo">
+  <div class="ball"></div>
+</section>
+
+<style>{`
+#demo {
+  position: relative;
+}
+
+.ball {
+  background-color: blue;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  animation: rotate 3s linear infinite;
+  position: absolute;
+}
+
+@keyframes rotate {
+  0% {
+    top: calc(100px * sin(0deg) + 50px);
+    left: calc(100px * cos(0deg) + 50px);
+  }
+  25% {
+    top: calc(100px * sin(90deg) + 50px);
+    left: calc(100px * cos(90deg) + 50px);
+  }
+  50% {
+    top: calc(100px * sin(180deg) + 50px);
+    left: calc(100px * cos(180deg) + 50px);
+  }
+  75% {
+    top: calc(100px * sin(270deg) + 50px);
+    left: calc(100px * cos(270deg) + 50px);
+  }
+  100% {
+    top: calc(100px * sin(360deg) + 50px);
+    left: calc(100px * cos(360deg) + 50px);
+  }
+}
+`}</style>
