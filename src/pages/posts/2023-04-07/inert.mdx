@@ -1,0 +1,30 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-07"
+updatedDate: "2023-04-07"
+title: "inert属性で一括非活性"
+author: ダーシノ
+description: "inert属性が全主要ブラウザで利用可能になった。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[inert属性](https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes/inert)が全主要ブラウザで利用可能になった。
+
+inert属性をつけた要素の子孫要素に対し、一括でクリック不可、選択不可、フォーカス不可、アクセシビリティツリーから除外をしてくれる。
+
+```html
+<body inert>
+  <!-- bodyの子孫はすべて非活性 -->
+  <div class="loading-mask"></div>
+  <form>
+    <input type="text">
+    <button>Submit</button>
+  </form>
+</body>
+```
+
+※上記コードはあくまでサンプルコードで、実際に`<body inert>`をするとローディングマスクが表示されていることを伝えられないので適用範囲には注意すること。
