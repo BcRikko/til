@@ -1,0 +1,24 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-05"
+updatedDate: "2023-04-05"
+title: "CSS Nestingが使えるようになった"
+author: ダーシノ
+description: "Chrome 112でついに待望のCSS Nestingが使えるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Chrome 112](https://developers-jp.googleblog.com/2023/04/chrome-112.html)でついに待望の[CSS Nesting](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_nesting)が使えるようになった。
+
+CSS Nesting、CSS Variables（Custom Properties）などがサポートされることで、Sassの機能の9割（自分調べ）をカバーできるようになる。
+```css
+.foo {
+  .bar {
+    &:hover {}
+  }
+}
+```
