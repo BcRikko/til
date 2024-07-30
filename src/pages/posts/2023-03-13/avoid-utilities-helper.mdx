@@ -1,0 +1,33 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-13"
+updatedDate: "2023-03-13"
+title: "Utilities、Helpers、その他 を避ける理由"
+author: ダーシノ
+description: 'Utilities、Helpers、"その他" は極力避けるべきだ。'
+tags: ["Architecture"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+思想の話。
+
+Utilities、Helpers、"その他" は極力避けるべきだ。
+
+## 人間は楽をしたがる生き物だから
+
+- Utilities、Helpers、"その他"のような汎用カテゴリが現れると分類が面倒なので「とりあえずUtilitiesに入れよう」となりがち
+- そのため適切な命名・分類がされずUtilitiesが肥大化する
+- 肥大化したUtilitiesは扱いが難しくなる
+
+
+## 扱いづらいUtilitiesが生まれるから
+
+- DRY原則を基に共通化を進めるといろんなところから参照される
+- 適切な命名・分類がされていないと「似ているだけで本質的には違う」用途に使われがち
+- 小さくシンプルだったメソッドが魔改造され複雑なUtilitiesが生まれる
+
+
+他にも世間ではいろいろ言われているけど、個人的には上記2つが主な理由。適切な命名・分類・運用がされるならUtilitiesにまとめてもOK。
