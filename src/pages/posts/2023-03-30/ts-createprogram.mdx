@@ -1,0 +1,38 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-30"
+updatedDate: "2023-03-30"
+title: "ts.createProgram()のパフォーマンス改善"
+author: ダーシノ
+description: "TypeScriptのモジュールを使って80個ほどの型定義を作成しようとしたとき、パフォーマンスがかなり悪かった。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScriptのモジュールを使って80個ほどの型定義を作成しようとしたとき、パフォーマンスがかなり悪かった。
+
+## Before: 1m30s
+
+```ts
+function extract(path: string, config: Config): Docs {
+  const program = ts.createProgram(path, {})
+  const source = program.getSourceFile(path)!
+  ...
+}
+```
+
+## After: 1.5s
+
+createProgramが遅いので、複数回呼び出すのを避ける。
+
+```ts
+const program = ts.createProgram(paths, {})
+
+function extract(path: string, config: Config): Docs {
+  const source = program.getSourceFile(path)!
+  ...
+}
+```

@@ -1,0 +1,47 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-30"
+updatedDate: "2023-03-30"
+title: "メディアクエリのRange Syntaxを使う"
+author: ダーシノ
+description: "Safari 16.4がサポートしたことで、Range Syntaxが全主要ブラウザで利用可能になった。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Safari 16.4がサポートしたことで、[Range Syntax](https://zenn.dev/moneyforward/articles/css-range-syntax)が全主要ブラウザで利用可能になった。
+
+## Before
+
+```css
+/* 画面サイズ 600px 未満 */
+@media (max-width: 599px) { ... }
+
+/* 画面サイズ 600px 以上 1200px 未満 */
+@media (min-width: 601px) and (max-width: 1200px) { ... }
+
+/* 画面サイズ 1200px 以上 */
+@media (min-width: 1201px) { ... }
+```
+
+## After
+
+```css
+/* 画面サイズ 600px 未満 */
+@media (width < 600px) { ... }
+
+/* 画面サイズ 600px 以上 1200px 未満 */
+@media (600px <= width < 1200px) { ... }
+
+/* 画面サイズ 1200px 以上 */
+@media (1200px <= width) { ... }
+```
+
+## After: `@container`でも利用可能
+
+```css
+@container (300px <= width) { ... }
+```
