@@ -1,0 +1,44 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-03"
+updatedDate: "2023-03-03"
+title: "配列をフィルターする型 "
+author: ダーシノ
+description: "TypeScriptの型も、配列のようにフィルターしたい。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScriptの型も、配列のようにフィルターしたい。
+
+```ts
+type Item = {
+  key: string
+  disabled?: true
+}
+
+const items = [
+  { key: 'foo' },
+  { key: 'bar' },
+  { key: 'baz', disabled: true },
+] as const satisfies readonly Item[]
+
+const enabledItems = items.filter(a => !a.disabled).map(a => a.key)
+```
+
+上記のJavaScriptのコードをTypeで表現すると以下の通り
+
+```ts
+type SortKey<T extends readonly Item[]> = {
+  [K in keyof T]: T[K]['disabled'] extends true
+    ? never
+    : T[K]['key']
+}[number]
+
+type EnableItem = SortKey<typeof items>
+//   ^? type EnableItem = 'foo' | 'bar'
+```
+
