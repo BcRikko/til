@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-10"
+updatedDate: "2023-03-10"
+title: "Reactで複数のrefを使いたいときの方法 "
+author: ダーシノ
+description: "ときどき複数のrefを使いたいことがあるが、コンポーネントに渡せるrefはひとつだけなのでちょっとした対応が必要。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ときどき複数のrefを使いたいことがあるが、コンポーネントに渡せるrefはひとつだけなのでちょっとした対応が必要。
+
+```ts
+type Ref<T extends HTMLElement> = MutableRefObject<T> | ForwardedRef<T>
+
+/**
+ * 複数のrefをマージする
+ */
+function mergeRefs<T extends HTMLElement>(...refs: Ref<T>[]) {
+  return (node: T) => {
+    for (const ref of refs) {
+      if (ref === null) { continue }
+
+      if (typeof ref === 'function') {
+        ref(node)
+      } else {
+        ref.current = node
+      }
+    }
+  }
+}
+```
+
+```ts
+const Component = forwardRef<HTMLElement, Props>((props, forwardedRef) => { 
+  const componentRef = useRef(null)
+
+  // 複数のrefをマージしてコンポーネントにわたす
+  return <Element ref={mergeRefs(componentRef, forwardedRef)} />
+})
+```
