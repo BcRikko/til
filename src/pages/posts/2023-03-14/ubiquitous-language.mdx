@@ -1,0 +1,25 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-14"
+updatedDate: "2023-03-14"
+title: "ユビキタス言語と命名について"
+author: ダーシノ
+description: "Ubiquitous Language and Naming · Enterprise Craftsmanship"
+tags: ["Architecture"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ref: [Ubiquitous Language and Naming · Enterprise Craftsmanship](https://enterprisecraftsmanship.com/posts/ubiquitous-language-naming/)
+
+- コードで表現されるモノには以下の2種類がある
+  - ビジネス上意味のあるモノ（ドメインエキスパートが話す言葉）
+  - ビジネス上意味のないモノ（プログラマだけが話す言葉）
+- ビジネス上意味のあるモノにはユビキタス言語を使用する
+  - Weasel Word（ふわっとしていて明確でない言葉）は排除する
+  - ItemEntity → Item extends Entityとすることでクラス名が明確になる(そもそもItemって命名が…と言う話はなし)
+- ビジネス上意味のないモノには Weasel Word を使ってもいいけど端的に表現する
+  - EntityやRepository、Serviceなどはビジネス上意味のないモノ
+  - ItemRepository、ItemServiceのような命名はOKだけどなるべく使わない
