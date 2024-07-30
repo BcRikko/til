@@ -1,0 +1,83 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-07-30"
+updatedDate: "2024-07-30"
+title: "TypeScript 5.6 Betaがリリースされた"
+author: ダーシノ
+description: "先日、TypeScript 5.6 Betaがリリースされた。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+先日、[TypeScript  5.6 Beta](https://devblogs.microsoft.com/typescript/announcing-typescript-5-6-beta/)がリリースされた。
+
+
+## Disallowed Nullish and Truthy Checkes
+
+文法的には正しいけど開発者の意図と異なるような条件（常にtrue/nullishになるなど）をチェックしてくれるようになった。
+
+### 意図しないTruthyチェック
+
+```ts
+// Before: No error
+if (/0x[0-9a-f]/) {
+  // 条件式はTruthyになるが開発者の意図とは異なる
+  // 本来なら /0x[0-9a-f]/.test(val) とすべき
+}
+
+
+// After
+if (/0x[0-9a-f]/) {
+//  ^^^^^^^^^^^^
+//  error: This kind of expression is always truthy.
+}
+```
+
+### 意図しないNullishチェック
+
+```ts
+// Before: No error
+function isValid(val: string | number, options: any) {
+  // val < options.mapの結果はbooleanでNullish valueにはならないため、100が絶対に返らない
+  return val < options.max ?? 100
+}
+
+// After
+function isValid(val: string | number, options: any) {
+  return val < options.max ?? 100
+//       ^^^^^^^^^^^^^^^^^
+// error: Right operand of ?? is unreachable because the left operand is never nullish.
+}
+```
+
+
+## Iterator Helper Methods
+
+Generatorが返すオブジェクトに[Iterator#map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/map)、[Iterator#take()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/take)メソッドが追加された。
+
+ECMAScriptの[Iterator Helpers](https://github.com/tc39/proposal-iterator-helpers)がStage3になったことに伴い、TypeScript 5.6からもサポートされるようになった。
+
+```ts
+function* positiveIntegers() {
+    let i = 1;
+    while (true) {
+        yield i;
+        i++;
+    }
+}
+
+const evenNumbers = positiveIntegers().map(x => x * 2);
+
+// Output:
+//    2
+//    4
+//    6
+//    8
+//   10
+for (const value of evenNumbers.take(5)) {
+    console.log(value);
+}
+```
