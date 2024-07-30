@@ -1,0 +1,39 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-03"
+updatedDate: "2023-04-03"
+title: "storybook 6.5から7にアップグレードするときの注意点"
+author: ダーシノ
+description: "普通にマイグレーションしようとするとエラーになることが多いので、storybook関連のパッケージを削除して再度 init処理をするのがオススメ"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+普通にマイグレーションしようとするとエラーになることが多いので、storybook関連のパッケージを削除して再度 init処理をするのがオススメ。
+
+※storybook7 まだ RC なので注意
+
+```sh
+# storybook@next で 7.0.0 がインストールされる
+# builder はデフォで webpack5 なのでオプションを使って vite に変更
+$ npx storybook@next init --builder=@storybook/builder-vite
+```
+
+## 注意点
+
+1. mdx2になりGFM（GitHub-Flavored Markdown）が含まれなくなったのでテーブル書式が使えないremark-gfmプラグインを使う
+  - https://github.com/storybookjs/storybook/issues/20091
+1. storybook buildをしたときにdynamic importのエラーがでる
+  - https://github.com/vitejs/vite/issues/11804
+
+
+## Storybook7にしてよかったこと
+
+- 依存パッケージが減った（package.json から babel/core とかいろいろ消せた）
+  - npm ciが1m 01s→44sになった
+- バンドラにviteが使える
+  - 正直そこまで速くなった感覚はないので気持ちの問題かも
+- サイドバーのdocsとstoryが明確にわかれた

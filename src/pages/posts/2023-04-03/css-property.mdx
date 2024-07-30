@@ -1,0 +1,92 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-04-03"
+updatedDate: "2023-04-03"
+title: "@propertyを使ったCSS変数の制限"
+author: ダーシノ
+description: "@propertyは、CSS Houdiniの一種で、Custom Propertyに制約を追加するための機能。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[@property](https://developer.mozilla.org/ja/docs/Web/CSS/@property)は、CSS Houdiniの一種で、Custom Propertyに制約を追加するための機能。
+
+## CSSから使う
+
+```css
+@property --color {
+  syntax: '<color>';
+  /* 子孫要素に影響を与えない。--color を変更した要素のみに適用される */
+  inherits: false;
+  initial-value: black;
+}
+
+@property --bg-color {
+  syntax: '<color>';
+  /* 子孫要素に影響がある。--bg-color を変更した要素の子孫要素すべてに適用される */
+  inherits: true;
+  initial-value: yellow;
+}
+
+p {
+  color: var(--color);
+  background-color: var(--bg-color);
+}
+```
+
+```html
+<p>Outside</p>
+
+<section style="--color: red; --bg-color: skyblue;">
+  <!-- --color は inherits: false なので子孫要素には影響しない -->
+  <!-- --bg-color は inherits: true なので子孫要素に影響する -->
+  <p>Inside</p>
+  <p style="--color: red;">inherites:falseでも自身の要素なら色が変わる</p>
+</section>
+```
+
+## JavaScriptから使う
+
+```js
+window.CSS.registerProperty({
+  name: '--color',
+  syntax: '<color>',
+  inherits: false,
+  initialValue: 'black',
+});
+```
+
+## デモ
+
+<section id="demo">
+  <p>Outside</p>
+
+  <section style="--color: red; --bg-color: skyblue;">
+    <p>Inside</p>
+    <p style="--color: red;">inherites:falseでも自身の要素なら色が変わる</p>
+  </section>
+</section>
+
+<style>{`
+@property --color {
+  syntax: '<color>';
+  /* 子孫要素に影響を与えない。--color を変更した要素のみに適用される */
+  inherits: false;
+  initial-value: black;
+}
+
+@property --bg-color {
+  syntax: '<color>';
+  /* 子孫要素に影響がある。--bg-color を変更した要素の子孫要素すべてに適用される */
+  inherits: true;
+  initial-value: yellow;
+}
+
+#demo p {
+  color: var(--color);
+  background-color: var(--bg-color);
+}
+`}</style>
