@@ -1,0 +1,52 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-03-23"
+updatedDate: "2023-03-23"
+title: "TypeScript Decoratorを使ったメモ化"
+author: ダーシノ
+description: "TypeScript 5.0で追加されたDecoratorでメモ化する。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScript 5.0で[新しいDecorator](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/)が追加された。
+
+※今回追加されたものはECMAScriptの仕様に則ったもので、TypeScriptに前からあったDecoratorはLegacy Decoratorとして区別される
+
+## Decoratorでメモ化する
+
+```ts
+function memo(target: any, _context: ClassMethodDecoratorContext) {
+  const memo = new Map<string, any>()
+
+  function method (this: any, ...args: any[]) {
+    const key = JSON.stringify(args)
+    if (memo.has(key)) { return memo.get(key) }
+
+    const result = target.call(this, ...args)
+    memo.set(key, result)
+    return result
+  }
+  return method
+}
+
+
+class Calculator {
+  @memo
+  calc(x: number, y: number) {
+    // めちゃくちゃ重い計算処理
+    return x + y
+  }
+}
+
+const calclator = new Calculator()
+
+// calc の処理がまるっと実行される
+console.log(calclator.calc(1, 2))
+
+// キャッシュされている値が返ってくるだけなので速い
+console.log(calclator.calc(1, 2))
+```
