@@ -1,0 +1,54 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-02-17"
+updatedDate: "2023-02-17"
+title: "日本語でプログラミングする方法"
+author: ダーシノ
+description: "我々日本人に英語文化のプログラミングは読みづらい。日本語でわかりやすくプログラミングしたい！"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+我々日本人に英語文化のプログラミングは読みづらい。日本語でわかりやすくプログラミングしたい！
+
+```ts
+interface 分析機 {
+    は: (比較対象: 分析機) => {
+        より前: boolean
+        より後: boolean
+    }
+    日時: string
+}
+
+const 時間 = (日時: string): 分析機 => {
+    return {
+        は: (比較対象: 分析機) => {
+            return {
+                より前: 日時 < 比較対象.日時,
+                より後: 日時 > 比較対象.日時
+            }
+        },
+        日時
+    }
+}
+
+const 出力せよ = (内容: any) => console.log(内容)
+
+const 昨日 = 時間('20230216')
+const 今日 = 時間('20230217')
+const 明日 = 時間('20230218')
+
+出力せよ(昨日.は(今日).より前)  // true
+出力せよ(昨日.は(今日).より後)  // false
+出力せよ(今日.は(明日).より前)  // true
+出力せよ(今日.は(明日).より後)  // false
+出力せよ(明日.は(昨日).より前)  // false
+出力せよ(明日.は(昨日).より後)  // true
+```
+
+## デモ
+
+- [TS Playground: 日本語でプログラミング](https://www.typescriptlang.org/play/?#code/JYOwLgpgTgZghgYwgAkGBKgE80PpWyDeAoZQ5QewYAuZACkBXrQYHjA-7UEMY8jTASmQF4A+XAo-wBEMgKIZAskrkARgHtJAGwhwQffoWGAY-QnS5CpcgC+OwKemgITNyAZzBRQAczz68CSSHPIjgZNTOlY2YvXWzLJw8+PxQEGAArlAgvMpEZJS0jP5sgTGxyqERUWnp6cJiyMbIADzIiQwAdMYANDq5gkLqhUbIPOVVRnXp+rm6tbnGOvp2Dk5gyIBfioDZSoDaDAIeFIChioCd2uQKAJ7s3MijprIQFTKSVkvLrHj2js6AFGYGHm4UAOQATAAMzwDM7wCMAGyP51240AU3J3DguVxPN6fH4AdgBlzGyEAcGZgiFQ95fZ7fAAcCLw0zmFFuFWIFFBrAq+XYyAA9LTkBZwhACbMBMSDKTyQZKWoafTkPAZKYWYT2aCuajeaJ+QymaK2dzJTyqY1ZYK4MKFUTUVzbtKROqhSLWTrOWT9arVOr5UA)
