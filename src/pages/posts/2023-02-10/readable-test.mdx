@@ -1,0 +1,52 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-02-10"
+updatedDate: "2023-02-10"
+title: "意図が伝わりやすいテストの書き方"
+author: ダーシノ
+description: "ユニットテストでリテラルを使うか変数を使うか問題。いろいろ話を聞いて考えた結果をまとめる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+ユニットテストでリテラルを使うか変数を使うか問題。いろいろ話を聞いて考えた結果をまとめる。
+
+```js
+function add(x, y) {
+  return x + y
+}
+```
+
+## テストの意図が伝わりづらい書き方
+
+```js
+const val1 = 10
+const val2 = 20
+const expected = val1 + val2
+
+const actual = add(val1, val2)
+
+expect(actual).toBe(expected)
+```
+
+- テスト対象の中身を知らないと読み解けない
+- `add(val1, val2)`が`val1 + val2`と等価であることを表現しても意味がない
+- テスト対象のロジックを再表現しているだけ
+
+
+## テストの意図が伝わりやすい書き方
+
+```js
+expect(add(10, 20)).toBe(30)
+
+// テストツールによっては呼び出しが長くなるので変数使っても良いかも
+const actual = result.current.add(10, 20)
+```
+
+- テスト対象の中身を知らなくても読み解ける
+- `add(10, 20)`の結果は、（add関数内でどんな計算がされてるか知ったこっちゃないけど）`30`が返ってきてほしい
+- 英文的にも「Test expect “add(10, 20)” to be “30"」と意味が伝わりやすい
