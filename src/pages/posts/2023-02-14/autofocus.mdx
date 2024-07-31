@@ -1,0 +1,40 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-02-14"
+updatedDate: "2023-02-14"
+title: "ダイアログを開いたときのフォーカス"
+author: ダーシノ
+description: "<dialog>でマークアップされていればautofocus属性があってもなくても関係なく最初のfocusableな要素にフォーカスされるみたいなので、現時点ではまだ考えなくても良さそう。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`<dialog>`でマークアップされていれば[autofocus属性](https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes/autofocus)があってもなくても関係なく最初のfocusableな要素にフォーカスされるみたいなので、現時点ではまだ考えなくても良さそう。
+
+※モーダルを`<div style="display: none;">`とかでマークアップしている場合はフォーカスされないし、tabindexをちゃんと考えないとやばめ（非干渉うんぬん）
+
+
+## ボタンのみのダイアログ
+
+```html
+<dialog id="confirm">
+  <form>
+    <button type="submit" autofocus>OK</button>
+    <button type="button">Cancel</button>
+  </form>
+</dialog>
+```
+
+## 入力フィールドがあるダイアログ
+
+```html
+<dialog id="input">
+  <form>
+    <input type="text" autofocus>
+    <button type="submit">Submit</button>
+  </form>
+</dialog>
+```
