@@ -1,0 +1,74 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-01-30"
+updatedDate: "2023-01-30"
+title: "TypeScript 5.0 Betaがリリースされた"
+author: ダーシノ
+description: "TypeScript 5.0 Betaがリリースされた。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[TypeScript 5.0 Beta](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0-beta)がリリースされた。
+
+## Decorators
+
+クラスやメソッドなどの上に`@xxxx`と書いて機能拡張できる機能
+
+### デコレータ
+
+```ts
+function logged(originalMethod: any, _context: any) {
+    function replacementMethod(this: any, ...args: any[]) {
+        console.log("LOG: Entering method.")
+        const result = originalMethod.call(this, ...args);
+        console.log("LOG: Exiting method.")
+        return result;
+    }
+    return replacementMethod;
+}
+```
+
+### 使用方法
+
+```ts
+class Person {
+  @logged
+  greet() {
+    console.log(`Hi, my name is ${this.name}`)
+  }
+}
+
+const person = new Person('john smith')
+person.greet()
+// LOG: Entering method.
+// Hi, my name is john smith
+// LOG: Exiting method.
+```
+
+
+## const type Parameters
+
+
+### Before
+```ts
+type HasNames = { readonly names: string[] };
+function getNamesExactly1<T extends HasNames>(arg: T): T["names"] {
+  return arg.names;
+}
+// string[]
+const names1 = getNamesExactly1({ names: ["Alice", "Bob", "Eve"]});
+```
+
+### After
+
+```ts
+function getNamesExactly2<const T extends HasNames>(arg: T): T["names"] {
+  return arg.names;
+}
+// readonly ["Alice", "Bob", "Eve"]
+const names2 = getNamesExactly2({ names: ["Alice", "Bob", "Eve"]} as const);
+```
