@@ -1,0 +1,30 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-02-27"
+updatedDate: "2023-02-27"
+title: "アクセシブルWebフォーム"
+author: ダーシノ
+description: "1つのinputフィールドに対してラベル、説明、エラーを紐づける方法。"
+tags: ["Accessibility", "HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+1つのinputフィールドに対してラベル、説明、エラーを紐づける方法。
+
+```html
+<label for="username">ユーザー名</label>
+<input id="username" aria-describedby="username-hint username-error">
+<span id="username-hint">ユーザー名についての説明...</span>
+<span id="username-error" aria-live="assertive">英数字で入力してください</span>
+```
+
+- `aria-describedby`は複数指定できるので、フィールドの説明やエラーメッセージを紐づける
+- `aria-live="assertive"`にすると読み上げに割り込んでくるので使用場所には注意
+
+
+## 参考
+
+- [A Guide To Accessible Form Validation — Smashing Magazine](https://www.smashingmagazine.com/2023/02/guide-accessible-form-validation/)
