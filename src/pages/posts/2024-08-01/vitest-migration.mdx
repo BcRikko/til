@@ -1,0 +1,47 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-01"
+updatedDate: "2024-08-01"
+title: "Vitest 1.xから2.xにアップデートにするとjest-domのメソッドがエラーになる"
+author: ダーシノ
+description: "Vitestを1.xから2.xにアップグレードしたところ、testing-library/jest-domが提供するtoBeInTheDocumentやtoHaveAttribute、toHaveClassなどが見つからないというエラーになった。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Vitestを1.xから2.xにアップグレードしたところ、`testing-library/jest-dom`が提供する`toBeInTheDocument`や`toHaveAttribute`、`toHaveClass`などが見つからないというエラーになった。
+
+## エラー
+
+```text
+Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+Property 'toHaveAttribute' does not exist on type 'Assertion<HTMLElement>'.
+Property 'toHaveClass' does not exist on type 'Assertion<HTMLElement>'
+```
+
+調べてみたところ、Vitestの型定義が変更されたことで発生した問題らしい。
+
+## 対処法
+
+jest-domの型定義を読み込むことで解消できる。
+```ts
+// vitest.config.mts
+
+// NOTE: jest-domの型を参照ディレクティブで読み込む
+/// <reference types="@testing-library/jest-dom" />
+
+import '@testing-library/jest-dom/vitest'
+import * as matchers from '@testing-library/jest-dom/matchers'
+import { expect } from 'vitest'
+
+expect.extend(matchers)
+```
+
+[fix: proper vitest ts support \(\#515\)](https://github.com/testing-library/jest-dom/pull/589)のPullRequestがマージされたら、参照ディレクティブも不要になるかも。
+
+## 参考
+
+- [Upgrading to v6\.0\.0 remove the \`toBeInTheDocument\` interface with vitest · Issue \#515 · testing\-library/jest\-dom](https://github.com/testing-library/jest-dom/issues/515)

@@ -1,0 +1,51 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-01"
+updatedDate: "2024-08-01"
+title: "Reactでautofocus属性が使えないときの対処法"
+author: ダーシノ
+description: "ReactではautoFocus: booleanというインターフェースを持ちながら、なぜか属性が削除されてしまうというバグ？仕様？がある。"
+tags: ["JavaScript", "React"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+dialogを表示するときにどこにフォーカスを当てるかを指定するために[autofocus属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus)を使う。ただ、Reactでは`autoFocus: boolean`というインターフェースを持ちながら、なぜか属性が削除されてしまうというバグ？仕様？がある。
+
+## 環境
+
+- React 18.x
+
+## 対処法
+
+`autofocus="true"`と指定することでautofocus属性が削除されなくなる。
+
+```tsx
+<dialog>
+  ...
+  <button>セカンダリ</button>
+  <button autofocus="true">プライマリ</button>
+</dialog>
+```
+
+Issueやブログを読んでみると`ref.current.focus()`をすればいいという情報も多いが、そもそも全主要ブラウザがサポートしている機能に対してハックが必要なのはナンセンスだと感じる。
+
+
+## 動作しないパターン
+
+```tsx
+<button autoFocus>xxx</button>
+<button autoFocus="true1">xxx</button>
+// `autoFocus={true}`が本来の使い方のはず
+<button autoFocus={true}>xxx</button>
+
+<button autofocus>xxx</button>
+<button autofocus={true}>xxx</button>
+```
+
+## 参考
+
+- [Bug: autoFocus broken inside `<dialog />` · Issue \#23301 · facebook/react](https://github.com/facebook/react/issues/23301)
+  - 2022年2月に報告されたIssueだが、まだ解決されていない模様
