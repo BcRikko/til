@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bcrikko.github.io/til/sitemap-index.xml
