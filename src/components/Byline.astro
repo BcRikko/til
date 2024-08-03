@@ -1,0 +1,19 @@
+---
+interface Props {
+  title: string;
+  pubDate: string;
+  updatedDate: string;
+}
+
+const { title, pubDate, updatedDate } = Astro.props;
+
+const byline = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: title,
+  datePublished: new Date(pubDate).toISOString(),
+  dateModified: new Date(updatedDate).toISOString(),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(byline)} />

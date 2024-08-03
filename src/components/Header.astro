@@ -13,14 +13,14 @@ const { title, pubDate, updatedDate, tags } = Astro.props;
   <dl class="tags">
     <div>
       <dt>公開日</dt>
-      <dd><time>{pubDate}</time></dd>
+      <dd><time datetime={pubDate}>{pubDate}</time></dd>
     </div>
     {
       pubDate !== updatedDate && (
         <div>
           <dt>更新日</dt>
           <dd>
-            <time>{updatedDate}</time>
+            <time datetime={updatedDate}>{updatedDate}</time>
           </dd>
         </div>
       )
