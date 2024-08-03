@@ -3,6 +3,7 @@ import Meta from "../components/Meta.astro";
 import GoogleFont from "../components/GoogleFont.astro";
 import Ads from "../components/Ads.astro";
 import Byline from "../components/Byline.astro";
+import Discover from "../components/Discover.astro";
 
 import "../styles/global.css";
 interface Props {
@@ -28,8 +29,9 @@ const { title, description, tags, pubDate, updatedDate } =
     <GoogleFont />
 
     <title>{title} | @bc_rikko</title>
-    
+
     <Byline title={title} pubDate={pubDate} updatedDate={updatedDate} />
+    <Discover rss="/til/rss" />
   </head>
   <body>
     <header>
