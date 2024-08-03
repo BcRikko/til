@@ -1,18 +1,28 @@
 ---
 interface Props {
   title: string;
+  description: string;
   pubDate: string;
   updatedDate: string;
 }
 
-const { title, pubDate, updatedDate } = Astro.props;
+const { title, description, pubDate, updatedDate } = Astro.props;
 
 const byline = {
   "@context": "https://schema.org",
   "@type": "Article",
+  name: "Today I learned. | @bc_rikko",
+  url: "https://bcrikko.github.io/til/",
+  alternateName: "@bc_rikko",
   headline: title,
+  description: description,
   datePublished: new Date(pubDate).toISOString(),
   dateModified: new Date(updatedDate).toISOString(),
+  author: {
+    "@type": "Person",
+    name: "ダーシノ(@bc_rikko)",
+    url: "https://x.com/bc_rikko",
+  },
 };
 ---
 
