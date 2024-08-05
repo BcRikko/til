@@ -1,10 +1,10 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-03-06"
-updatedDate: "2024-03-06"
-title: "バニラCSSでSassの@functionや@mixin使える？！"
+updatedDate: "2024-08-05"
+title: "バニラCSSでSassの@functionや@mixin使えるようになる（かも）"
 author: ダーシノ
-description: "{ページの概要}"
+description: "CSSでもSassの@functionや@mixinを使えるようにしようぜという議論がGitHubでされている。"
 tags: ["CSS"]
 ---
 
@@ -40,3 +40,23 @@ CSSでもSassの`@function`や`@mixin`を使えるようにしようぜという
 ```
 
 [NES.css](https://nostalgic-css.github.io/NES.css/)でSassの`@function`や`@mixin`を使っていたが、CSSはただでさえ気合を入れて設計しないと破綻するのにレベル感がバラバラなチーム開発ではちゃんと運用できる自信がない。
+
+---
+
+## 追記:2024-08-05
+
+7月19日に[CSS Functions and Mixins Module](https://drafts.csswg.org/css-mixins/)の草案が公開され、`@function`の仕様が検討されている。なお`@mixin`は現時点ではない。
+
+### functions
+
+```css
+@function --circle-area(--r) {
+  result: calc(pi * var(--r2));
+  --r2: var(--r) * var(--r);
+}
+
+.element {
+  /** --rは引数、1.5remはフォールバック */
+  inline-size: --circle-HTMLTextAreaElement(--r, 1.5rem);
+}
+```
