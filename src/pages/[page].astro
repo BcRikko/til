@@ -9,7 +9,7 @@ const description = "日々学んだことを公開するサイトです。";
 const tags = ["frontend", "web", "javascript", "html", "css"];
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-  const allPosts = await Astro.glob("../pages/posts/**/*.{md,mdx}");
+  const allPosts = await Astro.glob("../pages/posts/**/[!_]*.{md,mdx}");
 
   const sortedPosts = allPosts.sort(
     (a, b) =>
