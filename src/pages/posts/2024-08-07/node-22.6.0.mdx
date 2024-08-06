@@ -1,0 +1,41 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-07"
+updatedDate: "2024-08-07"
+title: "Node.js v22.6.0で実験的にTypeScriptをサポート"
+author: ダーシノ
+description: "Node.js v22.6.0で実験的にTypeScriptがサポートされた。"
+tags: ["Node.js", "TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Node.js v22.6.0](https://nodejs.org/en/blog/release/v22.6.0)で実験的にTypeScriptがサポートされた。
+
+
+## 現時点での制限
+
+- enumsやnamespacesはサポートしない
+- import/require文では明示的にファイル拡張子を指定する
+- 型のimportにはtypeキーワードを指定する（実行時エラーを避けるため）
+- デフォルトで、node_modulesのTypeScriptは無効になっている
+
+## Node.jsでTypeScriptを動かす
+
+```js
+// tsconfig.json
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "allowImportingTsExtensions": true,
+  }
+}
+```
+
+```sh
+$ node --experimental-strip-types index.ts
+```
+
+まだ制限があるのでプロダクトでガッツリ使うというのは難しそうだが、ts-nodeをインストールするのが面倒でJavaScriptで書いていた小さなスクリプトをTypeScriptにして動かすという用途では使えそう。
