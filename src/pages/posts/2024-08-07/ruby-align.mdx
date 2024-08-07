@@ -1,0 +1,83 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-07"
+updatedDate: "2024-08-07"
+title: "<ruby>の配置を制御するruby-align"
+author: ダーシノ
+description: "Chrome128でruby要素が改行可能になり、ルビの配置を制御できるようになった。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Chrome128](https://developer.chrome.com/blog/line-breakable-ruby)で[ruby要素](https://developer.mozilla.org/ja/docs/Web/HTML/Element/ruby)が改行可能になり、ルビの配置を制御できるようになった。
+
+```html
+<ruby>
+  青眼の白龍
+  <rt>ブルーアイズホワイトドラゴン</rt>
+</ruby>
+```
+
+```html
+<ruby style="ruby-align: space-around;">
+  青眼の白龍
+  <rt>ブルーアイズホワイトドラゴン</rt>
+</ruby>
+
+<ruby style="ruby-align: space-between;">
+  青眼の白龍
+  <rt>ブルーアイズホワイトドラゴン</rt>
+</ruby>
+
+<ruby style="ruby-align: start;">
+  青眼の白龍
+  <rt>ブルーアイズホワイトドラゴン</rt>
+</ruby>
+
+<ruby style="ruby-align: center;">
+  青眼の白龍
+  <rt>ブルーアイズホワイトドラゴン</rt>
+</ruby>
+```
+
+![ruby-alignのデモ。青眼の白龍という文字にルビが振られている。](./ruby-align.png)
+
+## デモ
+
+※[FirefoxとChrome128以降](https://caniuse.com/mdn-css_properties_ruby-align)でのみ動作する。
+
+<section>
+  <h2>ruby-align: space-around</h2>
+  <ruby style="ruby-align: space-around;">
+    青眼の白龍
+    <rt>ブルーアイズホワイトドラゴン</rt>
+  </ruby>
+</section>
+
+<section>
+  <h2>ruby-align: space-between</h2>
+  <ruby style="ruby-align: space-between;">
+    青眼の白龍
+    <rt>ブルーアイズホワイトドラゴン</rt>
+  </ruby>
+</section>
+
+<section>
+  <h2>ruby-align: start</h2>
+  <ruby style="ruby-align: start;">
+    青眼の白龍
+    <rt>ブルーアイズホワイトドラゴン</rt>
+  </ruby>
+</section>
+
+<section>
+  <h2>ruby-align: center</h2>
+  <ruby style="ruby-align: center;">
+    青眼の白龍
+    <rt>ブルーアイズホワイトドラゴン</rt>
+  </ruby>
+</section>
+
