@@ -6,7 +6,7 @@ export async function GET(context) {
     description: 'フロントエンド関連で今日学んだことを共有',
     site: context.site,
     items: await pagesGlobToRssItems(
-      import.meta.glob('./posts/**/*.{md,mdx}')
+      import.meta.glob('./posts/**/[!_]*.{md,mdx}')
     ),
   })
 }
