@@ -1,0 +1,32 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-12-09"
+updatedDate: "2022-12-09"
+title: "ChatGPTをしゃべらせる方法"
+author: ダーシノ
+description: "Web Speech APIを使うことで、ChatGPTを簡単に喋らせることができる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Web Speech API](https://developer.mozilla.org/ja/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API)を使うことで、ChatGPTを簡単に喋らせることができる。
+
+```js
+const nodes = document.querySelectorAll('main p')
+// ここで「最後の要素」と限定せず nodes を for-of で回して全部読み上げも可能
+const ai = Array.from(nodes).at(-1)
+
+const tts = new SpeechSynthesisUtterance(ai.textContent || '...')
+tts.voice = speechSynthesis.getVoices().find(a => a.name === 'kyoko')
+tts.pitch = 1
+tts.rate = 1.2
+
+speechSynthesis.speak(tts)
+```
+
+## 展望
+
+- [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)などを使ってp要素が追加されたときに読み上げさせれば通常の会話みたいになるかも
