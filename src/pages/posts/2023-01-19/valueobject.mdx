@@ -1,0 +1,37 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2023-01-19"
+updatedDate: "2023-01-19"
+title: "ValueObjectが指すものとは？"
+author: ダーシノ
+description: "ValueObjectには複数の意味がある。DDDの文脈に限ると「属性を表現するためのオブジェクトがValueObject」となる。"
+tags: ["Architecture"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ValueObjectには複数の意味がある。DDDの文脈に限ると「属性を表現するためのオブジェクトがValueObject」となる。
+
+## 古のJava界隈
+
+- DTO（Data Transfer Object） = VO（ValueObject）
+
+## TDD界隈
+
+- [テスト駆動開発 / Kent Beck](https://amzn.to/3MhQWEt)
+- 台数計算や集合、単位を伴う計算、記号計算などを行いたいときにValueObjectを使う
+- ValueObjectはImmutable、equalsが必要
+- オブジェクトの上書きを防いだり、計算しやすくするために使う
+
+## リファクタリング界隈
+
+- [リファクタリング / Martin Fowler](https://amzn.to/3LWhhYh)
+- ValueObjectは使用把握が容易で不変だから扱いやすい
+- 副作用を気にする必要がない
+
+## DDD界隈
+- [ドメイン駆動設計 / Eric Evans](https://amzn.to/4dyJ1y1)
+- あるモデル要素について、その属性しか関心の対象にならないとあれば、その要素を値オブジェクトとして分類すること
+- 何らかの属性を表現する場合につかう
