@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-11-11"
+updatedDate: "2022-11-11"
+title: "CommonJSとESModulesのデュアルパッケージをつくる"
+author: ダーシノ
+description: "rollupを使ってデュアルパッケ―ジを作る方法を紹介する。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Modules: Dual CommonJS/ES module packages](https://nodejs.org/api/packages.html#dual-commonjses-module-packages)にかかれていることをrollupを使って対応する場合、以下のようになる。
+
+## パッケージ提供側
+```js
+// rollup.config.js
+export default {
+  input: './index.js',
+  output: [
+    { file: './lib/package.cjs', format: 'cjs' },  // Node.js用
+    { file: './lib/package.mjs', format: 'es' },   // ESModules用
+  ]
+}
+```
+
+```json
+// package.json
+{
+  "name": "package",
+  "type": "module",
+  "files": [
+    "lib"
+  ],
+  // exports で ESM/CJS を分けるので、 ["main": "./index.js"] は不要
+  "exports": {
+    "import": "./lib/package.mjs",
+    "require": "./lib/package.cjs"
+  },
+}
+```
+
+## パッケージ使用側
+
+```js
+// client.node.js
+// lib/package.cjs が読み込まれる
+const pkg = require('package')
+
+
+// client.esm.js
+// lib/package.mjs が読み込まれる（※ブラウザで実行する場合はバンドラーが必要）
+import pkg from 'package'
+```
+
+## デモ
+
+- [BcRikko/dual\-package\-example: Example of npm package for both CommonJS and ESModules](https://github.com/BcRikko/dual-package-example)
