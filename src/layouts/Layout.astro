@@ -2,6 +2,7 @@
 import Meta from "../components/Meta.astro";
 import GoogleFont from "../components/GoogleFont.astro";
 import Ads from "../components/Ads.astro";
+import SNS from "../components/SNS.astro";
 import Byline from "../components/Byline.astro";
 import Discover from "../components/Discover.astro";
 
@@ -31,6 +32,7 @@ const { title, description, tags, pubDate, updatedDate } =
     <title>{title} | @bc_rikko</title>
 
     <Byline title={title} description={description} pubDate={pubDate} updatedDate={updatedDate} />
+    <SNS />
     <Discover rss="/til/rss" />
   </head>
   <body>
