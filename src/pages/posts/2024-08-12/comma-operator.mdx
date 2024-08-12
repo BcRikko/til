@@ -1,0 +1,53 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-12"
+updatedDate: "2024-08-12"
+title: "カンマ演算子を使ってパイプラインを実現する"
+author: ダーシノ
+description: "カンマ演算子とは、演算対象を左から順に評価し最後の値を返す演算子のこと。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[カンマ演算子](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator)とは、演算対象を左から順に評価し最後の値を返す演算子のこと。
+
+
+## 例
+
+```js
+let x = 1
+x = (x++, x)
+console.log(x) // 2
+```
+
+## パイプラインを実現する
+
+```js
+const double = (x: number) => x * 2
+const square = (x: number) => x ** 2
+const power = (x: number, y: number) => x ** y
+
+// 単一の値
+const pipe1 = (val: number) => (
+  val = double(val),
+  val = square(val),
+  val = power(val, 3)
+)
+
+// output: 4096
+console.log(pipe1(2))
+
+// 配列
+const pipe2 = (val: number[]) => (
+  val = val.map(double),
+  val = val.map(square),
+  val = val.map(x => power(x, 3)),
+  val = val.filter(x => x % 10 >= 5)
+)
+
+// output: [4096, 46656] 
+console.log(pipe2([1, 2, 3, 4, 5]))
+```
