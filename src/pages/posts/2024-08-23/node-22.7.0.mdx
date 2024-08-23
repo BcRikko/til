@@ -1,0 +1,26 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-23"
+updatedDate: "2024-08-23"
+title: "Node.js v22.7.0でTypeScriptのシンタックスをサポート"
+author: ダーシノ
+description: "Node.js v22.7.0で--experimental-transform-typesが追加されたことでenumsやnamespaceといったTypeScriptの構文がJavaScriptに変換されるようになった。"
+tags: ["Node.js", "TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Node.js v22.7.0](https://nodejs.org/en/blog/release/v22.7.0)で`--experimental-transform-types`が追加されたことで、[v22.6.0](/til/2024-08-07/node-22.6.0)ではサポートされなかった`enums`や`namespace`といったTypeScriptの構文がJavaScriptに変換されるようになった。
+
+> **Experimental transform types support**
+>
+> With the new flag --experimental-transform-types it is possible to enable the transformation of TypeScript-only syntax into JavaScript code.
+>
+> This feature allows Node.js to support TypeScript syntax such as Enum and namespace.
+
+## 関連記事
+
+- [Node\.js v22\.6\.0で実験的にTypeScriptをサポート](/til/posts/2024-08-07/node-22.6.0/)
+
