@@ -1,0 +1,73 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-28"
+updatedDate: "2024-08-28"
+title: "th要素にscope属性をつけて見出しをセルを紐づける"
+author: ダーシノ
+description: "th要素にはscope属性をつけることができる。基本的には気にしなくて良いが昨今のWebUIではテーブル自体が拡張され複雑化することが多く、マークアップだけでは適切に紐づけることができないため有用になるケースもある。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[th要素](https://developer.mozilla.org/ja/docs/Web/HTML/Element/th)にはscope属性をつけることができる。
+
+## scope属性
+
+- `row`: 見出しがその行に属するすべてのセルに関連する
+- `col`: 見出しがその列に属するすべてのセルに関連する
+- `rowgroup`: 見出しがその行グループに属し、その中のセルに関連する
+- `colgroup`: 見出しがその列グループに属し、その中のセルに関連する
+
+scope属性が指定されていない場合は、ブラウザが自動的に見出しが適用されるセルを選択してくれるので、基本的に気にしなくてよい属性ではある。
+
+ただし、昨今のWebUIではテーブル自体が拡張され複雑化することが多く、マークアップだけでは適切に紐づけることができないため有用になるケースもある。
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Age</th>
+      <th scope="col">Job</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">John</th>
+      <td>30</td>
+      <td>Engineer</td>
+    </tr>
+    <tr>
+      <th scope="row">Smith</th>
+      <td>25</td>
+      <td>Designer</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+## デモ
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Age</th>
+      <th scope="col">Job</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">John</th>
+      <td>30</td>
+      <td>Engineer</td>
+    </tr>
+    <tr>
+      <th scope="row">Smith</th>
+      <td>25</td>
+      <td>Designer</td>
+    </tr>
+  </tbody>
+</table>
