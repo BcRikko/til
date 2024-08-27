@@ -1,0 +1,38 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-27"
+updatedDate: "2024-08-27"
+title: "Intl.DurationFormatで時分秒の多言語対応をする"
+author: ダーシノ
+description: "Chrome 129 BetaでIntl.DurationFormatがサポートされた。現時点ではSafari 16.4のみサポート済み。Intl.DurationFormatは国際化APIの一部で、時分秒の多言語対応とフォーマットができるようになる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+[Chrome 129 Beta](https://developer.chrome.com/blog/chrome-129-beta?hl=en)で[Intl.DurationFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat)がサポートされた。現時点ではSafari 16.4のみサポート済み。
+
+`Intl.DurationFormat`は国際化APIの一部で、時分秒の多言語対応とフォーマットができるようになる。
+
+```js
+const duration = {
+  hours: 1,
+  minutes: 23,
+  seconds: 45,
+}
+
+new Intl.DurationFormat('ja-JP', {style: 'long'}).format(duration)
+// 1 時間 23 分 45 秒
+
+new Intl.DurationFormat('en-US', {style: 'long'}).format(duration)
+// 1 hour, 23 minutes, 45 seconds
+
+new Intl.DurationFormat('en-US', {style: 'short'}).format(duration)
+// 1 hr, 23 min, 45 sec
+
+new Intl.DurationFormat('en-US', {style: 'narrow'}).format(duration)
+// 1h 23m 45s
+```
