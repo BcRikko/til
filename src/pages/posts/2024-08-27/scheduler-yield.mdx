@@ -1,0 +1,196 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-27"
+updatedDate: "2024-08-27"
+title: "scheduler.yield()を使い長いタスクに割り込む"
+author: ダーシノ
+description: "Chrome 129 Betaでscheduler.yield()がフラグなしで使えるようになった。scheduler.yield()を使うことで、長い処理の中に割り込むことができる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Chrome 129 Beta](https://developer.chrome.com/blog/chrome-129-beta?hl=en)で`scheduler.yield()`が使えるようになった。
+
+※Chrome 115でフラグ付きで実装されていた。
+
+長い処理を実行しているときは、その処理が終わるまで他のイベントを受け付けなくなってしまう。
+
+```
+  +-------------------+   +---------+
+--|     long task     |---| onclick |--->
+  +-------------------+   +---------+
+    ↑
+    このあたりでクリックしてもlong taskが終わるまで反応しない
+```
+
+`scheduler.yield()`を使うことで、長い処理の中に割り込むことができる。
+
+```
+  +----+  +----+  +---------+  +----+  +----+
+--| lo |--| ng |--| onclick |--| ta |--| sk |-->
+  +----+  +----+  +---------+  +----+  +----+
+                    ↑
+    ここでクリックするとlong taskの途中でも実行できる
+```
+
+## Before: ブロックされる
+
+### サンプルコード
+```html
+<button id="click" type="button">Click</button>
+<button id="start" type="button">Start</button>
+```
+
+```js
+function longTask() {
+  // 長い処理
+  for(let i = 0; i < 10_000_000; i++) {
+    const el = document.querySelector('dummytask')
+  }
+}
+
+function run() {
+  console.group('Blocking')
+  let i = 0
+  longTask()
+  console.log(i++)
+
+  longTask()
+  console.log(i++)
+
+  longTask()
+  console.log(i++)
+
+  longTask()
+  console.log(i++)
+
+  longTask()
+  console.log(i++)
+
+  console.groupEnd('Blocking')
+}
+
+
+const click = document.querySelector('#click')
+click.addEventListener('click', () => console.log('Clicked'))
+
+const start = document.querySelector('#start')
+start.addEventListener('click', () => run())
+```
+
+### 実行結果
+
+```
+> Blocking
+> 0
+> 1
+> 2
+> 3
+> 4
+> Clicked
+> Clicked
+> ...
+```
+
+## After: ブロックされない（scheduler.yield()）
+
+### サンプルコード
+```js
+...
+async function run() {
+  console.group('Scheduler Yield')
+  let i = 0
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  console.groupEnd('Scheduler Yield')
+}
+...
+```
+
+### 実行結果
+
+```
+> Scheduler Yield
+> 0
+> Clicked
+> 1
+> Clicked
+> Clicked
+> 2
+> Clicked
+> 3
+> Clicked
+> 4
+> Clicked
+> ...
+```
+
+
+## デモ
+
+実行結果はConsoleに出力されます。
+
+<button id="start" type="button">Start</button>
+<button id="click" type="button">Click</button>
+
+<script>{`
+function longTask() {
+  for(let i = 0; i < 1_000_000; i++) {
+    const el = document.querySelector('dummytask')
+  }
+}
+
+async function run() {
+  console.group('Scheduler Yield')
+  let i = 0
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  longTask()
+  console.log(i++)
+  await scheduler.yield()
+
+  console.groupEnd('Blocking')
+}
+
+
+const click = document.querySelector('#click')
+click.addEventListener('click', () => console.log('Clicked'))
+
+const start = document.querySelector('#start')
+start.addEventListener('click', () => run())
+`}</script>
