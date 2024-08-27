@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-08-27"
-updatedDate: "2024-08-27"
+updatedDate: "2024-08-28"
 title: "Intl.DurationFormatで時分秒の多言語対応をする"
 author: ダーシノ
 description: "Chrome 129 BetaでIntl.DurationFormatがサポートされた。現時点ではSafari 16.4のみサポート済み。Intl.DurationFormatは国際化APIの一部で、時分秒の多言語対応とフォーマットができるようになる。"
@@ -19,20 +19,27 @@ import Header from '../../../components/Header.astro'
 
 ```js
 const duration = {
-  hours: 1,
-  minutes: 23,
-  seconds: 45,
-}
+  years: 1,
+  months: 2,
+  weeks: 3,
+  days: 4,
+  hours: 5,
+  minutes: 6,
+  seconds: 7,
+  milliseconds: 8,
+  microseconds: 9,
+  nanoseconds: 9,
+};
 
 new Intl.DurationFormat('ja-JP', {style: 'long'}).format(duration)
-// 1 時間 23 分 45 秒
+// 1 年 2 か月 3 週間 4 日 5 時間 6 分 7 秒 8 ミリ秒 9 マイクロ秒 9 ナノ秒
 
 new Intl.DurationFormat('en-US', {style: 'long'}).format(duration)
-// 1 hour, 23 minutes, 45 seconds
+// 1 year, 2 months, 3 weeks, 4 days, 5 hours, 6 minutes, 7 seconds, 8 milliseconds, 9 microseconds, 9 nanoseconds
 
 new Intl.DurationFormat('en-US', {style: 'short'}).format(duration)
-// 1 hr, 23 min, 45 sec
+// 1 yr, 2 mths, 3 wks, 4 days, 5 hr, 6 min, 7 sec, 8 ms, 9 μs, 9 ns
 
 new Intl.DurationFormat('en-US', {style: 'narrow'}).format(duration)
-// 1h 23m 45s
+// 1y 2m 3w 4d 5h 6m 7s 8ms 9μs 9ns
 ```
