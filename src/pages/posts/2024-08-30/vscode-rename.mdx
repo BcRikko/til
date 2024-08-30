@@ -1,0 +1,42 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-08-30"
+updatedDate: "2024-08-30"
+title: "VSCodeのリファクタリング機能でリネームするとエイリアスが残る"
+author: ダーシノ
+description: "VSCodeのリファクタリング機能（F2）を使ってリネームすると、JavaScriptやTypeScriptの変数、関数名などを一括変更できる。しかし、リネームした後にエイリアスされ変更前の名前が保持されてしまう。"
+tags: []
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+VSCodeのリファクタリング機能（<kbd>F2</kbd>）を使ってリネームすると、JavaScriptやTypeScriptの変数、関数名などを一括変更できる。
+
+しかし、リネームした後にエイリアスされ変更前の名前が保持されてしまう。
+
+```js
+import { before } from './module.js'
+const { before } = obj
+
+
+// Refactoring
+
+import { after as before } from './module.js'
+//             ^^^^^^^^^^
+const { after: before } = obj
+//             ^^^^^^
+console.log(before)
+```
+
+## 解決方法
+
+`settings.json`で`useAliasesForRenames`を無効化することでエイリアスを削除できる。
+
+```json
+{
+  "javascript.preferences.useAliasesForRenames": false,
+  "typescript.preferences.useAliasesForRenames": false,
+}
+```
