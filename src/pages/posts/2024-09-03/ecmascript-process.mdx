@@ -1,0 +1,65 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-03"
+updatedDate: "2024-09-03"
+title: "ECMAScriptの標準化プロセスと各Stageの意味と移行条件"
+author: ダーシノ
+description: "ECMAScriptはEcma Internationalによって標準化されている仕様で、その標準化プロセスはStage 0からStage 4までの6つの段階に分かれている。各Stageの意味と移行条件 Stage 0 新しい機能のアイデア段階。このProposalがなぜ有用なのか説明が必要するリポジトリの作成と、Champion（旗振り役）が決まったらStage 1に進む。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ECMAScriptはEcma Internationalによって標準化されている仕様で、その標準化プロセスはStage 0からStage 4までの6つの段階に分かれている。
+
+## 各Stageの意味と移行条件
+### Stage 0
+
+新しい機能のアイデア段階。
+
+このProposalがなぜ有用なのか説明が必要するリポジトリの作成と、Champion（旗振り役）が決まったらStage 1に進む。
+
+
+### Stage 1
+
+Proposalの正式な提案段階。
+
+Proposalの設計を詳細化し、初期仕様を作成することでStage 2に進む。
+
+
+### Stage 2
+
+初期仕様のドラフト段階。
+
+テストスイートを作成することでStage 2.7に進む。
+
+
+### Stage 2.7
+
+Proposalの検証段階。原則的には承認される。
+
+2023年に新設されたStageで、Stage 3に進んでもテストスイートが不十分だったり、検証が不足していたりするときにStage 2に差し戻されProposalの設計を修正する必要があった。Stage 3はほぼ承認段階でブラウザに実装されるのでStage 2に戻されるインパクトが大きいため間にStage 2.7が設けられた。
+
+実装とテストスイートの検証ができたらStage 3に進む。
+
+
+### Stage 3
+
+Proposalの実装と検証段階。ブラウザに実装されフィードバックを求める。
+
+仕様が完成し、最終的な承認を得ることでStage 4に進む。
+
+
+### Stage 4
+
+Proposalの最終承認段階。
+
+仕様策定が完了し、正式にECMAScript標準に組み込まれる。
+
+
+## 参考
+
+- [Inside ECMAScript: JavaScript Standard Gets an Extra Stage \- The New Stack](https://thenewstack.io/inside-ecmascript-javascript-standard-gets-an-extra-stage/)
+- [ECMAScript · JavaScript Primer \#jsprimer](https://jsprimer.net/basic/ecmascript/)
