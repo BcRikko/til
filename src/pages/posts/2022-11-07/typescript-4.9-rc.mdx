@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-11-07"
+updatedDate: "2022-11-07"
+title: "TypeScript 4.9に追加されたaccessorについて"
+author: ダーシノ
+description: "TypeScript 4.9にクラス内自動アクセサが追加された。以下のようにクラスのメンバ変数にaccessorをつけることで、getterとsetterを自動で生成される。accessorが追加された背景には、TypeScript 5.0で追加されるデコレータに必要になるらしい。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[TypeScript 4.9](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9-rc/)にクラス内自動アクセサが追加された。
+
+以下のようにクラスのメンバ変数に`accessor`をつけることで、`getter`と`setter`を自動で生成される。
+```ts
+class Item {
+  accessor name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+```
+↓トランスパイル
+```ts
+class Item {
+  #__name: string
+  get name() { this.#__name }
+  set name(val) { this.#__name = val }
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+```
+
+`accessor`が追加された背景には、TypeScript 5.0で追加されるデコレータに必要になるらしい。
+
+> ## 9.1 Why are auto-accessors needed? 
+>
+> Auto-accessors are needed by decorators:
+> - They can only influence the values fields are initialized with.
+> - But they can completely replace auto-accessors.
+>
+> Therefore, we have to use auto-accessors instead of fields whenever a decorator needs more control than it has with fields.
+>
+> https://2ality.com/2022/10/javascript-decorators.html#why-are-auto-accessors-needed%3F
