@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-04"
+updatedDate: "2024-09-04"
+title: "details要素のname属性を使ってグループ化する"
+author: ダーシノ
+description: "Firefox 130でdetails要素のname属性がサポートされたことで、全主要部（Chrome120、Edge120、Firefox130、Safari17.2）で使えるようになった。details要素にname属性をつけることでグループ化ができ、アコーディオンの開閉制御を排他的に行うことができるようになった。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Firefox 130](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/130)で[details要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)のname属性がサポートされたことで、全主要部（Chrome120、Edge120、Firefox130、Safari17.2）で使えるようになった。
+
+
+details要素にname属性をつけることでグループ化ができ、アコーディオンの開閉制御を排他的に行うことができるようになった。
+
+```html
+<details name="faq">
+  <summary>Q.これはなんですか？</summary>
+  <p>これは○○です。</p>
+</details>
+<details name="faq">
+  <summary>Q.それはなんですか？</summary>
+  <p>それは○○です。</p>
+</details>
+<details name="faq">
+  <summary>Q.あれはなんですか？</summary>
+  <p>あれは○○です。</p>
+</details>
+```
+
+## デモ
+
+<details name="faq">
+  <summary>Q.これはなんですか？</summary>
+  <p>これは○○です。</p>
+</details>
+<details name="faq">
+  <summary>Q.それはなんですか？</summary>
+  <p>それは○○です。</p>
+</details>
+<details name="faq">
+  <summary>Q.あれはなんですか？</summary>
+  <p>あれは○○です。</p>
+</details>
