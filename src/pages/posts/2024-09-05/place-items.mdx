@@ -1,0 +1,51 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-05"
+updatedDate: "2024-09-05"
+title: "place-itemsでaling-itemsとjustify-itemsを1行で指定する"
+author: ダーシノ
+description: "place-itemsプロパティを使うとグリッドやフレックスボックスなどにおいて、align-itemsとjustify-itemsを1行で指定できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[place-items](https://developer.mozilla.org/ja/docs/Web/CSS/place-items)プロパティを使うとグリッドやフレックスボックスなどにおいて、[align-items](https://developer.mozilla.org/ja/docs/Web/CSS/align-items)と[justify-items](https://developer.mozilla.org/ja/docs/Web/CSS/justify-items)を1行で指定できる。
+
+```html
+<section id="demo">
+  <div class="item"></div>
+</section>
+```
+```css
+.section {
+  display: grid;
+  place-items: center;
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <div class="item"></div>
+</section>
+
+<style>{`
+#demo {
+  display: grid;
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  border: solid 4px;
+  place-items: center;
+
+  .item {
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+  }
+}
+`}</style>
