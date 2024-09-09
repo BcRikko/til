@@ -1,0 +1,123 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-09"
+updatedDate: "2024-09-09"
+title: "Call-This Operatorを使ってオブジェクト指向と関数型の良いとこ取りをする"
+author: ダーシノ
+description: "Call-This OperatorというProposalが提案されており、これを使うとオブジェクト指向プログラミング（OOP）と関数型プログラミング（FP）の良いとこ取りができる。Call-This Operatorを簡単に紹介すると、Function.property.call(this, ...args)を、~>を使ってthis~>fn(...args)のように表現することができる。※何年もStage 1のままで動きがないので、実際使えるようになるかはわからない。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Call-This Operator](https://github.com/tc39/proposal-call-this)というProposalが提案されており、これを使うとオブジェクト指向プログラミング（OOP）と関数型プログラミング（FP）の良いとこ取りができる。
+
+Call-This Operatorを簡単に紹介すると、`Function.property.call(this, ...args)`を、`~>`を使って`this~>fn(...args)`のように表現することができる。
+
+※何年もStage 1のままで動きがないので、実際使えるようになるかはわからない。
+
+## オブジェクト指向プログラミング（Class-based OOP）
+
+```ts
+class Item {
+  name: string
+  price: number
+}
+
+class Cart {
+  #items: Item = []
+
+  add(item: Item): void {
+    this.#items.push(item)
+  }
+
+  total(): number {
+    return this.#items.reduce((total, a) => total += a.price, 0)
+  }
+}
+
+const item = new Item('xxx', 1_000)
+const cart = new Cart()
+cart.add(item)
+const total = cart.total() // 1000
+```
+
+### メリット
+
+- データと振る舞いをまとめて管理できる
+
+### デメリット
+
+- フロントエンド開発においてJavaScriptフレームワークとClassベースのOOPの相性が悪い
+- ミュータブルになりがち
+
+
+## type + 関数型プログラミング
+
+```ts
+type Item = { name: string, price: number }
+type Cart = { items: Item[] }
+
+function addItem(cart: Cart, item: Item): cart {
+  return { items: [...cart.items, item] }
+}
+function getTotal(cart: Cart): number {
+  return cart.items.reduce((total, a) => total += a.price, 0)
+}
+
+const item: Item = { name: 'xxx', price: 1_000 }
+const cart: Cart = { items: [] }
+
+const addedCart = addItem(cart, item)
+const total = getTotal(addedCart) // 1000
+```
+
+### メリット
+
+- 純粋なオブジェクトとして扱えるのでフロントエンド開発と相性が良い
+- イミュータブルなオブジェクトとして扱える（コーディングルールによる）
+
+### デメリット
+
+- データと振る舞いが別々に管理される
+- 関数が増えると探すのが大変
+
+
+## Call-This Operator(≒ Function.prototype.call)
+
+```ts
+type Item = { name: string, price: number }
+type Cart = { items: Item[] }
+
+function addItem(this: Cart, item: Item): cart {
+  return { items: [...this.items, item] }
+}
+function getTotal(this: Cart): number {
+  return this.items.reduce((total, a) => total += a.price, 0)
+}
+
+const item: Item = { name: 'xxx', price: 1_000 }
+const cart: Cart = { items: [] }
+
+const addedCart = cart~>addItem(item)
+// = addItem.call(cart, item)
+const total = addedCart~>getTotal() // 1000
+// = getTotal(addedCart)
+```
+
+### メリット
+
+- `cart~>`の段階でどの関数が使えるかサジェストできる
+- 実装自体は関数型っぽく書ける
+
+### デメリット
+
+- Proposal Stage1のまま動きがない
+- 似たような演算子にPipeline Operator（`|>`）があるが、こちらはStage 2になっている
+
+
+## 参考
+
+- [僕が思い描くTypeScriptの未来を勝手に先取りする \- Speaker Deck](https://speakerdeck.com/yukukotani/my-own-typescript-future)
