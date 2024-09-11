@@ -1,0 +1,89 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-12"
+updatedDate: "2024-09-12"
+title: "スクロールバーの表示によるガタツキを防ぐscroll-gutter"
+author: ダーシノ
+description: "コンテンツの増減によりスクロールバーが表示されたり消えたりするときに、レイアウトがガタつくことがある。これを防ぐためにscroll-gutterプロパティを使うことができる。Safari TP 203が対応したことで、近い将来全主要ブラウザで利用可能になる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+コンテンツの増減によりスクロールバーが表示されたり消えたりするときに、レイアウトがガタつくことがある。これを防ぐために[scroll-gutterプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter)を使うことができる。
+
+[Safari TP 203](https://webkit.org/blog/15860/release-notes-for-safari-technology-preview-203/)が対応したことで、近い将来全主要ブラウザで利用可能になる。
+
+## サポート状況
+
+- Chrome 94
+- Edge 94
+- Firefox 97
+- Safari TP 203
+
+## scrollbar-gutter
+
+```css
+/**
+ * デフォルト: スクロールバー分のスペースは確保されない
+ */
+.container {
+  scrollbar-gutter: auto;
+}
+/**
+ * あらかじめスクロールバー分のスペースが確保される
+ */
+.container {
+  scrollbar-gutter: stable;
+}
+/**
+ * 両サイドにスクロールバー分のスペースが確保される
+ */
+.container {
+  scrollbar-gutter: stable both-edges;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <section class="container auto">
+    <h3>scrollbar-gutter: auto</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+  <section class="container stable">
+    <h3>scrollbar-gutter: stable</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+  <section class="container both-edges">
+    <h3>scrollbar-gutter: stable both-edges</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+</section>
+
+<style>{`
+.container {
+  border: 4px solid;
+  overflow: auto;
+  resize: both;
+}
+.container + .container {
+  margin-top: 1rem;
+}
+.container > p {
+  word-break: normal;
+}
+
+.auto {
+  scrollbar-gutter: auto;
+}
+.stable {
+  scrollbar-gutter: stable;
+}
+.both-edges {
+  scrollbar-gutter: stable both-edges;
+}
+`}</style>
