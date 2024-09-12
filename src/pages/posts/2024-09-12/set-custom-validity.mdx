@@ -1,0 +1,76 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-12"
+updatedDate: "2024-09-12"
+title: "setCustomValidity()でバリデーションメッセージの多言語対応をする"
+author: ダーシノ
+description: "HTML標準のバリデーションでは、たとえばrequired属性を指定した場合は「このフィールドを入力してください。」というメッセージが表示される。HTMLInputElement:setCustomValidity()メソッドを使うことで、メッセージを変更できる。"
+tags: ["HTML", "JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+HTML標準のバリデーションでは、たとえば[required属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required)を指定した場合は「このフィールドを入力してください。」というメッセージが表示される。
+
+[HTMLInputElement:setCustomValidity()](https://developer.mozilla.org/ja/docs/Web/API/HTMLInputElement/setCustomValidity)メソッドを使うことで、メッセージを変更できる。
+
+```js
+const trans = {
+  en: {
+    required: "Please fill this."
+  },
+  ja: {
+    required: "入力してください。"
+  }
+}
+
+let lang = navigator.language || 'ja'
+
+const nameInput = document.querySelector('input[name="name"]')
+const submitBtn = document.querySelector('button[type="submit"]')
+
+
+submitBtn.addEventListener('click', (e) => {
+  if (nameInput.value === '') {
+    nameInput.setCustomValidity[trans[lang].required]
+    nameInput.classList.add('error')
+  }
+}
+```
+
+## デモ
+
+<section id="demo">
+  <form>
+    <div class="field">
+      <label for="name">Name</label>
+      <input
+        id="name"
+        name="name"
+        type="text"
+        pattern="[a-zA-Z]+"
+        required
+      />
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+<script>{`
+const trans = {
+  en: {
+    required: "Please fill this."
+  },
+  ja: {
+    required: "入力してください。（カスタム）"
+  }
+}
+
+let lang = navigator.language || 'ja'
+
+const nameInput = document.querySelector('#demo input[name="name"]')
+nameInput.setCustomValidity(trans[lang].required)
+`}</script>
