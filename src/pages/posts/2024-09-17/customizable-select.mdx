@@ -1,0 +1,213 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-17"
+updatedDate: "2024-09-17"
+title: "select要素のスタイルをカスタマイズする"
+author: ダーシノ
+description: "Chrome Canary 130がカスタマイズ可能なselect要素を実験的にサポートした。フロントエンドエンジニア大歓喜。chrome://flagsで#experimental-web-platform-featuresを有効にすることでselect要素のカスタマイズができるようになる。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Chrome Canary 130](https://developer.chrome.com/blog/rfc-customizable-select)がカスタマイズ可能なselect要素を実験的にサポートした。フロントエンドエンジニア大歓喜。
+
+`chrome://flags`で`#experimental-web-platform-features`を有効にすることでselect要素のカスタマイズができるようになる。
+
+
+## 背景
+
+select要素のデフォルトスタイルはデザイナーから嫌われており（要出典）、必ずと言っていいほど別UIに変更されている。そのたびにフロントエンドエンジニアはbuttonやul/liなどを使ってselect要素の再実装することになる。
+
+開閉管理やスクロール位置による展開方向など考えることが多く、地味に面倒な作業だった。
+
+
+## Customizable Selectの状況
+
+> Now that we have a draft spec, I think we are ready for stage 2 as defined [here.](https://whatwg.org/stages)
+> 
+> https://github.com/whatwg/html/issues/9799#issuecomment-2269604204
+
+要約: stage 2に進む準備ができた。
+
+
+> We have discussed the stage 2 entrance in the last 2 triage meetings, and we have 2 implementers supporting and no strong implementer objections. This is sufficient for advancing to the next stage, but we agreed to wait for next week's meeting for an explicit signal from WebKit, since they didn't attend today's meeting.
+> 
+> https://github.com/whatwg/html/issues/9799
+
+要約: WebKitの意見を待つことになった。
+
+
+まだドラフト段階で今後の仕様が大きく変わる可能性がある。でも、この機能はずっとほしかったので先取りして触っていきたい。
+
+
+## select要素をカスタマイズする
+
+### `::picker(select)` と `appearance: base-select`
+
+```css
+select,
+::picker(select) {
+  appearance: base-select;
+}
+```
+
+`::picker(select)`はポップオーバー（ドロップダウン）の疑似要素を指している。`select, ::picker(select) { appearance: base-select; }`とすることで、select要素とポップオーバーに対して新しいスタイルを適用することができる。
+
+### select要素を構成する部品
+
+```html
+<select>
+  <button>
+    <selectedoption></selectedoption>
+  </button>
+  <option value="cat">
+    <span>🐱</span>
+    <span>Cat</span>
+  </option>
+  ...
+</select>
+```
+
+- select … ルートとなる要素
+- ::picker(select) … ポップオーバー全体を指すコンテナ（疑似要素）
+- button … select要素のボタン部分で、クリックすると選択肢が表示される
+  - selectedoption … 選択されたオプションのinnerHTMLを反映する
+- option … 選択肢
+  - option::before … 選択肢に追加できる疑似要素
+  - option:checked … 選択された要素の擬似クラス
+
+### スタイルをカスタマイズする
+
+```css
+select,
+::picker(select) {
+  appearance: base-select;
+}
+
+/* ボタン */
+button,
+::select-fallback-button {
+  border-radius: 4px;
+  background-color: yellow;
+}
+
+/* ポップオーバーのコンテナ */
+::picker(select) {
+  border-radius: 4px;
+}
+
+/* 選択肢 */
+option {
+  padding: 4px;
+
+  /* 選択された値（option） */
+  &:checked {
+    background-color: lightblue;
+  }
+
+  /* 選択された要素に表示する疑似要素 */
+  &::before {
+    content: '❤️';
+    margin: 4px;
+  }
+}
+
+/* 選択した値のinnerHTMLが入るコンテナ */
+selectedoption {
+  padding: 4px;
+
+  /* buttonに表示するときにiconは非表示にする */
+  & > .icon {
+    display: none;
+  }
+}
+```
+
+
+## デモ
+
+<section id="demo-default">
+  <h3>Default</h3>
+  <select>
+    <option value="dog">Dog</option>
+    <option value="cat">Cat</option>
+    <option value="hamster">Hamster</option>
+    <option value="parrot">Parrot</option>
+  </select>
+</section>
+
+<section id="demo">
+  <h3>Customizable Select</h3>
+  <select>
+    <button>
+      <selectedoption></selectedoption>
+    </button>
+    <option>--- Please select ---</option>
+    <option value="dog">
+      <span class="icon">🐶</span>
+      <span>Dog</span>
+    </option>
+    <option value="cat">
+      <span class="icon">🐱</span>
+      <span>Cat</span>
+    </option>
+    <option value="hamster">
+      <span class="icon">🐹</span>
+      <span>Hamster</span>
+    </option>
+    <option value="parrot">
+      <span class="icon">🦜</span>
+      <span>Parrot</span>
+    </option>
+  </select>
+</section>
+
+<style>{`
+#demo {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+
+  /* ボタン */
+  button,
+  ::select-fallback-button {
+    border-radius: 4px;
+    background-color: yellow;
+  }
+
+  /* ポップオーバーのコンテナ */
+  ::picker(select) {
+    border-radius: 4px;
+  }
+
+  /* 選択肢 */
+  option {
+    padding: 4px;
+
+    /* 選択された値（option） */
+    &:checked {
+      background-color: lightblue;
+    }
+
+    /* 選択された要素に表示する疑似要素 */
+    &::before {
+      content: '❤️';
+      margin: 4px;
+    }
+  }
+
+  /* 選択した値のinnerHTMLが入るコンテナ */
+  selectedoption {
+    padding: 4px;
+
+    /* buttonに表示するときにiconは非表示にする */
+    & > .icon {
+      display: none;
+    }
+  }
+}
+`}</style>
