@@ -1,0 +1,61 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-18"
+updatedDate: "2024-09-18"
+title: "text-spacing-trimで括弧や句読点にできるスペースを調整する"
+author: ダーシノ
+description: "日本語では「」や【】などの括弧や、や。などの句読点を使うことが多い。ただ、それらは全角扱いなので先頭が揃わない、文中に余分なスペースが生まれるなどの弊害があった。text-spacing-trimを使うことで、先頭や文中の括弧や句読点のスペースを調整することができる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+日本語では`「」`や`【】`などの括弧や`、`や`。`などの句読点を使うことが多い。ただ、それらは全角扱いなので先頭が揃わない、文中に余分なスペースが生まれるなどの弊害があった。
+
+[text-spacing-trim](https://developer.mozilla.org/en-US/docs/Web/CSS/text-spacing-trim)を使うことで、先頭や文中の括弧や句読点のスペースを調整することができる。
+
+## サポート状況（2024-09-18時点）
+
+現在Experimentalとして一部のブラウザで実装されている。
+
+- Chrome 123
+- Edge 123
+- Firefox 未サポート
+- Safari 未サポート
+
+## text-spacing-trim
+
+- `normal`: 基本括弧句読点は全角で行に収まらないときは調整される
+- `space-all`: すべての括弧・句読点は全角になる
+- `space-first`: normalと同じだが明示的な改行のあとには全角になる
+- `trim-start`: 各行の先頭のい半角になる以外はnormalと同じ
+
+
+```css
+p {
+  text-spacing-trim: normal;
+  text-spacing-trim: space-all;
+  text-spacing-trim: space-first;
+  text-spacing-trim: trim-start;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <p>text-spacing-trim</p>
+  <p style="text-spacing-trim: normal;">「text-spacing-trim」、【「normal」】。</p>
+  <p style="text-spacing-trim: space-all;">「text-spacing-trim」、【「space-all」】。</p>
+  <p style="text-spacing-trim: space-first;">「text-spacing-trim」、【「space-first」】。</p>
+  <p style="text-spacing-trim: trim-start;">「text-spacing-trim」、【「trim-start」】。</p>
+</section>
+
+<style>{`
+#demo {
+  border: solid 4px;
+  overflow: auto;
+  resize: horizontal;
+}
+`}</style>
