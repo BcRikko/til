@@ -1,0 +1,102 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-19"
+updatedDate: "2024-09-19"
+title: ":has()を使って前の兄弟要素を選択する"
+author: ダーシノ
+description: "Selecting Previous Siblingsで:has()擬似クラスを使って、前の兄弟要素を選択する方法が紹介されていた。:has(+ &)は、「マウスオーバーした要素（&）が次にくる要素」を指している。正規表現の肯定先読みのようなもの。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Selecting Previous Siblings](https://frontendmasters.com/blog/selecting-previous-siblings/)で[:has()](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)擬似クラスを使って、前の兄弟要素を選択する方法が紹介されていた。
+
+```html
+<section>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  ...
+</section>
+```
+
+```css
+/* マウスオーバーした要素 */
+.item:hover {
+
+  /* マウスオーバーした次の兄弟要素 */
+  & + .item {}
+
+  /* マウスオーバーした次の次兄弟要素 */
+  & + .item + .item {}
+
+  /* マウスオーバーした前の兄弟要素 */
+  :has(+ &) {}
+  /* = :has(+ .item:hover) */
+
+  /* マウスオーバーした前の前の兄弟要素 */
+  :has(+ .item + &) {}
+  /* = :has(+ .item + .item:hover) */
+}
+```
+
+`:has(+ &)`は、「マウスオーバーした要素（`&`）が次にくる要素」を指している。正規表現の肯定先読みのようなもの。
+
+## デモ
+
+<section id="demo">
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+</section>
+
+<style>{`
+#demo {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100px;
+}
+#demo {
+  .item {
+    width: 50px;
+    height: 50px;
+    border: solid 4px;
+      transition: all .2s ease-out;
+  }
+
+  .item:hover {
+    background-color: red;
+    width: 100px;
+    height: 100px;
+    
+    /* hover要素の前後 */
+    & + .item,
+    :has(+ &) {
+      background-color: blue;
+      width: 80px;
+      height: 80px;
+    }
+    
+    /* hover要素の隣の隣 */
+    & + .item + .item,
+    :has(+ .item + &) {
+      background-color: yellow;
+      width: 60px;
+      height: 60px;
+    }
+  }
+}
+`}</style>
