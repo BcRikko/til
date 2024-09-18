@@ -1,0 +1,83 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-18"
+updatedDate: "2024-09-18"
+title: ":targetを使ったLightbox UIの実装"
+author: ダーシノ
+description: "画像をクリックすると拡大表示される機能をLightboxと呼ぶ。:target擬似クラスを使うことで、JavaScriptなしでも実装できる。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+画像をクリックすると拡大表示される機能をLightboxと呼ぶ。[:target](https://developer.mozilla.org/ja/docs/Web/CSS/:target)擬似クラスを使うことで、JavaScriptなしでも実装できる。
+
+```html
+<a href="#image1">
+  <span>画像1を開く</span>
+  <img src="..." alt="サンプル">
+</a>
+
+<section id="image1" class="lightbox">
+  <figure>
+    <a href="#">閉じる</a>
+    <img src="..." alt="サンプル">
+    <figcaption>Lerem ipsum</figcaption>
+  </figure>
+</section>
+```
+
+```css
+.lightbox {
+  display: none;
+}
+.lightbox:target {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+```
+
+## デモ
+
+<section id="demo">
+  <a class="open" href="#image">
+    <span>画像を開く</span>
+    <img src="https://avatars.githubusercontent.com/u/5305599?v=4" alt="サンプル" />
+  </a>
+
+  <section id="image" class="lightbox">
+    <figure>
+      <a href="#" class="close">閉じる</a>
+      <img src="https://avatars.githubusercontent.com/u/5305599?v=4" alt="サンプル" />
+      <figcaption>Lerem ipsum</figcaption>
+    </figure>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  .open {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  .close {
+    background-color: white;
+  }
+
+  .lightbox {
+    display: none;
+  }
+  .lightbox:target {
+    display: block;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+`}</style>
