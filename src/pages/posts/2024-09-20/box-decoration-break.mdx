@@ -1,0 +1,78 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-09-20"
+updatedDate: "2024-09-20"
+title: "改行されたinline要素のすべての行にスタイルを適用する"
+author: ダーシノ
+description: "inline要素（インラインボックス）を改行すると、以下のようにborderが途中で切れたり、paddingを使うと前の行と要素が重なってしまったり、いろいろな問題があった。box-decoration-breakプロパティは、改行されたinline要素のすべての行にスタイルを適用でき、これらの問題を解決することができる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+inline要素（インラインボックス）を改行すると、以下のようにborderが途中で切れたり、paddingを使うと前の行と要素が重なってしまったり、いろいろな問題があった。
+
+<span class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</span>
+
+[box-decoration-break](https://developer.mozilla.org/en-US/docs/Web/CSS/box-decoration-break)プロパティは、改行されたinline要素のすべての行にスタイルを適用でき、これらの問題を解決することができる。
+
+```html
+<span class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</span>
+```
+
+```css
+.paragraph {
+  /* inline-block要素のようなブロック要素では再現しない */
+  display: inline;
+
+  /*
+   * すべての行に同じスタイルを適用する
+   * 一部ブラウザでは -webkit- のベンダープレフィックスが必要
+   */
+  box-decoration-break: clone;
+  box-decoration-break: slice;
+}
+```
+
+`box-decoration-break`は以下のプロパティに影響する。
+
+- background
+- border
+- border-image
+- box-shadow
+- clip-path
+- margin
+- padding
+
+
+## デモ
+
+<section id="demo">
+  <span class="paragraph slice">slice: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</span>
+  <br />
+  <br />
+  <span class="paragraph clone">clone: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</span>
+</section>
+
+<style>{`
+
+.paragraph {
+  border: 4px solid;
+  border-radius: 1rem;
+  padding: .2rem;
+  background-color: #eee;
+  line-height: 2;
+
+  &.slice {
+    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+  }
+  &.clone {
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+}
+
+`}</style>
