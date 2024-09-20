@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-04-26"
-updatedDate: "2024-04-26"
+updatedDate: "2024-09-20"
 title: "Popover API + CSS Anchor Positioningでツールチップを表示する"
 author: ダーシノ
 description: "Popover API + CSS Anchor Positioningでツールチップを表示する。"
@@ -40,7 +40,7 @@ Popover API + CSS Anchor Positioningでツールチップを表示する。
   /* 勝手にmarginがとられてしまうので無効にする */
   margin: 0;
   /* anchorに対してどの位置にtooltipを表示するか指定する。この他に top: anchor(center) のような指定の仕方もある。 */
-  inset-area: top;
+  position-area: top;
   border: 2px solid;
 }
 </style>
@@ -87,7 +87,15 @@ Popover API + CSS Anchor Positioningでツールチップを表示する。
 .tooltip {
   position: absolute;
   margin: 0;
-  inset-area: top;
+  position-area: top;
   border: 2px solid;
 }
 `}</style>
+
+
+## 追記: 2024-09-20
+
+- `position-try-options`が`position-try-fallbacks`にリネームされた
+  - [\[css\-anchor\-position\] Rename \`position\-try\-options\` to \`position\-try\-fallbacks\`](https://github.com/w3c/csswg-drafts/issues/10395)
+- `inset-area`が`position-area`にリネームされた
+  - [inset\-area is now renamed to position\-area](https://github.com/mdn/content/issues/34893)
