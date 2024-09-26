@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-10-27"
+updatedDate: "2024-09-26"
+title: "section要素で分けてもh1要素はページにつき1つだけ"
+author: ダーシノ
+description: "昔々、まだHTML5の頃には、section要素で区切れば1ページ内で複数h1要素を使っても良いという仕様があった。HTML5が廃止され、HTML Living Standardが採用された現在では、h1要素はページに1つだけになっている。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+昔々、まだHTML5の頃には、section要素で区切れば1ページ内で複数h1要素を使っても良いという仕様があった。
+
+```html
+<body>
+  <h1>heading 1</h1>
+
+  <section>
+    <h1>heading 2</h1>
+  </section>
+</body>
+```
+
+HTML5が廃止され、HTML Living Standardが採用された現在では、h1要素はページに1つだけになっている。
+
+> ### 日本語 - MDN
+> 複数の`<h1>`を使用することはHTMLの仕様では認められていますが、ベストプラクティスとは見なされていません。
+
+> ### 英語 - MDN
+> Do not use multiple `<h1>` elements on one page. Use only one `<h1>` per page and nest headings without skipping levels.
+>
+> https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
+
+
+## 追記: 2024-09-26
+
+MDNの内容が、日本語・英語ともに変わっていた。
+
+> 1つのページに複数の `<h1>` 要素を使用することは HTML 標準では認められていますが（入れ子でない限り）、これはよい習慣とはみなされません。
+>
+> https://developer.mozilla.org/ja/docs/Web/HTML/Element/Heading_Elements
+
+> While using multiple `<h1>` elements on one page is allowed by the HTML standard (as long as they are not nested), this is not considered a best practice.
+>
+> https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
