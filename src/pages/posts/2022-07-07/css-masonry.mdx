@@ -1,10 +1,10 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2022-07-07"
-updatedDate: "2024-05-08"
+updatedDate: "2024-09-26"
 title: "CSSだけでMasonryレイアウト（組積レイアウト）をする "
 author: ダーシノ
-description: "{ページの概要}"
+description: "Masonryレイアウト（組積レイアウト）をするにはJavaScriptが必須（jQueryのプラグインとか）だったが、Gridレイアウトの機能でCSSだけで実現できるようになった。"
 tags: ["CSS"]
 ---
 
@@ -50,3 +50,11 @@ CSS Gridの機能ではなく、`display: masonry`でフローレイアウトの
   display: masonry;
 }
 ```
+
+----
+
+## 追記: 2024-09-26
+
+[CSS Grid Level 3のWorking Draft](https://www.w3.org/blog/CSS/2024/09/24/css-grid-3-fpwd/)が公開された。
+
+`grid-template-rows: masonry`と`display: masonry`の2つの提案があり、ユーザーにフィードバックを求めている。
