@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-02"
+updatedDate: "2024-10-02"
+title: "image-renderingでピクセルアートのキレイに表示する"
+author: ダーシノ
+description: "ピクセルアート（ドット絵）やQRコードのような小さな画像を拡大表示するとアンチエイリアスによって輪郭がぼやけてしまう。image-renderingで画像の拡大縮小時のアルゴリズムを指定することでアンチエイリアスを無効化できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ピクセルアート（ドット絵）やQRコードのような小さな画像を拡大表示するとアンチエイリアスによって輪郭がぼやけてしまう。
+
+[image-rendering](https://developer.mozilla.org/ja/docs/Web/CSS/image-rendering)で画像の拡大縮小時のアルゴリズムを指定することでアンチエイリアスを無効化できる。
+
+```css
+.pixel-art {
+  image-rendering: pixelated;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <h2>デフォルト</h2>
+  <span class="default">![qrcodeのサンプル画像](./_qrcode.png)</span>
+  <h2>image-rendering: pixelated;</h2>
+  <span class="pixelated">![qrcodeのサンプル画像](./_qrcode.png)</span>
+</section>
+
+<style>{`
+#demo {
+  img {
+    width: 40vw;
+    height: 40vw;
+
+  }
+  .pixelated > img {
+    image-rendering: pixelated;
+  }
+}
+`}</style>
