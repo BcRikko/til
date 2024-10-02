@@ -1,0 +1,54 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-10-21"
+updatedDate: "2022-10-21"
+title: "オブジェクトのプロパティを連結してUnion型をつくる"
+author: ダーシノ
+description: "オブジェクトのプロパティを連結して`Foo | Foo.Bar | Foo.Bar.Baz`のようなUnion Typeがほしいときがある。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+オブジェクトのプロパティを連結して`Foo | Foo.Bar | Foo.Bar.Baz`のようなUnion Typeがほしいときがある。
+
+```ts
+type Primitive =
+  | null
+  | undefined
+  | string
+  | number
+  | boolean
+  | symbol
+  | bigint
+
+type PathImpl<K extends string | number, V> =
+  V extends Primitive
+    ? `${K}`
+    :`${K}` | `${K}.${Path<V>}`
+
+type Path<T> =
+  T extends ReadonlyArray<infer V>
+    ? PathImpl<number, V>
+    : {
+      [K in keyof T]-?: PathImpl<K & string, T[K]>
+    }[keyof T]
+```
+これをこうすると…
+```ts
+type Item = {
+  Foo: {
+    Bar: {
+      Baz: string
+    }
+  }
+  Hoge: {
+    Fuga: string
+  }
+}
+
+type test = Path<Item>
+//   ^? 'Foo' | 'Foo.Bar' | 'Foo.Bar.Baz' | 'Hoge' | 'Hoge.Fuga'
+```

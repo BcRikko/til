@@ -1,0 +1,106 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-10-21"
+updatedDate: "2022-10-21"
+title: "コピーした要素のスタイルや属性を含めて貼り付ける"
+author: ダーシノ
+description: "GitHubでコミットやIssueのリンクをコピー（Ctrl+C/Command+C）して、テキストエリアに貼り付ける（Ctrl+V/Command+V）と[リンクテキスト](URL)のような形式で貼り付けられる。他にもWebページの要素をコピーして、リッチテキストエディタなどに貼り付けるとスタイルも一緒に貼り付けられる。これらはClipboardEvent#clipboardDataのデータを読み取ることで実現可能だ。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+GitHubでコミットやIssueのリンクをコピー（Ctrl+C/Command+C）して、テキストエリアに貼り付ける（Ctrl+V/Command+V）と`[リンクテキスト](URL)`のような形式で貼り付けられる。
+
+他にもWebページの要素をコピーして、リッチテキストエディタなどに貼り付けるとスタイルも一緒に貼り付けられる。
+
+これらは[ClipboardEvent#clipboardData](https://developer.mozilla.org/ja/docs/Web/API/ClipboardEvent/clipboardData)のデータを読み取ることで実現可能だ。
+
+```js
+const testarea = document.querySelector('#textarea')
+
+testarea.addEventListener('paste', (e) => {
+  const transfer = e.clipboardData
+  if (transfer === null) { return }
+
+  // クリップボードからプレーンテキストとHTMLを取得する
+  const plainText = transfer.getData('text/plain')
+  const htmlText = transfer.getData('text/html')
+
+  // テキストのHTMLをパースする
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlText, 'text/html')
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT)
+
+  // パースしたHTMLのNodeをひとつずつチェックする
+  let currentNode = walker.firstChild()
+  while(currentNode) {
+    // リンクだったらテキストの値をhref（URL）に書き換える
+    if (isLink(currentNode)) {
+        currentNode.textContent = currentNode.getAttribute('href')
+    }
+    
+    currentNode = walker.nextNode()
+  }
+
+  // 書き換えた内容をtextareaに設定する
+  e.target.value = doc.body.textContent || ''
+  e.preventDefault()
+})
+
+function isLink(node) {
+  return node.tagName.toLowerCase() === 'a' && node.hasAttribute('href')
+}
+```
+
+## デモ
+
+<section id="demo">
+  <p style="border: solid;">この<a href="https://bcrikko.github.io/til/">リンクテキスト</a>をコピーしてください</p>
+
+  <label for="textarea" style="display: block;">リンクをコピペするとhrefが貼り付けられる</label>
+  <textarea
+    id="textarea"
+    placeholder="ここに貼り付けてください"
+    cols="40"
+  ></textarea>
+</section>
+
+<script>{`
+const testarea = document.querySelector('#textarea')
+
+testarea.addEventListener('paste', (e) => {
+  const transfer = e.clipboardData
+  if (transfer === null) { return }
+
+  // クリップボードからプレーンテキストとHTMLを取得する
+  const plainText = transfer.getData('text/plain')
+  const htmlText = transfer.getData('text/html')
+
+  // テキストのHTMLをパースする
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlText, 'text/html')
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT)
+
+  // パースしたHTMLのNodeをひとつずつチェックする
+  let currentNode = walker.firstChild()
+  while(currentNode) {
+    // リンクだったらテキストの値をhref（URL）に書き換える
+    if (isLink(currentNode)) {
+        currentNode.textContent = currentNode.getAttribute('href')
+    }
+    
+    currentNode = walker.nextNode()
+  }
+
+  // 書き換えた内容をtextareaに設定する
+  e.target.value = doc.body.textContent || ''
+  e.preventDefault()
+})
+
+function isLink(node) {
+  return node.tagName.toLowerCase() === 'a' && node.hasAttribute('href')
+}
+`}</script>
