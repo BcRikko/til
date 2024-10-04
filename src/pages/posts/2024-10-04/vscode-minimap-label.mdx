@@ -1,0 +1,27 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-04"
+updatedDate: "2024-10-04"
+title: "VSCodeのミニマップにラベル（目印）をつける"
+author: ダーシノ
+description: "VSCode には Minimap というファイル全体をプレビューする機能がある。// MARK: や // #region などを使うことでミニマップにラベル（目印）を表示できる。"
+tags: []
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+VSCode には Minimap というファイル全体をプレビューする機能がある。`// MARK:` や `// #region` などを使うことでミニマップにラベル（目印）を表示できる。
+
+
+```ts
+// MARK: Constants
+const A = 'a' as const
+...
+
+// #region Console.logs
+console.log(A)
+```
+
+![VSCodeの右側にミニマップがありラベルが表示されている](./_vscode.png)
