@@ -29,6 +29,8 @@ import Header from '../../../components/Header.astro'
 
 Iteratorをより使いやすくするためのメソッドが増えた。ほとんどがArrayが持つメソッドと同じようなものだが、Iteratorを使うことで**遅延評価**が可能になる。大規模なデータ群を扱うときなどに有用だ。
 
+Iteratorを使うメリットについては末尾の「おまけ」参照
+
 ### Iterator#map(fn)
 
 `Array#map()`と同じ機能をイテレータに対して行うメソッド。
@@ -196,3 +198,76 @@ const iter = new Iter()
 const wrapper = Iterator.from(iter)
 wrapper.next() // { value: 1, done: false }
 ```
+
+## おまけ: Iteratorを使うメリット
+
+### Arrayを使う場合
+```js
+const naturals = [1,2,3,4,5,6,7,8,9,10]
+
+const array = naturals
+  .filter(a => {
+    console.log('filter:', a)
+    return a % 2 === 0
+  })
+  .map(a => {
+    console.log('map:', a)
+    return a * a
+  })
+  .slice(0, 2)
+
+console.log(array)
+```
+
+```txt
+// console
+[LOG]: "filter:",  1 
+[LOG]: "filter:",  2 
+[LOG]: "filter:",  3 
+[LOG]: "filter:",  4 
+[LOG]: "filter:",  5 // ← 使われない値
+[LOG]: "filter:",  6 // ← 使われない値
+[LOG]: "filter:",  7 // ← 使われない値
+[LOG]: "filter:",  8 // ← 使われない値
+[LOG]: "filter:",  9 // ← 使われない値
+[LOG]: "filter:",  10 // ← 使われない値
+[LOG]: "map:",  2 
+[LOG]: "map:",  4 
+[LOG]: "map:",  6 // ← 使われない値
+[LOG]: "map:",  8 // ← 使われない値
+[LOG]: "map:",  10// ← 使われない値 
+[LOG]: [4, 16] 
+```
+
+### Iteratorを使う場合
+```js
+const naturals = [1,2,3,4,5,6,7,8,9,10]
+const iterator = naturals
+  .values()
+  .filter(a => {
+    console.log('filter:', a)
+    return a % 2 === 0
+  })
+  .map(a => {
+    console.log('map:', a)
+    return a * a
+  })
+  .take(2)
+
+console.log(iterator.next())
+console.log(iterator.next())
+```
+
+```txt
+// console
+[LOG]: "filter:",  1 
+[LOG]: "filter:",  2 
+[LOG]: "map:",  2 
+[LOG]: { "value": 4, "done": false } 
+[LOG]: "filter:",  3 
+[LOG]: "filter:",  4 
+[LOG]: "map:",  4 
+[LOG]: { "value": 16, "done": false } 
+```
+
+必要な分だけ実行されるため、大きなデータを扱うときに難しいことしなくても最適化できる。
