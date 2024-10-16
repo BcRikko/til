@@ -1,0 +1,49 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-17"
+updatedDate: "2024-10-17"
+title: "Iterator Sequencingでイテレータを合成する"
+author: ダーシノ
+description: "{ページの概要}"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2024年10月に[Iterator Sequencing](https://github.com/tc39/proposal-iterator-sequencing)がStage2.7にアップデートされた。
+
+Iterator Sequencingは[Array#concat()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)のように複数のイテレータを合成し、新しいイテレータを返す。
+
+この他のIterator関連のメソッドは[Iterator Helpers](../2024-10-16/iterator-helpers)を参照。
+
+
+## Before
+
+```js
+const lows = Iterator.from([0, 1, 2, 3])
+const highs = Iterator.from([6, 7, 8, 9])
+
+const merged = function* () {
+  yield* lows
+  yield 4
+  yield 5
+  yield* highs
+}
+
+Array.from(merged())  // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+
+## After
+
+```js
+const lows = Iterator.from([0, 1, 2, 3])
+const highs = Iterator.from([6, 7, 8, 9])
+
+const merged = Iterator.concat(
+  lows,
+  [4, 5],
+  highs
+)
+```
