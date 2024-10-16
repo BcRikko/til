@@ -1,0 +1,198 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-16"
+updatedDate: "2024-10-16"
+title: "ES2025 Iterator Helpersを使う"
+author: ダーシノ
+description: "2025年〜2026年のECMAScript界隈はイテレータ元年になりそうなほどIterator関連のProposalが承認された。そのなかでES2025の仕様に追加されることになったIterator Helpersについて学ぶ。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年〜2026年のECMAScript界隈はイテレータ元年になりそうなほどIterator関連のProposalが承認された。
+
+## [ECMAScript proposal updates@2024-10](https://ecmascript-daily.github.io/ecmascript/2024/10/12/ecmascript-proposal-update)
+
+2024年10月は以下のようなIterator関連のProposalsがアップデートされた
+
+- [Iterator Helpers](https://github.com/tc39/proposal-iterator-helpers): stage3→4
+- [Iterator Sequencing](https://github.com/tc39/proposal-iterator-sequencing): stage2→2.7
+- [Iterator Chunking](https://github.com/tc39/proposal-iterator-chunking): stage1→2
+
+
+そのなかでES2025の仕様に追加されることになったIterator Helpersについて学ぶ。
+
+## Iterator Helpers
+
+Iteratorをより使いやすくするためのメソッドが増えた。ほとんどがArrayが持つメソッドと同じようなものだが、Iteratorを使うことで**遅延評価**が可能になる。大規模なデータ群を扱うときなどに有用だ。
+
+### Iterator#map(fn)
+
+`Array#map()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+/**
+ * 0から始まる自然数を生成するジェネレータ
+ */
+function* naturals() {
+  let i = 0
+  while (true) {
+    yield i
+    i += 1
+  }
+}
+
+const result = naturals().map(x => x * x)
+
+result.next() // { value: 0, done: false }
+result.next() // { value: 1, done: false }
+result.next() // { value: 4, done: false }
+```
+
+
+### Iterator#filter(fn)
+
+`Array#filter()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+const result = naturals().filter(x => x % 2 === 0)
+result.next() // { value: 0, done: false }
+result.next() // { value: 2, done: false }
+result.next() // { value: 4, done: false }
+```
+
+### Iterator#take(limit)
+
+`Array#slice(0, n)`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+const result = naturals().take(3)
+result.next() // { value: 0, done: false }
+result.next() // { value: 1, done: false }
+result.next() // { value: 2, done: false }
+result.next() // { value: undefined, done: true }
+```
+
+
+### Iterator#drop(limit)
+
+`Array#slice(n)`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+const result = naturals().drop(3)
+result.next() // { value: 3, done: false }
+result.next() // { value: 4, done: false }
+result.next() // { value: 5, done: false }
+```
+
+### Iterator#flatMap(fn)
+
+`Array#flatMap()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+// Array#values()はイテレータオブジェクトを返す
+const sunny = ["It's sunny in", "", "California"].values()
+
+const result = sunny.flatMap(x => x.split(' ').values())
+result.next() // { value: "It's", done: false }
+result.next() // { value: "sunny", done: false }
+result.next() // { value: "in", done: false }
+result.next() // { value: "", done: false }
+result.next() // { value: "California", done: false }
+result.next() // { value: undefined, done: true }
+```
+
+### Iterator#reduce(fn [, initialValue])
+
+`Array#reduce()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+const result = naturals()
+  .take(5)
+  .reduce((sum, val) => sum + val, 3)
+
+result // 13
+```
+
+### Iterator#toArray()
+
+イテレータを配列に変換するメソッド。
+
+```js
+function* naturals() { ... }
+
+const result = naturals()
+  .take(5)
+  .toArray()
+
+result // [0, 1, 2, 3, 4]
+```
+
+### Iterator#forEach(fn)
+
+`Array#forEach()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+const fn = val => console.log(val)
+const items = [1, 2, 3].values()
+
+items.forEach(fn)
+// 1, 2, 3
+```
+
+### Iterator#some(fn)
+
+`Array#some()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+naturals().take(4).some(v => v > 1) // true
+```
+
+### Iterator#every(fn)
+
+`Array#every()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+naturals().take(4).every(v => v >= 0) // true
+```
+
+### Iterator#find(fn)
+
+`Array#find()`と同じ機能をイテレータに対して行うメソッド。
+
+```js
+function* naturals() { ... }
+
+naturals().find(v => v > 1) // 2
+```
+
+### Iterator.from(object)
+
+いままで紹介したメソッドとは異なるスタティックメソッドで、オブジェクトをイテレータでラップできる。
+
+```js
+class Iter {
+  next() {
+    return { done: false, value: 1 }
+  }
+}
+
+const iter = new Iter()
+const wrapper = Iterator.from(iter)
+wrapper.next() // { value: 1, done: false }
+```
