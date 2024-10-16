@@ -1,8 +1,8 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-06-17"
-updatedDate: "2024-08-23"
-title: "ECMAScript Stage3のPromise.try()を使う"
+updatedDate: "2024-10-17"
+title: "ES2025 Promise.try()を使う"
 author: ダーシノ
 description: "関数には同期的な処理と非同期的な処理がある。関数利用者はいまから使う関数がPromiseを返すかどうか知りたくない。"
 tags: ["JavaScript"]
@@ -61,3 +61,8 @@ Promise.try(mustThrow).catch(/* 呼ばれる */)
 [Promise.try()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/try)が[Chrome 128](https://developer.chrome.com/blog/new-in-chrome-128)に実装された。
 
 
+---
+
+## 追記: 2024-10-17
+
+[2024年10月](https://ecmascript-daily.github.io/ecmascript/2024/10/12/ecmascript-proposal-update)にStage4に移行し、ECMAScript2025に取り込まれた。
