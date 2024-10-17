@@ -1,0 +1,54 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-17"
+updatedDate: "2024-10-17"
+title: "新しいHTTPリクエストメソッド QUERY"
+author: ダーシノ
+description: "新しいHTTPリクエストメソッドのQUERYメソッドのドラフト仕様が公開された。QUERYメソッドは、データ取得やクエリの実行時など安全で冪等なクエリを実行するために使用される。クエリパラメータが大量に必要になる場合、GETメソッドではURIの長さ制限に引っかかり正確なリクエストができないことがある。慣習的にPOSTメソッドのリクエストボディを使ってリクエストすることがあるが、そもそもPOSTメソッドは冪等でない。"
+tags: ["Web"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+新しいHTTPリクエストメソッドの[QUERYメソッドのドラフト仕様](https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-05.html)が公開された。
+
+QUERYメソッドは、データ取得やクエリの実行時など安全で冪等なクエリを実行するために使用される。
+
+クエリパラメータが大量に必要になる場合、GETメソッドでは[URIの長さ制限](#URIの長さの制限について)に引っかかり正確なリクエストができないことがある。慣習的にPOSTメソッドのリクエストボディを使ってリクエストすることがあるが、そもそもPOSTメソッドは冪等でない。
+
+そこで新たにQUERYメソッドを用い、リクエストボディを使ってクエリを実行することができる。
+
+## QUERYメソッド
+
+### リクエスト
+```
+QUERY /contacts HTTP/1.1
+Host: example.com
+Content-Type: example/query
+Accept: text/csv
+
+select surname, givenname, email limit 10
+```
+
+### レスポンス
+```
+HTTP/1.1 200 OK
+Content-Type: text/csv
+
+surname, givenname, email
+Smith, John, john.smith@example.org
+Jones, Sally, sally.jones@example.com
+Dubois, Camille, camille.dubois@example.net
+```
+
+
+## ※URIの長さの制限について
+
+URIの文字長の上限は特に定められていないが、[RFC 7230](https://datatracker.ietf.org/doc/html/rfc7230)では以下のように最低8,000octetsをサポートすることが推奨されているが、ブラウザによっては挙動がことなるようだ。
+
+> Various ad hoc limitations on request-line length are found in practice.  It is RECOMMENDED that all HTTP senders and recipients support, at a minimum, request-line lengths of 8000 octets.
+>
+> https://datatracker.ietf.org/doc/html/rfc7230
+
