@@ -1,0 +1,153 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-10-29"
+updatedDate: "2024-10-29"
+title: "Optional Propertyの乱用は諸悪の根源"
+author: ダーシノ
+description: "私は、数年来のOptional Propertyアンチ、Optional Property撲滅委員会 会長を務めている。なぜそこまでOptional Propertyを嫌うのか、その理由を説明し世の中から不要な?をなくしたい。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+私は、数年来のOptional Propertyアンチ、Optional Property撲滅委員会 会長を務めている。なぜそこまでOptional Propertyを嫌うのか、その理由を説明し世の中から不要な`?`をなくしたい。
+
+
+## TL;DR
+
+- Optional Propertyの代わりにUnion Typeを使おう
+- Optional Propertyは存在しない型を生み出す
+- 間違った共通化は大切な意味が失われる
+- 嘘をつく型のせいで疑心暗鬼になり生産性が下がる
+- コードが複雑になり、仕様がわかりづらくなる
+
+## Optional Propertyのアンチパターン
+
+### Optional Propertyは存在しない型を生み出す
+
+安易にOptional Propertyを使うことで、存在しない形を生み出してしまう。
+
+```ts
+type Item = {
+  a?: string
+  b?: string
+  c?: string
+  d?: string
+}
+```
+たった4つのプロパティをオプショナルにするだけで、Item型から16通りの型が生まれる。
+```
+1. {}
+2. { a }
+3. { b }
+4. { c }
+5. { d }
+6. { a, b }
+7. { a, c }
+8. { a, d }
+9. { b, c }
+10. { b, d }
+11. { c, d }
+12. { a, b, c }
+13. { a, b, d }
+14. { a, c, d }
+15. { b, c, d }
+16. { a, b, c, d }
+```
+
+16通りすべてのパターンが存在するならOptional Propertyは有用である。しかし、ほとんどの場合、組み合わせは限られているのに、プログラマが**手を抜くため**だけにOptional Propertyが使われるケースが多い。
+
+
+### Optional Propertyで意味が失われ疑心暗鬼になる
+
+Optional Propertyを使うと、仕様的に必ず存在する値であってもundefinedのチェックをしたり、Optional Chainingを追加したりが必要になる。また、間違った共通化を行うことで、本来オブジェクトが持つ意味が失われ「本当にプロパティは存在するのか？」という疑心暗鬼になり、生産性が落ちる。
+
+
+たとえば、以下のような型があるとする。
+```ts
+type User = {
+  role: 'admin' | 'guest' | 'user'
+  name: string
+  /** role: 'guest'のときに有効 */
+  expirationDate?: Date
+  /** role: 'user'のときに有効 */
+  lastLogin?: Date
+}
+
+const user: User = fetchUser()
+
+if (user.role === 'admin') {
+  console.log(user.expirationDate?.toLocaleString()) // undefined
+  console.log(user.lastLogin?.toLocaleString()) // undefined
+}
+if (user.role === 'guest') {
+  console.log(user.expirationDate?.toLocaleString()) // Date
+  console.log(user.lastLogin?.toLocaleString()) // undefined
+}
+if (user.role === 'user') {
+  console.log(user.expirationDate?.toLocaleString()) // undefined
+  console.log(user.lastLogin?.toLocaleString()) // Date
+}
+```
+
+必ずプロパティがあるとわかっていてもOptional Chainingを書いたり、必ずundefinedになるとわかっていてもコード上ではそれが表現されない。
+
+
+### Optional Propertyがコードを複雑にする
+
+先述の例を見ていただいたとおり、Optional Propertyのせいでコードがわかりづらくなったことがわかると思う。
+
+これがネストしたオブジェクトで、複数階層でOptional Propertyが使われていると手に負えない。
+
+
+## Optional Propertyの代わりにUnion Typeを使おう
+
+先ほどの`User`をUnion Typeを使ってリファクタリングしてみよう。
+
+```ts
+type Admin = {
+  role: 'admin'
+  name: string
+}
+type Guest = {
+  role: 'guest'
+  name: string
+  expirationDate: Date
+}
+type RegularUser = {
+  role: 'user'
+  name: string
+  lastLogin: Date
+}
+
+type User = Admin | Guest | RegularUser
+
+const user: User = fetchUser()
+
+if (user.role === 'admin') {
+  console.log(user.name)
+  // 静的型チェックでexpirationDate, lastLoginが存在しないことが保証される
+}
+if (user.role === 'guest') {
+  console.log(user.name)
+  console.log(user.expirationDate.toLocaleString())
+  // 静的型チェックでlastLoginが存在しないことが保証される
+}
+if (user.role === 'user') {
+  console.log(user.name)
+  console.log(user.lastLogin.toLocaleString())
+  // 静的型チェックでexpirationDateが存在しないことが保証される
+}
+```
+
+Union Typeで存在する型だけを宣言することで、コード中は`role`をチェックするだけでナローイングによって正確な型がわかる。またOptional Chainingでは失われていた各型の意味が明示的に表現できるようになった。
+
+
+## まとめ
+
+手抜きせず仕様と向き合いドメインモデルを正確に表現しよう。楽だからという理由でOptional Propertyを使うと、早ければ数カ月後には牙を剥いてくる。数年後には仕様がわからないから安全のためにとりあえずOptional Chainingがコード上に大量に現れる。
+
+このことが理解できないなら、Optional Propertyは使うべきではない。
