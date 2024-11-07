@@ -1,0 +1,26 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-08"
+updatedDate: "2024-11-08"
+title: "Chrome DevToolsでスクロール可能要素を見つける"
+author: ダーシノ
+description: "ChromeのDevTools（Elementsタブ）に、新たにscrollバッジが追加された。ElementsタブでHTMLを確認すると、スクロールできる要素の隣に(scroll)というバッジが表示されるようになった。UI開発でよくある2重スクロールや範囲外スクロールなどの調査が容易になった。"
+tags: ["browser"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ChromeのDevTools（Elementsタブ）に、[新たに`scroll`バッジ](https://developer.chrome.com/blog/swe-devtools-scroll-badge)が追加された。
+
+ElementsタブでHTMLを確認すると、スクロールできる要素の隣に`(scroll)`というバッジが表示されるようになった。UI開発でよくある2重スクロールや範囲外スクロールなどの調査が容易になった。
+
+<span class="image">![Chrome DevToolsでページのソースを表示している。スクロール可能な要素の隣にscrollというバッジが表示されている。](./scroll-badge.png)</span>
+
+<style>{`
+.image > img {
+  width: 100%;
+  height: auto;
+}
+`}</style>

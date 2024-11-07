@@ -22,6 +22,8 @@
     "package*.json": true,
     ".nojekyll": true,
     "tsconfig.json": true,
+    "src/pages/posts/2022-*": true,
+    "src/pages/posts/2023-*": true,
   },
   "editor.wordWrap": "on",
 }
