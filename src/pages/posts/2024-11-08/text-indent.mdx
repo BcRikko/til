@@ -1,0 +1,66 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-08"
+updatedDate: "2024-11-08"
+title: "text-indentで段落の文字下げをする"
+author: ダーシノ
+description: "国語の授業では「段落の1行目は1文字下げて書きましょう」と習った。これをCSSで実現するにはtext-indentを用いる。サンプルではemを使ったが、英語ならch（0の大きさ）、日本語ならic（水の大きさ）という単位を使うことで、文字サイズに応じて文字下げの量を調整できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+国語の授業では「段落の1行目は1文字下げて書きましょう」と習った。これをCSSで実現するには[text-indent](https://developer.mozilla.org/ja/docs/Web/CSS/text-indent)を用いる。
+
+```css
+p {
+  /* 文字を上げる */
+  text-indent: 1em;
+}
+
+p {
+  /* 文字を上げる */
+  text-indent: -1em;
+}
+```
+
+サンプルでは`em`を使ったが、英語なら`ch`（`0`の大きさ）、日本語なら`ic`（`水`の大きさ）という単位を使うことで、文字サイズに応じて文字下げの量を調整できる。
+
+
+## デモ
+
+<section id="demo">
+
+<section id="english">
+
+### 英語（text-indent: 1ch）
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+</section>
+
+<section id="japanese">
+
+### 日本語（text-indent: 1ic）
+
+吾輩は猫である。名前はまだ無い。
+
+どこで生れたかとんと見当がつかぬ。何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。吾輩はここで始めて人間というものを見た。しかもあとで聞くとそれは書生という人間中で一番獰悪な種族であったそうだ。
+
+</section>
+
+</section>
+
+<style>{`
+#english p {
+  text-indent: 1ch;
+}
+
+#japanese p {
+  text-indent: 1ic;
+}
+`}</style>
