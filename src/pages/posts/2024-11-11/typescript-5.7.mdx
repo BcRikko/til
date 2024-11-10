@@ -1,0 +1,63 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-11"
+updatedDate: "2024-11-11"
+title: "TypeScript 5.7 RCの主なアップデート"
+author: ダーシノ
+description: "TypeScript 5.7 RCがリリースされた。初期化されていない変数のチェック
+ES2024をサポート、Node.js v22の新しいAPIを用いたコンパイルキャッシュ、クラス内のメソッドでComputed Property Namesをサポート、tsconfig.jsonの所有権チェック"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[TypeScript 5.7 RC](https://devblogs.microsoft.com/typescript/announcing-typescript-5-7-rc/)がリリースされた。
+
+- 初期化されていない変数のチェック
+- ES2024をサポート
+- Node.js v22の新しいAPIを用いたコンパイルキャッシュ
+- クラス内のメソッドでComputed Property Namesをサポート
+- tsconfig.jsonの所有権チェック
+
+などなど。
+
+## 初期化されていない変数のチェック
+
+### Before: TS5.6
+```ts
+function foo() {
+  let result: number
+
+  function printResult() {
+    // resultは初期化されていないがエラーにならない
+    console.log(result)
+  }
+}
+```
+
+### After: TS5.7
+```ts
+function foo() {
+  let result: number
+
+  function printResult() {
+    console.log(result)
+    //          ^^^^^^ Variable 'result' is used before being assigned.
+  }
+}
+```
+まったく初期化されていない場合にはエラーになる。
+
+## ES2024をサポート
+
+以下のようなES2024で追加された新しい機能をサポートした。
+
+- Object#groupBy / Map#groupBy
+- Promise#withResolvers()
+- Atmics#waitAsync()
+
+## Node.js v22の新しいAPIを用いたコンパイルキャッシュ
+
+Node.js v22は`APIModule.enableCompileCache()`をサポートした。この機能はコンパイル作業の一部をキャッシュして再利用できるようにするもので、TypeScript 5.7ではこれを利用することでコンパイル時間を短縮できる。
