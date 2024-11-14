@@ -1,0 +1,100 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-15"
+updatedDate: "2024-11-15"
+title: "CSSだけでスクロールバーの幅を取得する"
+author: ダーシノ
+description: "100vw - 100cqwでスクロールバーの幅がわかる。vw: ウェブページの表示領域（viewport）のwidthを100としたときの単位。cqw: クエリコンテナのwidthを100としたときの単位"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`100vw - 100cqw`でスクロールバーの幅がわかる。
+
+## `<length>`の意味
+
+- `vw`: ウェブページの表示領域（viewport）のwidthを100としたときの単位
+- `cqw`: クエリコンテナのwidthを100としたときの単位
+  - html要素に`container-type: size;`を指定することで、スクロールバーを除いたwidthを取得できる。
+  ```css
+  html {
+    container-type: size;
+    /* 100cqw = スクロールバーを除いたwidth */
+  }
+  ```
+
+## スクロールバーのwidthを取得する
+
+```css
+html {
+  container-type: size;
+}
+
+body {
+  --scrollbar: calc(100vw - 100cqw);
+}
+```
+
+```
+<======= 100vw ========>
++--------------------+-+
+|                    | |
+|<===== 100cqw =====>| |
+|                    | |
++--------------------+-+
+                      ^
+                  scrollbar
+```
+
+## デモ
+
+```css
+@property --scrollbar {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px; 
+}
+html {
+  container-type: size;
+}
+body {
+  --scrollbar: calc(100vw - 100cqw);
+}
+
+body:before {
+  content: counter(val) "px";
+  counter-reset: val tan(atan2(var(--scrollbar),1px));
+}
+```
+
+<section id="demo">
+</section>
+
+<style>{`
+@property --scrollbar {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px; 
+}
+html {
+  container-type: size;
+}
+body {
+  --scrollbar: calc(100vw - 100cqw);
+}
+
+#demo {
+  &:before {
+    content: "スクロールバーのwidthは" counter(val) "pxです。";
+    counter-reset: val tan(atan2(var(--scrollbar),1px));
+  }
+}
+`}</style>
+
+
+## 参考サイト
+
+- [Get the scrollbar width using only CSS](https://css-tip.com/width-scrollbar/)
