@@ -1,0 +1,31 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-15"
+updatedDate: "2024-11-15"
+title: "import属性がなぜ必要なのか"
+author: ダーシノ
+description: "ECMAScirpt 2025に追加予定のimport属性（import attributes）はなぜ必要なのか。import構文はブラウザで実行されるため、参照したファイルの中身が読み込むまでわからない。拡張子が*.jsonだからと言って本当にJSONである保証はない。改ざんされて悪意のあるコードが含まれるJavaScriptファイルという可能性もある。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ECMAScirpt 2025に追加予定の[import属性（import attributes）](https://github.com/tc39/proposal-import-attributes)はなぜ必要なのか。
+
+webpackやViteなどのモジュールバンドラーを使って開発していると、import構文で参照したファイルはその中身が静的にわかるので、そのファイルを読み込んでよいかどうか判断できた。
+
+バンドラーを使わない場合は、import構文はブラウザで実行されるため、参照したファイルの中身が読み込むまでわからない。拡張子が`*.json`だからと言って本当にJSONである保証はない。改ざんされて悪意のあるコードが含まれるJavaScriptファイルという可能性もある。
+
+そのため、セキュリティの観点から明示的にファイルの種類を指定するimport属性が必要となる。
+
+```js
+// data.jsonがJavaScriptファイルに改ざんされている可能性がある
+import data from "https://example.com/data.json";
+
+// importするファイルの種類を明示的に指定する
+import data from "https://example.com/data.json" with { type: "json" };
+import data from "https://example.com/styles.css" with { type: "css" };
+```
+
