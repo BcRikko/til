@@ -1,0 +1,62 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-18"
+updatedDate: "2024-11-18"
+title: "border-blockで論理的なブロック方向にボーダーを引く"
+author: ダーシノ
+description: "Logical Propertiesのひとつであるborder-blockを使うことで、論理的なブロック方向にボーダーを引くことができる。「論理的なブロック方向」とは縦書き、横書き、右から読む、左から読むなど言語によってwriting-modeが異なっても、意味的に正しい方向を指す。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Logical Propertiesのひとつである[border-block](https://developer.mozilla.org/ja/docs/Web/CSS/border-block)を使うことで、論理的なブロック方向にボーダーを引くことができる。
+
+「論理的なブロック方向」とは縦書き、横書き、右から読む、左から読むなど言語によって[writing-mode](https://developer.mozilla.org/ja/docs/Web/CSS/writing-mode)が異なっても、意味的に正しい方向を指す。
+
+
+```html
+<h1>Title</h1>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+```
+
+```css
+h1 {
+  border-block-end: solid 4px;
+}
+```
+
+
+## デモ
+
+
+<section id="demo">
+  <section class="tb">
+    <h2>English</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </section>
+  <section class="rl">
+    <h2>日本語</h2>
+    <p>吾輩は猫である。名前はまだ無い。どこで生れたかとんと見当がつかぬ。</p>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  display: flex;
+  gap: 20px;
+  block-size: 20ch;
+
+  .tb {
+    writing-mode: horizontal-tb;
+  }
+  .rl {
+    writing-mode: vertical-rl;
+  }
+  h2 {
+    border-block-end: solid 4px;
+  }
+}
+`}</style>
