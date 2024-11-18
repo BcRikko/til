@@ -13,3 +13,9 @@ const { featureId } = Astro.props;
 <section class="baseline">
   <baseline-status featureId={featureId}></baseline-status>
 </section>
+
+<style>
+  .baseline + .baseline {
+    margin-top: 1rem;
+  }
+</style>

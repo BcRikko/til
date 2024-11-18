@@ -1,0 +1,99 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-18"
+updatedDate: "2024-11-18"
+title: "ブログにブラウザの対応状況を表示する"
+author: ダーシノ
+description: "当ブログでは、一部ブラウザでしか使えないような機能を取り扱うことがある。毎回「対応状況: Chrome123, Edge, Safari, Firefox」みたいなことを書いていたのだが、手動で更新し続けるには限界がある。そこで、W3C WebDX Community Groupが公開しているbaseline-statusというWeb Componentsを使用する。"
+tags: ["HTML", "JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+当ブログでは、一部ブラウザでしか使えないような機能を取り扱うことがある。
+
+毎回「対応状況: Chrome123, Edge, Safari, Firefox」みたいなことを書いていたのだが、手動で更新し続けるには限界がある。そこで、W3C WebDX Community Groupが公開している[baseline-status](https://github.com/web-platform-dx/baseline-status)というWeb Componentsを使用する。
+
+使用イメージは以下のような感じだ。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"abs-sign"} />
+
+## `baseline-status`の使い方
+
+### npm を使う場合
+
+npmで`baseline-status`をインストールする。
+```bash
+$ npm install -S baseline-status
+```
+
+パッケージ内部で[`window.customElements.define('baseline-status', BaselineStatus);`](https://github.com/web-platform-dx/baseline-status/blob/abc37a26a7d1ea66b55923e321be911c37f011f8/baseline-status.js#L355C1-L355C65)のようにカスタム要素に登録しているので、使用者はそのままimportするだけでよい。
+```js
+import 'baseline-status';
+```
+
+```html
+<baseline-status featureId="abs-sign" />
+```
+
+### CDN を使う場合（非推奨）
+
+テストやプロトタイピングでは良いが、プロダクトで使用する場合は、パッケージ重複が排除できなかったり、複数バージョンのlitが読み込まれたりするので、注意が必要。
+```html
+<script src="https://cdn.jsdelivr.net/npm/baseline-status@latest/baseline-status.min.js" type="module"></script>
+<baseline-status featureId="abs-sign"></baseline-status>
+```
+
+
+### SSR/SSGでで使う場合（Astro.jsの場合）
+
+`baseline-status`には`HTMLElement`が使われているので、SSR（Server-Side Rendering）やSSG（Static Site Generator）ではエラーになることがある
+
+当ブログで使っているAstro.jsを例に紹介する。
+
+#### BaselineStatusコンポーネントの作成
+
+クライアントサイドだけで読み込み・実行したいので、ダイナミックインポートを使って読み込んでいる。
+```bash
+$ npm install -S baseline-status
+```
+
+```astro
+// components/BaselineStatus.astro
+
+---
+interface Props {
+  featureId: string;
+}
+
+const { featureId } = Astro.props;
+---
+
+<script>
+  // クライアントサイトで読み込みたいので、Dymamic Importを使う。
+  import("baseline-status");
+</script>
+
+<baseline-status featureId={featureId}></baseline-status>
+```
+
+#### BaselineStatusの使用
+
+```js
+// {page}.mdx
+import Baseline from './path/to/components/BaselineStatus.astro'
+
+<Baseline featureId={"abs-sign"} />
+```
+
+## featureIdの指定をする
+
+最後に、`featureId`を指定する必要があるのだが、[webstatus.dev](https://webstatus.dev/)か[web-platform-dx/web-features](https://github.com/web-platform-dx/web-features)リポジトリで検索するのが良いだろう。
+
+検索後のURLにある`webstatus.dev/features/{featureId}`の部分を`featureId`として指定する。
+
+![webstatus.devでfeatureIdを検索している様子。](./_webstatus.png)
