@@ -1,0 +1,15 @@
+---
+interface Props {
+  featureId: string;
+}
+
+const { featureId } = Astro.props;
+---
+
+<script>
+  import("baseline-status" as string);
+</script>
+
+<section class="baseline">
+  <baseline-status featureId={featureId}></baseline-status>
+</section>
