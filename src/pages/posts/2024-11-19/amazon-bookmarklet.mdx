@@ -1,0 +1,57 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-19"
+updatedDate: "2024-11-19"
+title: "Amazonで使える便利ブックマークレット集"
+author: ダーシノ
+description: "検索結果を「販売元: Amazon」に限定する。マーケットプレイスで商品を出品している中華系企業は、ごくごく一部を除き出品ガイドラインを守っていない。商品ページのURLからクエリストリングを削除する。Amazon内ではユーザーの行動をトラッキングするために様々なクエリストリングがURLに付与される。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Amazonを利用するときに使っているブックマークレットを紹介する。
+
+## 検索結果を「販売元: Amazon」に限定する
+
+マーケットプレイスで商品を出品している中華系企業は、ごくごく一部を除き出品ガイドラインを守っていない。たとえば商品名に広告表現を含めない。商品画像に装飾を入れないなどだ。
+
+まじめな出品者には申し訳ないが、過去のトラブルから販売元:Amazonにするのが安全なので、検索結果を絞り込むブックマークレットを作成した。
+
+```js
+javascript:(function(){document.location.href=top.document.URL+'&emi=AN1VRQENFRJN5';})()
+```
+
+```js
+// URLの末尾に &emi=AN1VRQENFRJN5 を追加する
+document.location.href = top.document.URL + '&emi=AN1VRQENFRJN5';
+```
+
+[販売元をAmazonに限定するブックマークレット](javascript:(function(){document.location.href=top.document.URL+'&emi=AN1VRQENFRJN5';})())
+
+
+## 商品ページのURLからクエリストリングを削除する
+
+Amazon内ではユーザーの行動をトラッキングするために様々なクエリストリングがURLに付与される。そのままコピーしてURLを共有するには不親切なので、[ASIN（Amazon標準商品番号）](https://affiliate.amazon.co.jp/help/node/topic/G5KVDATAT5RKBBBG)のみにするブックマークレットを作成した。
+
+```js
+javascript:(function(d){var asin=d.getElementById('ASIN'),url;if(asin){url='https://'+d.domain+'/dp/'+asin.value;if(prompt('😆',url)){window.location.href=url;}}else{alert('😭');}}(document));
+```
+
+```js
+// ページ内の隠し要素からASINを取得する
+// 例: <input type="hidden" id="ASIN" name="ASIN" value="xxxxxxxxxx">
+const asin = document.getElementById('ASIN');
+if (asin) {
+  const url = `https://${document.domain}/dp/${asin.value}`;
+  if (prompt('😆', url)) {
+    window.location.href = url;
+  }
+} else {
+  alert('😭');
+}
+```
+
+<a href="javascript:(function(d){var asin=d.getElementById('ASIN'),url;if(asin){url='https://'+d.domain+'/dp/'+asin.value;if(prompt('😆',url)){window.location.href=url;}}else{alert('😭');}}(document));">Amazon商品ページURLを短くする</a>
