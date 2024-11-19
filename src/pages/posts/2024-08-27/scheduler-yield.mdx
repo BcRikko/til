@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-08-27"
-updatedDate: "2024-08-27"
+updatedDate: "2024-11-19"
 title: "scheduler.yield()を使い長いタスクに割り込む"
 author: ダーシノ
 description: "Chrome 129 Betaでscheduler.yield()がフラグなしで使えるようになった。scheduler.yield()を使うことで、長い処理の中に割り込むことができる。"
@@ -194,3 +194,9 @@ click.addEventListener('click', () => console.log('Clicked'))
 const start = document.querySelector('#start')
 start.addEventListener('click', () => run())
 `}</script>
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"scheduler"} />

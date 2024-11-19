@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-09-20"
-updatedDate: "2024-09-20"
+updatedDate: "2024-11-19"
 title: "改行されたinline要素のすべての行にスタイルを適用する"
 author: ダーシノ
 description: "inline要素（インラインボックス）を改行すると、以下のようにborderが途中で切れたり、paddingを使うと前の行と要素が重なってしまったり、いろいろな問題があった。box-decoration-breakプロパティは、改行されたinline要素のすべての行にスタイルを適用でき、これらの問題を解決することができる。"
@@ -76,3 +76,10 @@ inline要素（インラインボックス）を改行すると、以下のよ�
 }
 
 `}</style>
+
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"box-decoration-break"} />

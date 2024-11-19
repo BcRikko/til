@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-08-27"
-updatedDate: "2024-08-28"
+updatedDate: "2024-11-19"
 title: "Intl.DurationFormatで時分秒の多言語対応をする"
 author: ダーシノ
 description: "Chrome 129 BetaでIntl.DurationFormatがサポートされた。現時点ではSafari 16.4のみサポート済み。Intl.DurationFormatは国際化APIの一部で、時分秒の多言語対応とフォーマットができるようになる。"
@@ -43,3 +43,9 @@ new Intl.DurationFormat('en-US', {style: 'short'}).format(duration)
 new Intl.DurationFormat('en-US', {style: 'narrow'}).format(duration)
 // 1y 2m 3w 4d 5h 6m 7s 8ms 9μs 9ns
 ```
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"intl-duration-format"} />

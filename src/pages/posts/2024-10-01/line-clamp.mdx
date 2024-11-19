@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-10-01"
-updatedDate: "2024-10-01"
+updatedDate: "2024-11-19"
 title: "line-clampプロパティで表示する行数を制限する"
 author: ダーシノ
 description: "Safari TP 204がリリースされ、line-clampプロパティが使えるようになった。他のブラウザは未対応のため、-webkit-ベンダープレフィックス付きのプロパティをいくつか使う必要がある。"
@@ -55,3 +55,10 @@ p {
   }
 }
 `}</style>
+
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"line-clamp"} />

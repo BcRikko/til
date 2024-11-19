@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-09-12"
-updatedDate: "2024-09-12"
+updatedDate: "2024-11-19"
 title: "スクロールバーの表示によるガタツキを防ぐscroll-gutter"
 author: ダーシノ
 description: "コンテンツの増減によりスクロールバーが表示されたり消えたりするときに、レイアウトがガタつくことがある。これを防ぐためにscroll-gutterプロパティを使うことができる。Safari TP 203が対応したことで、近い将来全主要ブラウザで利用可能になる。"
@@ -23,6 +23,11 @@ import Header from '../../../components/Header.astro'
 - Edge 94
 - Firefox 97
 - Safari TP 203
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"scrollbar-gutter"} />
+
 
 ## scrollbar-gutter
 

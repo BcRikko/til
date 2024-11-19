@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-09-04"
-updatedDate: "2024-09-04"
+updatedDate: "2024-11-19"
 title: "details要素のname属性を使ってグループ化する"
 author: ダーシノ
 description: "Firefox 130でdetails要素のname属性がサポートされたことで、全主要部（Chrome120、Edge120、Firefox130、Safari17.2）で使えるようになった。details要素にname属性をつけることでグループ化ができ、アコーディオンの開閉制御を排他的に行うことができるようになった。"
@@ -46,3 +46,10 @@ details要素にname属性をつけることでグループ化ができ、アコ
   <summary>Q.あれはなんですか？</summary>
   <p>あれは○○です。</p>
 </details>
+
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"details-name"} />

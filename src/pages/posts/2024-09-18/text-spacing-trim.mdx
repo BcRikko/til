@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-09-18"
-updatedDate: "2024-09-18"
+updatedDate: "2024-11-19"
 title: "text-spacing-trimで括弧や句読点にできるスペースを調整する"
 author: ダーシノ
 description: "日本語では「」や【】などの括弧や、や。などの句読点を使うことが多い。ただ、それらは全角扱いなので先頭が揃わない、文中に余分なスペースが生まれるなどの弊害があった。text-spacing-trimを使うことで、先頭や文中の括弧や句読点のスペースを調整することができる。"
@@ -16,14 +16,17 @@ import Header from '../../../components/Header.astro'
 
 [text-spacing-trim](https://developer.mozilla.org/en-US/docs/Web/CSS/text-spacing-trim)を使うことで、先頭や文中の括弧や句読点のスペースを調整することができる。
 
-## サポート状況（2024-09-18時点）
+## ## ブラウザ対応状況
 
 現在Experimentalとして一部のブラウザで実装されている。
 
 - Chrome 123
 - Edge 123
-- Firefox 未サポート
-- Safari 未サポート
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"text-spacing-trim"} />
+
 
 ## text-spacing-trim
 
