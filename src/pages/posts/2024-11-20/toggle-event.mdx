@@ -1,0 +1,72 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-20"
+updatedDate: "2024-11-20"
+title: "ToggleEventを使ってPopoverの開閉を検知する"
+author: ダーシノ
+description: "ToggleEventを使うことで、Popoverの開閉を検知することができる。ToggleEventのoldState/newStateプロパティで、open/closedの状態を取得できる。dialog#showModal()を使った場合、ブラウザによってToggleEventが発火しないことがある。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ToggleEventを使うことで、Popoverの開閉を検知することができる。
+
+## ブラウザ対応状況
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"popover"} />
+
+## Popover要素の開閉イベント
+
+ToggleEventのoldState/newStateプロパティで、open/closedの状態を取得できる。
+
+```html
+<button popovertarget="my-popover">Popover</button>
+
+<div id="my-popover" popover>Popover Content</div>
+```
+
+```js
+const popover = document.querySelector('#my-popover')
+
+popover.addEventListener('beforetoggle', event => {
+  /**
+   * event.oldState: 開閉前の状態（open / closed)
+   * event.newState: 開閉後の状態（open / closed)
+   */
+})
+```
+
+
+## dialog要素のshowModal()の場合
+
+`dialog#showModal()`を使った場合、ブラウザによってToggleEventが発火しないことがある。
+
+2024年11月現在では、[Chrome 132 beta](https://developer.chrome.com/blog/chrome-132-beta)、FirefoxではToggleEventが発火するが、Safari TPでは発火しなかった。
+
+```html
+<button popovertarget="my-dialog">Dialog</button>
+
+<dialog id="my-dialog" popover>
+    Dialog
+    <button
+       popovertarget="my-dialog"
+       popovertargetaction="hide"
+    >Close</button>
+</dialog>
+```
+
+```js
+const dialog = document.querySelector('#my-dialog')
+
+dialog.addEventListener('beforetoggle', event => {
+  console.log(event.newState)
+})
+
+dialog.showModal()
+```
+
