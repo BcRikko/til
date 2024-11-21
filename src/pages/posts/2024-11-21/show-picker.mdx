@@ -1,0 +1,88 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-21"
+updatedDate: "2024-11-21"
+title: "showPicker()でinput要素のDatePickerやSelect要素のドロップダウンメニューを表示する"
+author: ダーシノ
+description: "type='date'やtype='color'属性を指定したinput要素を、HTMLInputElement#showPicker()メソッドを使うことでJavaScriptから表示できる。同じようにselect要素のドロップダウンメニューをHTMLSelectElement#showPicker()メソッドを使って表示することもできる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`type="date"`や`type="color"`属性を指定したinput要素を、[HTMLInputElement#showPicker()](https://developer.mozilla.org/ja/docs/Web/API/HTMLInputElement/showPicker)メソッドを使うことでJavaScriptから表示できる。
+
+同じようにselect要素のドロップダウンメニューを[HTMLSelectElement#showPicker()](https://developer.mozilla.org/ja/docs/Web/API/HTMLSelectElement/showPicker)メソッドを使って表示することもできる。
+
+`input[type="date"]`や`select`は見た目的な問題もあるので、デザイン性の高いウェブサイトでは隠し要素にしつつ、装飾用の要素を表示し、`showPicker()`を使ってブラウザ標準のDatePickerやColorPicker、ドロップダウンメニューなどを表示することができる。
+
+ブラウザの対応状況は以下の通り。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"show-picker-input"} />
+<Baseline featureId={"show-picker-select"} />
+
+```html
+<input id="date" type="date">
+<button id="open-date" type="button">Show picker</button>
+
+<select id="list">
+  <option value="1">One</option>
+  <option value="2">Two</option>
+</select>
+<button id="open-list" type="button">Show menu</button>
+```
+
+```js
+document.querySelector('#open-date').addEventListener('click', () => {
+  const dateInput = document.querySelector('#date')
+  dateInput.showPicker()
+})
+
+document.querySelector('#open-list').addEventListener('click', () => {
+  const list = document.querySelector('#list')
+  list.showPicker()
+})
+```
+
+## 注意点
+
+セキュリティ的な観点から、ユーザーイベント（クリックなど）をトリガーとしなければ`showPicker()`を呼び出すことができない。
+
+> Uncaught NotAllowedError: Failed to execute 'showPicker' on 'HTMLInputElement': HTMLInputElement::showPicker() requires a user gesture.
+
+他にも、クロスオリジンのiframeから`showPicker()`を呼び出すことはできない。
+
+> Uncaught SecurityError: Failed to execute 'showPicker' on 'HTMLInputElement': showPicker() called from cross-origin iframe. 
+
+## デモ
+
+<section id="demo">
+  <section>
+    <input type="date" />
+    <button id="open-date" type="button">Show picker</button>
+  </section>
+
+  <section>
+    <select>
+      <option value="1">One</option>
+      <option value="2">Two</option>
+    </select>
+    <button id="open-list" type="button">Show menu</button>
+  </section>
+</section>
+
+<script>{`
+document.querySelector('#demo #open-date').addEventListener('click', () => {
+  const dateInput = document.querySelector('#demo input[type="date"]')
+  dateInput.showPicker()
+})
+
+document.querySelector('#demo #open-list').addEventListener('click', () => {
+  const list = document.querySelector('#demo select')
+  list.showPicker()
+})
+`}</script>
