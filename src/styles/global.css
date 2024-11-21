@@ -1,7 +1,7 @@
 html {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 1.25rem;
-  line-height: 1.7;
+  line-height: 2;
   letter-spacing: 0.05em;
 
   color: #333333;
@@ -20,10 +20,17 @@ html {
 :where(h1, h2, h3, h4, h5, h6) {
   text-wrap: balance;
   word-break: auto-phrase;
+  line-height: 1.5;
 }
 
 p {
   word-break: auto-phrase;
+  margin-block-start: 0;
+  margin-block-end: 1.5em;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
 }
 
 dt {
@@ -48,8 +55,10 @@ pre > code {
 }
 
 blockquote {
-  margin: 2em 0;
-  padding: 0.2em 1em;
+  margin-block: 2em;
+  margin-inline: 0;
+  padding-block: 1em;
+  padding-inline: 0.2em;
   border-left: 8px solid #CACACA;
   background-color: #eeeeee;
 }
