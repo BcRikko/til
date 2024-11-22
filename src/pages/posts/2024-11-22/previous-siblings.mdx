@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-22"
+updatedDate: "2024-11-22"
+title: "兄弟セレクタ（次兄弟結合子）で兄要素を取得する"
+author: ダーシノ
+description: ":has()擬似クラスと兄弟セレクタ（次兄弟結合子）を使うことで、兄要素が取得できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[:has()](https://developer.mozilla.org/ja/docs/Web/CSS/:has)擬似クラスと兄弟セレクタ（次兄弟結合子）を使うことで、兄要素が取得できる。
+
+対応ブラウザは以下の通り。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"has"} />
+
+```html
+<span>兄</span>
+<span>弟</span>
+```
+
+```css
+/* 兄要素 */
+span:has(+ span)::after {
+ content: "より優れた";
+}
+
+/* 弟要素 */
+span + span {
+ content: "は存在しない";
+}
+```
+
+## デモ
+
+<section id="demo">
+  <span>兄</span>
+  <span>弟</span>
+</section>
+
+<style>{`
+#demo {
+  font-size: 2rem;
+  span:has(+ span)::after {
+    content: "より優れた";
+    font-size: 1rem;
+  }
+
+  span + span::after {
+    content: "は存在しない";
+    font-size: 1rem;
+  }
+}
+`}</style>
