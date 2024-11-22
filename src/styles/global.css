@@ -83,6 +83,13 @@ img {
   height: auto;
 }
 
+strong {
+  text-decoration: underline solid rgba(255, 255, 0, 0.5) 0.6ic;
+  text-decoration-skip-ink: none;
+  text-underline-offset: -0.3ic;
+  font-weight: 600;
+}
+
 @media (prefers-reduced-motion) {
   *, *::before, *::after {
     animation-duration: 0s !important;
