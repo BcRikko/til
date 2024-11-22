@@ -1,0 +1,50 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-22"
+updatedDate: "2024-11-22"
+title: "CSSでマーカー風アンダーラインを引く方法"
+author: ダーシノ
+description: "text-decorationのunderlineを使うことで、<strong>の文字にマーカーのようなunderlineを引ける。使うプロパティは以下の通り。text-decoration.<a>やリンクのようなunderlineのスタイルを指定するプロパティ。text-underline-offset。underlineの位置を調整するプロパティ。text-decoration-skip-ink。アルファベットのunderlineが途切れないようにするプロパティ"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+text-decorationのunderlineを使うことで、`<strong>`の文字にマーカーのようなunderlineを引ける。使うプロパティは以下の通り。
+
+- [text-decoration](https://developer.mozilla.org/ja/docs/Web/CSS/text-decoration)
+  - `<a>`やリンクのようなunderlineのスタイルを指定するプロパティ
+- [text-underline-offset](https://developer.mozilla.org/ja/docs/Web/CSS/text-underline-offset)
+  - underlineの位置を調整するプロパティ
+- [text-decoration-skip-ink](https://developer.mozilla.org/ja/docs/Web/CSS/text-decoration-skip-ink)
+  - アルファベットのunderlineが途切れないようにするプロパティ
+
+```html
+<p>吾輩は猫である。<strong>名前はまだない。</strong>どこで生れたか頓と見当がつかぬ。<strong>何でも薄暗いじめじめした所</strong>でニャーニャー泣いていた事だけは記憶している。</p>
+```
+
+```css
+strong {
+  text-decoration: underline solid rgba(255, 255, 0, .5) 0.5em;
+  text-underline-offset: -0.3em;
+  text-decoration-skip-ink: none;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <p>吾輩は猫である。<strong>名前はまだない。</strong>どこで生れたか頓と見当がつかぬ。<strong>何でも薄暗いじめじめした所</strong>でニャーニャー泣いていた事だけは記憶している。</p>
+</section>
+
+<style>{`
+strong {
+  text-decoration: underline solid rgba(255, 255, 0, .5) 0.5em;
+  text-underline-offset: -0.3em;
+  text-decoration-skip-ink: none;
+}
+`}</style>
+
