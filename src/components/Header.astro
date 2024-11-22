@@ -27,7 +27,15 @@ const { title, pubDate, updatedDate, tags } = Astro.props;
     }
     <div>
       <dt>タグ</dt>
-      <dd>{tags.join(", ")}</dd>
+      <dd>
+        {
+          tags.map((tag, i) => (
+            i < tags.length - 1
+              ? <a href=`/til/tags/${tag}`>{tag}</a><span>, </span> 
+              : <a href=`/til/tags/${tag}`>{tag}</a>
+          ))
+        }
+      </dd>
     </div>
     <div>
       <dt>著者</dt>

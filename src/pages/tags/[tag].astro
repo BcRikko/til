@@ -1,0 +1,66 @@
+---
+import type { GetStaticPathsItem } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import Article from "../../components/Article.astro";
+
+export async function getStaticPaths(): Promise<GetStaticPathsItem[]> {
+  const allPosts = await Astro.glob("../../pages/posts/**/[!_]*.{md,mdx}");
+  const sortedPosts = allPosts.sort(
+    (a, b) =>
+      new Date(b.frontmatter.pubDate).getTime() -
+      new Date(a.frontmatter.pubDate).getTime(),
+  );
+
+  const uniqTags = [
+    ...new Set(
+      sortedPosts
+        .map((a) => a.frontmatter.tags)
+        .flat()
+        .filter(Boolean),
+    ),
+  ] as string[];
+
+  return uniqTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) =>
+      post.frontmatter.tags.includes(tag),
+    );
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params as { tag: string };
+const { posts } = Astro.props as { posts: any[] };
+
+const title = `${tag}のタグが付いた記事 | Today I learned.`;
+const description = "日々学んだことを公開するサイトです。";
+const tags = [tag];
+---
+
+<Layout
+  title={title}
+  description={description}
+  pubDate="2024-07-21"
+  updatedDate="2024-07-21"
+  tags={tags.join(", ")}
+>
+  <h1>Today I learned.</h1>
+  <p>{`[${tag}]のタグが付いた記事を表示しています。`}</p>
+  <ul>
+    {
+      posts.map((post) => (
+        <li>
+          <Article
+            url={post.url}
+            title={post.frontmatter.title}
+            pubDate={post.frontmatter.pubDate}
+            updatedDate={post.frontmatter.updatedDate}
+            tags={post.frontmatter.tags}
+          />
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
