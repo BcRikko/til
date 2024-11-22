@@ -1,0 +1,49 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-22"
+updatedDate: "2024-11-22"
+title: "text-decorationの下線の位置をtext-underline-offsetで調整する"
+author: ダーシノ
+description: "主にリンクに使われるtext-decorationの下線の位置をtext-underline-offsetを使うことで調整できる。pxやemなどの<length>や<percentage>の値を指定できる。また、負の値も指定できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+主にリンクに使われる[text-decoration](https://developer.mozilla.org/ja/docs/Web/CSS/text-decoration)の下線の位置を[text-underline-offset](https://developer.mozilla.org/ja/docs/Web/CSS/text-underline-offset)を使うことで調整できる。
+
+対応ブラウザは以下の通り。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"text-underline-position"} />
+
+
+```css
+.text {
+  text-decoration: underline;
+  text-underline-offset: 1em; /* <length> */
+  text-underline-offset: 30%; /* <percentage> */
+  text-underline-offset: -10px; /* negative */
+}
+```
+
+pxやemなどの`<length>`や`<percentage>`の値を指定できる。また、負の値も指定できる。
+
+## デモ
+
+<section id="demo">
+  <p class="text" style="text-underline-offset: auto;">text-underline-offset: auto; … gjpqy</p>
+  <p class="text" style="text-underline-offset: 1em;">text-underline-offset: 1em; … gjpqy</p>
+  <p class="text" style="text-underline-offset: 30%;">text-underline-offset: 30%; … gjpqy</p>
+  <p class="text" style="text-underline-offset: -5px;">text-underline-offset: -1em; … gjpqy</p>
+</section>
+
+<style>{`
+.text {
+  text-decoration: underline red solid 4px;
+  letter-spacing: 0.5em;
+}
+`}</style>
