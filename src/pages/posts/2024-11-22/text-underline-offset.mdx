@@ -32,6 +32,11 @@ import Baseline from '../../../components/Baseline.astro'
 
 pxやemなどの`<length>`や`<percentage>`の値を指定できる。また、負の値も指定できる。
 
+## 注意点
+
+- 日本語などで使う場合は、`<del>`のように見えてしまう。
+- マーカー風のunderlineに使う場合は、アルファベットだけ透過しないため線が切れる
+
 ## デモ
 
 <section id="demo">
@@ -39,11 +44,19 @@ pxやemなどの`<length>`や`<percentage>`の値を指定できる。また、�
   <p class="text" style="text-underline-offset: 1em;">text-underline-offset: 1em; … gjpqy</p>
   <p class="text" style="text-underline-offset: 30%;">text-underline-offset: 30%; … gjpqy</p>
   <p class="text" style="text-underline-offset: -5px;">text-underline-offset: -1em; … gjpqy</p>
+
+  <p class="text" style="text-underline-offset: -0.5em;">日本語のひらがなやカタカナ、漢字はstrikeのように見えてしまう</p>
+  <p class="text mark">マーカー風に使いたくてもAlphabetは線が切れてしまう</p>
+  
 </section>
 
 <style>{`
 .text {
-  text-decoration: underline red solid 4px;
+  text-decoration: underline solid red 4px;
   letter-spacing: 0.5em;
+}
+.mark {
+  text-decoration: underline solid rgba(255,255,0,.5) .5em;
+  text-underline-offset: -0.3em;
 }
 `}</style>
