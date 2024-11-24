@@ -1,0 +1,123 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-24"
+updatedDate: "2024-11-24"
+title: "CSSの三角関数を活用してローダーをつくる"
+author: ダーシノ
+description: "CSSで三角関数（sin()、cos()など）が使えるようになった。社会では役に立たないと言われがちな三角関数だが、全然そんなことない。JavaScriptのMath.sin()やMath.cos()では、引数をラジアン（弧度法）に変換しなければならないのだが、CSSの三角関数は優秀で角度（度数法）のdegを渡すだけでよい。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+CSSで三角関数（[sin()](https://developer.mozilla.org/en-US/docs/Web/CSS/sin)、[cos()](https://developer.mozilla.org/en-US/docs/Web/CSS/cos)など）が使えるようになった。社会では役に立たないと言われがちな三角関数だが、全然そんなことない！！
+
+ブラウザの対応状況は以下のとおり。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"trig-functions"} />
+
+## ドットローダーをつくる
+
+```html
+<div class="loader">
+  <div class="dot" style="--index: 1"></div>
+  <div class="dot" style="--index: 2"></div>
+  <div class="dot" style="--index: 3"></div>
+  <div class="dot" style="--index: 4"></div>
+  <div class="dot" style="--index: 5"></div>
+  <div class="dot" style="--index: 6"></div>
+  <div class="dot" style="--index: 7"></div>
+  <div class="dot" style="--index: 8"></div>
+</div>
+```
+
+```css
+.loader {
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+
+  /* 8つのドットを表示するので360°を8分割する */
+  --angle: calc((360deg / 8) * var(--index));
+  top: calc(sin(var(--angle)) * 50px);
+  left: calc(cos(var(--angle)) * 50px);
+
+  /*　ドットスタイルは省略  */
+
+  animation: 2s linear calc(var(--index) * 250ms) infinite flash;
+}
+```
+
+JavaScriptの[Math.sin()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/sin)や[Math.cos()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/cos)では、引数をラジアン（弧度法）に変換しなければならないのだが、CSSの三角関数は優秀で角度（度数法）の`deg`を渡すだけでよい。
+
+一般的にx軸（`top`）には`sin()`、y軸（`left`）には`cos()`を使うが、今回の場合はとくに気にしなくても良い。
+
+
+### 補足
+
+`.dot`要素の順番に`--index`というCSS変数を使った。
+
+できることなら[counter()](https://developer.mozilla.org/ja/docs/Web/CSS/counter)でindexのカウントを自動化したかったのだが、仕様検討時に何度か提案されたもののブラウザの処理が重くなるという理由で却下されたそうだ。
+
+> The current counter() function outputs a `<string>`, so it can't be used directly in calc().
+> （略）Counters are surprisingly expensive in browsers,（略）
+>
+> 引用: [Re: \[css\-values\] CSS counters inside CALC function from Tab Atkins Jr\. on 2016\-08\-30 \(www\-style@w3\.org from August 2016\)](https://lists.w3.org/Archives/Public/www-style/2016Aug/0082.html)
+
+
+
+## デモ
+
+<section id="demo">
+  <div class="loader">
+    <div class="dot" style="--index: 1"></div>
+    <div class="dot" style="--index: 2"></div>
+    <div class="dot" style="--index: 3"></div>
+    <div class="dot" style="--index: 4"></div>
+    <div class="dot" style="--index: 5"></div>
+    <div class="dot" style="--index: 6"></div>
+    <div class="dot" style="--index: 7"></div>
+    <div class="dot" style="--index: 8"></div>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  display: grid;
+  place-content: center;
+
+  .loader {
+    position: relative;
+  }
+
+  .dot {
+    position: absolute;
+
+    --angle: calc((360deg / 8) * var(--index));
+    top: calc(sin(var(--angle)) * 50px);
+    left: calc(cos(var(--angle)) * 50px);
+
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: black;
+
+    animation: 2s linear calc(var(--index) * 250ms) infinite flash;
+  }
+}
+
+@keyframes flash {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+`}</style>
