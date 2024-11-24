@@ -1,0 +1,67 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-25"
+updatedDate: "2024-11-25"
+title: "ブラウザからインターネット接続状態を取得する"
+author: ダーシノ
+description: "Navigator#onLineプロパティを使うことで、ブラウザからインターネット接続の状態を取得できる。online/offlineイベントをリスンすることで、インターネット接続の状態が変化したときに処理を実行できる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Navigator#onLine](https://developer.mozilla.org/ja/docs/Web/API/Navigator/onLine)プロパティを使うことで、ブラウザからインターネット接続の状態を取得できる。
+
+```js
+if (navigator.onLine === true) {
+  console.log('ONLINE')
+} else {
+  console.log('OFFLINE')
+}
+```
+
+また、online/offlineイベントをリスンすることで、インターネット接続の状態が変化したときに処理を実行できる。
+
+```js
+window.addEventListener('online', () => {
+  console.log('ONLINE')
+})
+
+window.addEventListener('offline', () => {
+  console.log('OFFLINE')
+})
+```
+
+用途としては、エディターを持つサービス（ブログやSNSなど）で、オンラインならchangeイベントでPUTリクエストをし自動保存。オフラインならLocalStorageやIndexedDBなどに保存して、onlineイベントが発火されたときにPUTリクエストで保存するなどが考えられる。
+
+```js
+const editor = document.querySelector('#editor')
+
+// 入力内容が変更されたら保存
+editor.addEventListener('change', () => {
+  if (navigator.onLine === true) {
+    // オンラインならPUTリクエスト
+    fetch('/api/posts', {
+      method: 'PUT',
+      body: editor.value
+    })
+  } else {
+    // オフラインならLocalStorageに保存
+    localStorage.setItem('draft', editor.value)
+  }
+})
+
+window.addEventListener('online', () => {
+  // オンラインになったらLocalStorageの内容をPUTリクエスト
+  const draft = localStorage.getItem('draft')
+  if (draft) {
+    fetch('/api/posts', {
+      method: 'PUT',
+      body: draft
+    })
+    localStorage.removeItem('draft')
+  }
+})
+```
