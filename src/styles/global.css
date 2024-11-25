@@ -88,6 +88,10 @@ strong {
   text-decoration-skip-ink: none;
   text-underline-offset: -0.3ic;
   font-weight: 600;
+
+  a {
+    text-underline-offset: initial;
+  }
 }
 
 @media (prefers-reduced-motion) {
