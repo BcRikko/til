@@ -9,7 +9,7 @@ interface Props {
 const { title, pubDate, updatedDate, tags } = Astro.props;
 ---
 
-<hgroup>
+<section>
   <dl class="tags">
     <div>
       <dt>公開日</dt>
@@ -29,44 +29,45 @@ const { title, pubDate, updatedDate, tags } = Astro.props;
       <dt>タグ</dt>
       <dd>
         {
-          tags.map((tag, i) => (
-            i < tags.length - 1
-              ? <a href=`/til/tags/${tag}`>{tag}</a><span>, </span> 
-              : <a href=`/til/tags/${tag}`>{tag}</a>
-          ))
+          tags.map((tag, i) =>
+            i < tags.length - 1 ? (
+              <>
+                <a href={`/til/tags/${tag}`}>{tag}</a>
+                <span>, </span>
+              </>
+            ) : (
+              <a href={`/til/tags/${tag}`}>{tag}</a>
+            ),
+          )
         }
       </dd>
     </div>
     <div>
       <dt>著者</dt>
-      <dd>
-        <a href="/til/aboutme">
-          ダーシノ(@bc_rikko)
-        <a>
-      </dd>
+      <dd><a href="/til/aboutme">ダーシノ(@bc_rikko)</a></dd>
     </div>
   </dl>
   <h1>{title}</h1>
-</hgroup>
+</section>
 
 <style>
-.tags {
-  font-size: 0.8rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2em;
-
-  > div {
+  .tags {
+    font-size: 0.8rem;
     display: flex;
-    gap: 0.5em;
-  }
+    flex-wrap: wrap;
+    gap: 2em;
 
-  dt::after {
-    content: ":";
-  }
+    > div {
+      display: flex;
+      gap: 0.5em;
+    }
 
-  dd {
-    margin: 0;
+    dt::after {
+      content: ":";
+    }
+
+    dd {
+      margin: 0;
+    }
   }
-}
 </style>

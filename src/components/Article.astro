@@ -23,11 +23,16 @@ const { url, title, pubDate, updatedDate, tags } = Astro.props;
       <dt>タグ</dt>
       <dd>
         {
-          tags.map((tag, i) => (
-            i < tags.length - 1
-              ? <a href=`/til/tags/${tag}`>{tag}</a><span>, </span> 
-              : <a href=`/til/tags/${tag}`>{tag}</a>
-          ))
+          tags.map((tag, i) =>
+            i < tags.length - 1 ? (
+              <>
+                <a href={`/til/tags/${tag}`}>{tag}</a>
+                <span>, </span>
+              </>
+            ) : (
+              <a href={`/til/tags/${tag}`}>{tag}</a>
+            ),
+          )
         }
       </dd>
     </div>
