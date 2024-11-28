@@ -1,0 +1,57 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-11-28"
+updatedDate: "2024-11-28"
+title: "ESLint + stylisticでswitch文のindentが修正できない"
+author: ダーシノ
+description: "VSCodeでeslintをtypescript-eslintを使っているとき、switch文のindentで2つのルールがコンフリクトして上書き合戦がはじまってしまう。eslintからformatter関連の機能が削除されたため、stylisticで代用する。"
+tags: ["JavaScript", "TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+VSCodeで[eslint](https://github.com/eslint/eslint)を[typescript-eslint](https://github.com/typescript-eslint/typescript-eslint)を使っているとき、switch文のindentで2つのルールがコンフリクトして上書き合戦がはじまってしまう。
+
+## 使用パッケージ
+
+- eslint v9
+- typescript-eslint
+- stylistic
+
+eslintからformatter関連の機能が削除されたため、[stylistic](https://github.com/eslint-stylistic)で代用する。
+
+## 解決方法
+
+VSCodeのsettings.jsonに、defaultFormatterを指定する。
+
+```json
+{
+  "eslint.useFlatConfig": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  // 以下のdefaultFormatterを指定する
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+}
+```
