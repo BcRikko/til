@@ -1,0 +1,42 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-02"
+updatedDate: "2024-12-02"
+title: "Fetch APIのkeepaliveを使ってページ離脱後でもレスポンスを処理する"
+author: ダーシノ
+description: "Firefox 133がサポートしたことで、全主要ブラウザでFetch APIのkeepaliveオプションが使えるようになった。keepaliveオプションを使うことで、ページを閉じたり離脱したりしたあとでもレスポンスを適切に扱える。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Firefox 133](https://www.mozilla.org/en-US/firefox/133.0/releasenotes/)がサポートしたことで、全主要ブラウザでFetch APIの[keepaliveオプション](https://developer.mozilla.org/en-US/docs/Web/API/Request/keepalive)が使えるようになった。
+
+keepaliveオプションを使うことで、ページを閉じたり離脱したりしたあとでもレスポンスを適切に扱える。
+
+```js
+fetch(
+  'https://example.com/api/data',
+  {
+    method: 'GET',
+    keepalive: true
+  }
+)
+```
+
+DevToolsで確認してみると、`keepalive: true`フラグがない場合はリクエスト途中でページを離脱すると`Status: unknown`になるが、`keepalive: true`フラグがある場合は`Status: 200`になった。（※この挙動が正しいのかは判断できない）
+
+以下のように `fetch().then()`でチェーンしても後続の処理がされるわけではないようだ。
+```js
+fetch(
+  'https://example.com/api/data',
+  {
+    method: 'GET',
+    keepalive: true
+  })
+  .then(data => console.log(data))
+```
+
+いまのところ有効な使い方がわからないので、ちゃんと調べたい。
