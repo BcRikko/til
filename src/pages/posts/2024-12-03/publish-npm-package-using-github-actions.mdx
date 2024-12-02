@@ -1,0 +1,76 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-03"
+updatedDate: "2024-12-03"
+title: "GitHub Actionsでnpm publishを自動化する"
+author: ダーシノ
+description: "npm publishを手作業でやるのは大変なので、GitHub Actionsを使ってやってみる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`npm publish`を手作業でやるのは大変なので、GitHub Actionsを使ってやってみる。
+
+## npmjsでアクセストークンを発行する
+
+1. アカウントメニュー > Access Tokens
+2. Generate New Token > Classic Tokenをクリック
+3. Nameにわかりやすい名前（たとえばパッケージ名など）を設定
+4. Select typeでは`Publish`を選択
+5. 「Generate Token」をクリック
+6. 「Token successfully generated」と表示されるので`npm_xxxxx`というトークンをコピーする
+
+![アクセストークン発行の設定画面](./_npm-generate-token.png)
+
+## npmjsのアクセストークンをリポジトリのSecretsに登録する
+
+1. Settings > Security: Secrets and variables > Actions をクリック
+2. 「New repository secret」をクリック
+3. Nameに`NPM_TOKEN`、Secretにnpmjs.org
+
+![GitHub Actionsシークレットの設定画面](./_action-secrets.png)
+
+## GitHub Actionsのワークフローを設定する
+
+```yaml
+name: Publish Package to npmjs
+# npm publishするタイミング
+on:
+  release:
+    types: [published] # Releaseノートが更新されたとき
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+これで、Releaseが作成されたタイミングで`npm publish`が実行されて、パッケージが公開される。
+
+TypeScriptなどビルドが必要な言語を使っている場合は、`npm ci`と`npm publish`の間に`npm run build`のようなコマンドを実行する。
+
+## 注意
+
+`package.json`のバージョンは手動で更新するか、なんらかのスクリプトを使ってインクリメントしないと、同じバージョンが登録されているというエラーが出てpublishできない。
+
+
+## 参考
+
+- [Node\.jsパッケージの公開 \- GitHub Docs](https://docs.github.com/ja/actions/use-cases-and-examples/publishing-packages/publishing-nodejs-packages)
+- [GitHub Actions でのシークレットの使用 \- GitHub Docs](https://docs.github.com/ja/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+- [npmレジストリの利用 \- GitHub Docs](https://docs.github.com/ja/packages/working-with-a-github-packages-registry/working-with-the-npm-registry)
+- [リポジトリのリリースを管理する \- GitHub Docs](https://docs.github.com/ja/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
