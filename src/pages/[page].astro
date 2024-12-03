@@ -1,5 +1,5 @@
 ---
-import type { Page, GetStaticPaths } from "astro";
+import type { Page, GetStaticPaths, MDXInstance } from "astro";
 
 import Layout from "../layouts/Layout.astro";
 import Article from "../components/Article.astro";
@@ -9,7 +9,9 @@ const description = "日々学んだことを公開するサイトです。";
 const tags = ["frontend", "web", "javascript", "html", "css"];
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-  const allPosts = await Astro.glob("../pages/posts/**/[!_]*.{md,mdx}");
+  const allPosts: MDXInstance<MyPost>[] = Object.values(
+    import.meta.glob("../pages/posts/**/[!_]*.{md,mdx}", { eager: true }),
+  );
 
   const sortedPosts = allPosts.sort(
     (a, b) =>

@@ -1,10 +1,12 @@
 ---
-import type { GetStaticPathsItem } from "astro";
+import type { GetStaticPathsItem, MDXInstance } from "astro";
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
 
 export async function getStaticPaths(): Promise<GetStaticPathsItem[]> {
-  const allPosts = await Astro.glob("../../pages/posts/**/[!_]*.{md,mdx}");
+  const allPosts: MDXInstance<MyPost>[] = Object.values(
+    import.meta.glob("../../pages/posts/**/[!_]*.{md,mdx}", { eager: true }),
+  );
   const sortedPosts = allPosts.sort(
     (a, b) =>
       new Date(b.frontmatter.pubDate).getTime() -

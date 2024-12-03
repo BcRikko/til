@@ -1,8 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Article from "../components/Article.astro";
-const allPosts = await Astro.glob("../pages/posts/**/*.{md,mdx}");
-
+import type { MDXInstance } from "astro";
+const allPosts: MDXInstance<MyPost>[] = Object.values(
+  import.meta.glob("../pages/posts/**/*.{md,mdx}", { eager: true }),
+);
 const title = "Today I learned.";
 const description = "日々学んだことを公開するサイトです。";
 const tags = ["frontend", "web", "javascript", "html", "css"];
@@ -29,7 +31,7 @@ const tags = ["frontend", "web", "javascript", "html", "css"];
         .map((post) => (
           <li>
             <Article
-              url={post.url}
+              url={post.url!}
               title={post.frontmatter.title}
               pubDate={post.frontmatter.pubDate}
               updatedDate={post.frontmatter.updatedDate}
