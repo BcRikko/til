@@ -1,0 +1,71 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-04"
+updatedDate: "2024-12-04"
+title: "「サニタイズ言うなキャンペーン」から技術書の正しい書き方を理解する"
+author: ダーシノ
+description: "SNSを見ていたら「サニタイズ言うなキャンペーン」が2000年代に行われていたことを知る。高木さんの記事を読んでみても、当時の状況を知らない私にとってはいまいちピンとこなかったので、思考をまとめる意味でも書き出してみる。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+SNSを見ていたら「サニタイズ言うなキャンペーン」が2000年代に行われていたことを知る。高木さんの記事を読んでみても、当時の状況を知らない私にとってはいまいちピンとこなかったので、思考をまとめる意味でも書き出してみる。
+
+## 「サニタイズ言うなキャンペーン」関連記事
+
+- [高木浩光＠自宅の日記 \- プログラミング解説書籍の脆弱性をどうするか, 「サニタイズ言うなキャンペーン」とは何か, ASPとかJSPとかPHPとかERBとか、逆だ\.\.](https://takagi-hiromitsu.jp/diary/20051227.html#p02)
+- [高木浩光＠自宅の日記 \- 続・「サニタイズ言うなキャンペーン」とは](https://takagi-hiromitsu.jp/diary/20060115.html)
+- [高木浩光＠自宅の日記 \- 駄目な技術文書の見分け方 その1](https://takagi-hiromitsu.jp/diary/20061104.html)
+- [「サニタイズ言うなキャンペーン」私の解釈](https://kmaebashi.com/zakki/zakki0042.html)
+
+## 「サニタイズ言うなキャンペーン」の文脈
+
+- 「サニタイズ（無害化）」という用語が広がり、書籍で取り上げられるようになった
+- **サニタイズを説明するために、脆弱性を含むコードが生み出されるようになった**
+
+### 悪い書籍の例: 文字を表示しよう
+
+文字の表示には`HTMLElement.innerHTML`を使います。
+```js
+const p = document.querySelector('p')
+p.innerHTML = 'この文字列には<script>alert("危険")</script>だよ'
+```
+しかし、上記のように実装すると、`alert("危険")`が実行されてしまいます。なので、**サニタイズしましょう**。
+
+```js
+const p = document.querySelector('p')
+p.innerHTML = encodeURIComponent('この文字列には<script>alert("危険")</script>だよ')
+```
+これで安心ですね。
+
+
+## 「サニタイズ言うなキャンペーン」の主張
+
+- 「サニタイズ」を説明するために脆弱性を含むコードを書くこと自体が間違い
+- **正しくプログラミングしていれば、サニタイズという話はでてこない**
+
+
+### たぶん良い書籍の例: 文字を表示しよう
+
+
+
+文字の表示には`HTMLElement.textContent`を使います。
+```js
+const p = document.querySelector('p')
+p.textContent = 'この文字列には<script>alert("危険")</script>だよ'
+```
+
+「この文字列には`<script>alert("危険")</script>`だよ」という文字が表示されましたね。
+
+- ※もともとCGIとかPHPとかの文脈で使われていたが、専門外なのでJavaScriptで考えてみる
+- ※サニタイズうんぬんの説明をしなければ、`HTMLElement#textContent`という文字列出力に適したプロパティを使うことになり、この説明の流れでは「サニタイズ」という言葉はでてこない。
+
+## まとめ
+
+**「サニタイズ」という言葉を使うために脆弱性を生み出している。**
+
+**ゆえに「サニタイズ言うな」である。**
+
