@@ -9,6 +9,7 @@ export async function getStaticPaths(): Promise<GetStaticPathsItem[]> {
       eager: true,
     }),
   );
+
   const sortedPosts = allPosts.sort(
     (a, b) =>
       new Date(b.frontmatter.pubDate).getTime() -

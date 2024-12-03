@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Article from "../components/Article.astro";
 import type { MDXInstance } from "astro";
+
 const allPosts: MDXInstance<MyPost>[] = Object.values(
   import.meta.glob(["./posts/**/*.{md,mdx}", "!./posts/**/_*.{md,mdx}"], {
     eager: true,
@@ -33,7 +34,7 @@ const tags = ["frontend", "web", "javascript", "html", "css"];
         .map((post) => (
           <li>
             <Article
-              url={post.url!}
+              url={post.url}
               title={post.frontmatter.title}
               pubDate={post.frontmatter.pubDate}
               updatedDate={post.frontmatter.updatedDate}
