@@ -5,7 +5,7 @@ import Article from "../../components/Article.astro";
 
 export async function getStaticPaths(): Promise<GetStaticPathsItem[]> {
   const allPosts: MDXInstance<MyPost>[] = Object.values(
-    import.meta.glob(["./posts/**/*.{md,mdx}", "!./posts/**/_*.{md,mdx}"], {
+    import.meta.glob(["../posts/**/*.{md,mdx}", "!../posts/**/_*.{md,mdx}"], {
       eager: true,
     }),
   );
