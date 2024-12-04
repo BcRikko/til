@@ -59,7 +59,7 @@ const { page } = Astro.props as { page: Page };
       {
         page.url.prev && (
           <li>
-            <a href={`/til${page.url.prev}`} aria-label="前のページに移動する">
+            <a href={page.url.prev} aria-label="前のページに移動する">
               ≪ 前へ
             </a>
           </li>
@@ -68,7 +68,7 @@ const { page } = Astro.props as { page: Page };
       {
         page.url.next && (
           <li>
-            <a href={`/til${page.url.next}`} aria-label="次のページに移動する">
+            <a href={page.url.next} aria-label="次のページに移動する">
               次へ ≫
             </a>
           </li>
