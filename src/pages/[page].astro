@@ -10,7 +10,9 @@ const tags = ["frontend", "web", "javascript", "html", "css"];
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const allPosts: MDXInstance<MyPost>[] = Object.values(
-    import.meta.glob("../pages/posts/**/[!_]*.{md,mdx}", { eager: true }),
+    import.meta.glob(["./posts/**/*.{md,mdx}", "!./posts/**/_*.{md,mdx}"], {
+      eager: true,
+    }),
   );
 
   const sortedPosts = allPosts.sort(
@@ -57,7 +59,7 @@ const { page } = Astro.props as { page: Page };
       {
         page.url.prev && (
           <li>
-            <a href={`/til${page.url.prev}`} aria-label="前のページに移動する">
+            <a href={page.url.prev} aria-label="前のページに移動する">
               ≪ 前へ
             </a>
           </li>
@@ -66,7 +68,7 @@ const { page } = Astro.props as { page: Page };
       {
         page.url.next && (
           <li>
-            <a href={`/til${page.url.next}`} aria-label="次のページに移動する">
+            <a href={page.url.next} aria-label="次のページに移動する">
               次へ ≫
             </a>
           </li>

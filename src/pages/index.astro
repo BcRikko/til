@@ -3,7 +3,9 @@ import Layout from "../layouts/Layout.astro";
 import Article from "../components/Article.astro";
 import type { MDXInstance } from "astro";
 const allPosts: MDXInstance<MyPost>[] = Object.values(
-  import.meta.glob("../pages/posts/**/*.{md,mdx}", { eager: true }),
+  import.meta.glob(["./posts/**/*.{md,mdx}", "!./posts/**/_*.{md,mdx}"], {
+    eager: true,
+  }),
 );
 const title = "Today I learned.";
 const description = "日々学んだことを公開するサイトです。";
