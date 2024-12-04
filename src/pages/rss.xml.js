@@ -7,7 +7,8 @@ export async function GET(context) {
     site: context.site,
     trailingSlash: true,
     items: await pagesGlobToRssItems(
-      import.meta.glob('./posts/**/*.{md,mdx}')
+      // import.meta.glob('./posts/**/*.{md,mdx}')
+      import.meta.glob('./posts/**/[!_]*.{md,mdx}')
     ),
   })
 }
