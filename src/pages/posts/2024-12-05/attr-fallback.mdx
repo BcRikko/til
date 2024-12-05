@@ -1,0 +1,52 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-05"
+updatedDate: "2024-12-05"
+title: "attr()でデフォルト値を設定する"
+author: ダーシノ
+description: "Safari TP 208でattr()のフォールバックをサポートした。2024年12月現在では、Safari TPとFirefoxでのサポートしている。CSS Variablesのフォールバックのようにattr(attribute-name[, <fallback>])のように指定できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Safari TP 208](https://webkit.org/blog/16285/release-notes-for-safari-technology-preview-208/)で[attr()](https://developer.mozilla.org/en-US/docs/Web/CSS/attr)のフォールバックをサポートした。
+
+2024年12月現在では、Safari TPとFirefoxでのサポートしている。
+Baselineの状況は以下の通り。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"attr"} />
+
+CSS Variablesのフォールバックのように`attr(attribute-name[, <fallback>])`のように指定できる。
+```html
+<div class="attr" data-content="データ">data-contentあり</div>
+<div class="attr">data-contentなし</div>
+```
+
+```css
+.attr::after {
+  content: attr(data-content, "デフォルト値");
+}
+```
+
+`attr()`にフォールバックが使えることで、[属性駆動スタイリング](/til/posts/2024-05-23/attribute-driven-styling/)がやりやすくなる。
+
+## デモ
+
+<section id="demo">
+  <p>※一部ブラウザでは、`data-content`の値が表示されません。</p>
+  <div class="attr" data-content="データ">data-contentあり</div>
+  <div class="attr">data-contentなし</div>
+</section>
+
+<style>{`
+#demo {
+  .attr::after {
+    content: attr(data-content, "デフォルト値");
+  }
+}
+`}</style>
