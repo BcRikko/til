@@ -1,0 +1,55 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-09"
+updatedDate: "2024-12-09"
+title: "ECMAScript Proposalの2024年12月のアップデート内容"
+author: ダーシノ
+description: "先日105回目のミーティングで、ECMAScriptの各種プロポーザルがアップデートされた。New Proposals Sync Imports: stage 1 Stabilize: stage 1 More Currency Display  hoices: stage 2 Updated Proposals Immutable ArrayBuffers: stage 1→2 Error.isError: stage 2.7→3 Intl.DurationFormat: 3→4"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+先日105回目のミーティングで、[ECMAScriptの各種プロポーザルがアップデート](https://ecmascript-daily.github.io/ecmascript/2024/12/08/ecmascript-proposal-update)された。
+
+## New Proposals
+
+- [Sync Imports: stage 1](https://github.com/tc39/proposal-import-sync)
+- [Stabilize: stage 1](https://github.com/tc39-transfer/proposal-stabilize)
+- [More Currency Display Choices: stage 2](https://github.com/tc39/proposal-intl-currency-display-choices)
+
+## Updated Proposals 
+
+- [Immutable ArrayBuffers: stage 1→2](https://github.com/tc39/proposal-immutable-arraybuffer)
+- [Error.isError: stage 2.7→3](https://github.com/tc39/proposal-is-error)
+- [Intl.DurationFormat: 3→4](https://github.com/tc39/proposal-intl-duration-format)
+
+
+## ECMAScript 2026に入りそうなプロポーザル
+
+### `Intl.DurationFormat`
+
+- i18n（国際化）対応の一環で、時間の長さを表す「Duration」を、localeに応じて柔軟に書式化できるようにするもの。
+- 参考リンク: [Intl\.DurationFormatで時分秒の多言語対応をする](https://bcrikko.github.io/til/posts/2024-08-27/intl-durationformat/)
+
+<Baseline featureId={"intl-duration-format"} />
+
+
+### `Error.isError`
+
+よくある以下のような`instanceof Error`では、実行環境（iframeやnodeのvm modulesなど）によって誤った結果を返す可能性がある。
+```js
+if (error instanceof Error) {
+  // do something
+}
+```
+
+`Array#isArray()`と同じように`Error#isError()`を使うことで、実行環境によらない正確な判定ができるようになる。
+```js
+if (Error.isError(error)) {
+  // do something
+}
+```
