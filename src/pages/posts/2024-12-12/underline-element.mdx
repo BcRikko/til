@@ -1,0 +1,44 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-12"
+updatedDate: "2024-12-12"
+title: "注釈を表現するためにu要素を使う"
+author: ダーシノ
+description: "u要素は、もともとunderline要素と呼ばれ下線を引くために用いられてきたが、HTML4で非推奨となった。しかし、HTML5では「固有名詞に注釈をつける」「スペルミスを表現する」などの意味になって復活した。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[u要素](https://developer.mozilla.org/ja/docs/Web/HTML/Element/u)は、もともとunderline要素と呼ばれ下線を引くために用いられてきたが、HTML4で非推奨となった。しかし、HTML5では「固有名詞に注釈をつける」「スペルミスを表現する」などの意味になって復活した。
+
+
+> The u element represents a span of text with an unarticulated, though explicitly rendered, non-textual annotation, such as labeling the text as being a proper name in Chinese text (a Chinese proper name mark), or labeling the text as being misspelt.
+>
+> [HTML Standard - The u element](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-u-element)
+
+以下のように、スペルミスを表現するために使う。用途は限られており、使う場面は少ないかもしれない。
+
+```html
+<p>This paragraph includes a <u>wrnogly</u> spelled word.</p>
+```
+
+## 使用上の注意
+
+- より正しくマークアップするためには、`<em>`、`<b>`、`<mark>`、`<strong>`、`<cite>`、`<i>`を用いるべき
+- 使う場合は、同じくunderlineが表示される`<a>`と誤認されないようにする
+
+## デモ
+
+<section id="demo">
+<p>This paragraph includes a <u>wrnogly</u> spelled word.</p>
+</section>
+
+<style>{`
+#demo u {
+  text-decoration: #f00 wavy underline;
+  text-decoration-skip-ink: none;
+}
+`}</style>
