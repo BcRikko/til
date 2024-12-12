@@ -1,0 +1,37 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-13"
+updatedDate: "2024-12-13"
+title: "Node 23.4.0のassert.partialDeepStrictEqualを試す"
+author: ダーシノ
+description: "Node.js 23.4.0がリリースされ、その中でassert.partialDeepStrictEqualが実験的に導入された。よくあるdeepStrictEqualとの違いは、テストの中で追加、または変更されたプロパティだけをテストできるという点である。"
+tags: ["JavaScript", "Node.js"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Node.js 23.4.0](https://nodejs.org/en/blog/release/v23.4.0)がリリースされ、その中で`assert.partialDeepStrictEqual`が実験的に導入された。
+
+よくある`deepStrictEqual`との違いは、テストの中で追加、または変更されたプロパティだけをテストできるという点である。
+
+## Before
+```js
+const obj = { a: 1, b: 2, c: 3 };
+const actual = doubleEvenNumber(obj);
+
+// テストに関係ない `a: 1` や `c: 3` も必要になる
+assert.deepStrictEqual(actual, { a: 1, b: 4, c: 3 });
+```
+
+
+## After
+
+```js
+const obj = { a: 1, b: 2, c: 3 };
+const actual = doubleEvenNumber(obj);
+
+// 必要なプロパティだけテストする
+assert.partialDeepStrictEqual(actual, { b: 4 });
+```
