@@ -22,6 +22,8 @@ import Baseline from '../../../components/Baseline.astro'
 
 `background-clip`を使うことで、`background-image`などで指定した背景を切り抜き、表示することができる。
 
+デザイン性重視のウェブサイトでも、画像をつくって`<img src="..." alt="テキストの説明">`みたいなことをせずに、そのまま表示できる。ただし、背景画像を透過させるために`color: transparent`をしているため、`background-image`の読み込みに失敗すると何も見えなくなってしまうため、フォールバックのテストが必要だ。
+
 ```html
 <section class="clip">
   Hello world.
