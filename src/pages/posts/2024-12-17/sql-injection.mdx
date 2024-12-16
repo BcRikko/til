@@ -1,0 +1,119 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-17"
+updatedDate: "2024-12-17"
+title: "SQL Injectionの攻撃手法と対策"
+author: ダーシノ
+description: "SQL Injectionとは、データベース操作を悪用するサイバー攻撃のひとつ。攻撃者が不正なSQLコードを入力フォームやクエリパラメータなどに挿入してデータベースを不正に操作することで、秘匿情報の取得（情報漏えい）や破壊、不正な変更をする攻撃だ。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+## 概要
+
+SQL Injectionとは、**データベース操作を悪用するサイバー攻撃**のひとつ。攻撃者が不正なSQLコードを入力フォームやクエリパラメータなどに挿入してデータベースを不正に操作することで、秘匿情報の取得（情報漏えい）や破壊、不正な変更をする攻撃だ。
+
+## 攻撃方法の例
+
+以下のような`users`テーブルがあり、`user#id`を用いて検索する。
+
+|id|name|email|
+|---|---|---|
+|1|taro|`taro@example.com`|
+|2|jiro|`jiro-yattaze@example.com`|
+|3|saburo|`sabu-sabu@example.com`|
+
+```sql
+SELECT name, email
+  FROM users
+ WHERE id = '{user_input}';
+```
+
+本来であれば、入力したIDに対応する情報しか取得できないが、user_inputに`' OR '1' = '1'`と入力されると、以下のようなSQL文が生成される。
+
+```sql
+SELECT name, email
+  FROM users
+ WHERE id = '' OR '1' = '1';
+```
+
+このようなSQLが発行されると、`OR '1' = '1'`が常にtrueとなるため、不正にすべてのデータが取得される。
+
+または `;--`のような文字列が入力されると、以降のSQL（`AND visible=TRUE`）がコメントアウトされてしまい、表示条件に関係なくすべてのデータが取得できる。
+```sql
+SELECT name, email
+  FROM users
+ WHERE name LIKE '%'; -- AND visible=TRUE;
+```
+
+このように条件を無効化することで、データベースが持っているすべての情報にアクセスできる。さらにSQLを変更することで、メタデータを取得しデータベースの構造を知ったり、UNION TABLEで他のテーブルの情報を取得することも可能になる。
+
+## SQL Injectionの対策
+
+1. Prepared Statementsを使う
+2. ORMライブラリを使う
+3. 入力内容の検証とエスケープを行う
+4. 最小権限の原則を適用する
+
+### 1. Prepared Statementsを使う
+
+あらかじめplaceholderを設定しておき、SQLを組み立てるときにどこになんの値を設定するかを指定する。Prepared Statementsはパフォーマンスは良いが、使いやすさ・実装しやすさはORMライブラリに劣る。
+
+```go
+// placeholder(?)を設定したステートメントを準備する
+stmt := "SELECT name, email FROM users WHERE id = ? AND name = ?"
+// 値をバインドする
+row := db.QueryRow(stmt, id, name)
+// 実行/読み取りする
+err = row.Scan(&name, &email)
+if err != nil {
+  log.Fatal(err)
+}
+
+fmt.Println(name, email)
+```
+
+### 2. ORMライブラリを使う
+
+ORM（Object-Relational Mapping）のライブラリを使う。ORMは安全にデータ操作ができる反面、パフォーマンスはPrepared Statementsに劣る。
+
+```ts
+const user = await userRepository.findOneBy({
+  id: 1,
+  name: 'taro'
+})
+```
+
+### 3. 入力内容の検証とエスケープを行う
+
+Prepared StatementsやORMライブラリが使えないような場合は、入力内容の検証とエスケープを行う。**検証・エスケープ漏れが発生する可能性があるため、極力使わないようにする。**
+
+データのソート順を外部から受け取る場合は、取れる値が決まっているので、ホワイトリスト形式でチェックする。
+```ts
+const { order } = userInput
+
+if (order !== 'ASC' || order !== 'DESC') {
+  throw new Error('Invalid order')
+}
+
+const query = `SELECT name, email FROM users ORDER BY id ${order}`
+```
+
+Prepared Statementsが使えない状況は、必ず値のエスケープを行う。
+
+```ts
+const { id } = userInput
+const query = `SELECT name, email FROM users WHERE id = ${escape(id)}`
+```
+
+### 4. 最小権限の原則を適用する
+
+> **最小権限の原則**  
+> 最小権限の原則（最小特権の原則）とは、情報システム上のアクセス権限の運用についての原則の一つで、本来の目的に必要な最低限の権限しか与えないようにすること。
+>
+> [最小権限の原則（最小特権の原則 / PoLP）とは | e\-Words](https://e-words.jp/w/%E6%9C%80%E5%B0%8F%E6%A8%A9%E9%99%90%E3%81%AE%E5%8E%9F%E5%89%87.html)
+
+必要最小限の権限しか与えないことで、万が一誤作動や攻撃を受けても、影響範囲を局所化することができる。「最小権限の原則」はSQL Injectionに限らず、脆弱性全般に効果を発揮する。
