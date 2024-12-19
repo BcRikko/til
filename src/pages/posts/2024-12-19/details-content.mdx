@@ -1,0 +1,102 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-19"
+updatedDate: "2024-12-19"
+title: "::details-content疑似要素でdetails要素の中身をスタイリングする"
+author: ダーシノ
+description: "details要素に関連して::details-content疑似要素がサポートされはじめている。執筆時点では、Chrome、Edge、Safari TP 210でサポートしている。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[details要素](https://developer.mozilla.org/ja/docs/Web/HTML/Element/details)に関連して`::details-content`疑似要素がサポートされはじめている。
+
+執筆時点では、Chrome、Edge、[Safari TP 210](https://webkit.org/blog/16406/release-notes-for-safari-technology-preview-210/)でサポートしている。
+
+<Baseline featureId={"details-content"} />
+
+details要素を使うと以下のようなマークアップになる。
+
+```html
+<details>
+  <summary>概要</summary>
+  <p>コンテンツ</p>
+  <p>コンテンツ</p>
+</details>
+```
+
+レンダリングされるときは以下のようなツリーになっており、`::details-content`疑似要素は`<details>`内の`<summary>`以外の要素を包含する形になっている。
+
+そのため、コンテナ要素を使うことなくdetailsのコンテンツに対してスタイルを適用できる。
+
+```html
+<details>
+  #shadow-root
+    <slot>
+      ::marker
+      <summary>概要</summary>
+    </slot>
+    <slot ::details-content>
+      <p>コンテンツ</p>
+      <p>コンテンツ</p>
+    </slot>
+</details>
+```
+
+```css
+details {}
+details[open] {}
+
+/* ▼のマーク */
+::marker {
+  content: "+";
+}
+[open] ::marker {
+  content: "-";
+}
+
+/* 概要のスタイル */
+details summary {}
+
+/* コンテンツのスタイル */
+details::details-content {}
+details[open]::details-content {}
+```
+
+
+## デモ
+
+<section id="demo">
+  
+<details>
+  <summary>概要</summary>
+  <p>コンテンツ</p>
+  <p>コンテンツ</p>
+</details>
+
+</section>
+
+<style>{`
+details {
+  border: solid 4px;
+
+  &::before {
+    content: "summary";
+  }
+}
+
+summary::marker {
+  content: "▼ ::marker/close";
+}
+[open] summary::marker {
+  content: "▲ ::marker/open";
+}
+
+details[open]::details-content {
+  border: solid 4px red;
+}
+`}</style>
