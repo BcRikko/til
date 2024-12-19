@@ -13,6 +13,7 @@ html {
 }
 
 :where(header, footer, main, aside) {
+  padding-inline: 0.5ic;
   max-width: 40ic;
   margin-inline: auto;
 }
