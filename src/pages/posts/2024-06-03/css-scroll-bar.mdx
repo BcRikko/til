@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-06-03"
-updatedDate: "2024-06-03"
+updatedDate: "2024-12-20"
 title: "スクロールバー表示/非表示時のガタツキを防ぐ"
 author: ダーシノ
 description: "あらかじめスクロールバー分のスペースを確保することで、要素が増えスクロールバーが表示されてもガタつかないようにできる。"
@@ -15,6 +15,10 @@ import Header from '../../../components/Header.astro'
 あらかじめスクロールバー分のスペースを確保することで、要素が増えスクロールバーが表示されてもガタつかないようにできる。
 
 ※2024-06-03時点ではChrome94、Edge94、Firefox97でのみ利用可能。Safariは未サポート。
+
+import Baseline from '../../../components/Baseline.astro'
+
+<Baseline featureId={"scrollbar-gutter"} />
 
 ```css
 .container {
