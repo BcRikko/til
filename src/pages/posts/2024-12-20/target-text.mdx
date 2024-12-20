@@ -1,0 +1,42 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-20"
+updatedDate: "2024-12-20"
+title: "::target-textでscroll-to-textを強調する"
+author: ダーシノ
+description: "https://example.com#:~:text={target}という該当テキストの選択箇所へリンクする方法がある。そのときにどの部分が選択されているかを指すための::target-textという疑似要素が、全主要ブラウザで利用可能になった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+`https://example.com#:~:text={target}`という該当テキストの選択箇所へリンクする方法がある。そのときにどの部分が選択されているかを指すための[::target-text](https://developer.mozilla.org/ja/docs/Web/CSS/::target-text)という疑似要素が、全主要ブラウザで利用可能になった。
+
+<Baseline featureId={"target-text"} />
+
+たとえば`URL#:~:text={target}`というリンクを開いたら、`{target}`の部分に当たるのが`::target-text`疑似要素だ。
+
+```css
+::target-text {
+  background-color: pink;
+}
+```
+
+## デモ
+
+吾輩は猫である。
+
+これはデモ用の文字列です。
+
+名前はまだない。
+
+[デモ用の文字列](#:~:text=デモ用の文字列)のリンクをクリックすると、上記の「デモ用の文字列」の部分までスクロールしスタイルがあたる。
+
+<style>{`
+::target-text {
+  background-color: pink;
+}
+`}</style>
