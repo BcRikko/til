@@ -190,5 +190,66 @@ import Baseline from '../../../components/Baseline.astro'
 <figure style="max-width: 40ch;">
 ![ドーナツグラフ](./_donut.png)
 
-<figcaption>ドーナツグラフ（ブラウザ:Safari TP）</figcaption>
+<figcaption>ドーナツグラフ</figcaption>
+</figure>
+
+## 複数の色を使ったドーナツグラフ
+
+```css
+.donut-multi {
+  border-radius: 50%;
+  background-image: conic-gradient(
+    yellowgreen 0 20%,
+    yellow 20% 40%,
+    orange 40% 60%,
+    red 60% 80%,
+    purple 80% 100%
+  );
+
+  /* border-areaで切り抜く */
+  background-clip: border-area;
+  background-origin: border-box;
+  border: 10px solid transparent;
+}
+```
+
+<section id="demo4">
+  <div class="donut-multi">
+    <span>Hello</span>
+  </div>
+</section>
+
+<style>{`
+#demo4 {
+  .donut-multi {
+    aspect-ratio: 1;
+    width: 200px;
+    border-radius: 50%;
+    background-image: conic-gradient(
+      yellowgreen 0 20%,
+      yellow 20% 40%,
+      orange 40% 60%,
+      red 60% 80%,
+      purple 80% 100%
+    );
+    background-clip: border-area;
+    background-origin: border-box;
+    border: 2rem solid transparent;
+
+    align-content: center;
+    display: grid;
+    place-content: center;
+    span {
+      font-weight: 600;
+      font-size: 2rem;
+      color: teal;
+    }
+  }
+}
+`}</style>
+
+<figure style="max-width: 40ch;">
+![複数色を使ったドーナツグラフ](./_multi.png)
+
+<figcaption>複数色を使ったドーナツグラフ</figcaption>
 </figure>
