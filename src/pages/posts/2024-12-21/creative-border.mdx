@@ -4,7 +4,7 @@ pubDate: "2024-12-21"
 updatedDate: "2024-12-21"
 title: "conic-gradientを使った円グラフパターン"
 author: ダーシノ
-description: "グラデーション関連のCSS関数に、conic-gradient()がある。この関数は、中心点の周りをまわりながら色が変化する画像を生成する。このCSS関数を使うことで、円グラフがCSSだけで簡単に作れる。"
+description: "グラデーション関連のCSS関数に、conic-gradient()がある。この関数は放射状のグラデーションを作ることができ、応用することで円グラフがCSSだけで簡単に作れる。"
 tags: ["CSS"]
 ---
 
@@ -13,9 +13,7 @@ import Baseline from '../../../components/Baseline.astro'
 
 <Header {...frontmatter} />
 
-グラデーション関連のCSS関数に、[conic-gradient()](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/conic-gradient)がある。この関数は、中心点の周りをまわりながら色が変化する画像を生成する。
-
-このCSS関数を使うことで、円グラフがCSSだけで簡単に作れる。
+グラデーション関連のCSS関数に、[conic-gradient()](https://developer.mozilla.org/ja/docs/Web/CSS/gradient/conic-gradient)がある。この関数は放射状のグラデーションを作ることができ、応用することで円グラフがCSSだけで簡単に作れる。
 
 <Baseline featureId={"conic-gradients"} />
 
@@ -131,9 +129,9 @@ import Baseline from '../../../components/Baseline.astro'
 }
 `}</style>
 
-## `background-clip`を使ったドーナツグラフ
+## background-clipを使ったドーナツグラフ
 
-`background-clip: border-area`を使うことで、ドーナツグラフ（中抜き円グラフ）を作れる。
+[background-clip: border-area](https://developer.mozilla.org/ja/docs/Web/CSS/background-clip)を使うことで、ドーナツグラフ（中抜き円グラフ）を作れる。
 
 <Baseline featureId={"background-clip-border-area"} />
 
