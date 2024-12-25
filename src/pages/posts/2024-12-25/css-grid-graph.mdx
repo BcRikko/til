@@ -1,0 +1,94 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-25"
+updatedDate: "2024-12-25"
+title: "CSS Gridを使ったグラフ表示"
+author: ダーシノ
+description: "CSS Grid Layoutが全主要ブラウザで利用可能になったことで、いままでCanvasやSVGでがんばっていたグラフ描画も、HTMLとCSSだけで簡単に実装できるようになった。HTMLでグラフが書けるメリットは、レスポンシブで、かつアクセシビリティに有効であるという点に尽きる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids)が全主要ブラウザで利用可能になったことで、いままでCanvasやSVGでがんばっていたグラフ描画も、HTMLとCSSだけで簡単に実装できるようになった。HTMLでグラフが書けるメリットは、レスポンシブで、かつアクセシビリティに有効であるという点に尽きる。
+
+<Baseline featureId={"grid"} />
+
+CSS Grid Layoutを使ったグラフ描画を簡単に説明すると、columnやrowを100分割してパーセントをCSS変数で指定するという実装方法だ。
+
+```html
+<figure>
+  <dl class="graph">
+    <div class="bar" style="--value: 83;">
+      <dt>りんご</dt>
+      <dd>1,234</dd>
+    </div>
+    <div class="bar" style="--value: 30;">
+      <dt>みかん</dt>
+      <dd>446</dd>
+    </div>
+  </dl>
+  <figcaption>CSS Grid Graph</figcaption>
+</figure>
+```
+
+```css
+.graph {
+  display: grid;
+  grid-template-columns: repeat(100, 1fr);
+  gap: 1em 0;
+}
+
+.bar {
+  display: inline-grid;
+  background-color: #ccc;
+  grid-column-start: 1;
+  grid-column-end: var(--value); 
+}
+```
+
+## デモ
+
+<section id="demo">
+  <figure>
+    <figcaption>果物の出荷数（サンプル情報）</figcaption>
+    <dl class="graph">
+      <div class="bar" style="--value: 83;">
+        <dt>りんご</dt>
+        <dd>4,150</dd>
+      </div>
+      <div class="bar" style="--value: 32;">
+        <dt>みかん</dt>
+        <dd>1,600</dd>
+      </div>
+      <div class="bar" style="--value: 47;">
+        <dt>ぶどう</dt>
+        <dd>2,350</dd>
+      </div>
+    </dl>
+  </figure>
+</section>
+
+<style>{`
+#demo {
+  .graph {
+    border: solid 4px;
+    padding: 1em;
+
+    display: grid;
+    grid-template-columns: repeat(100, 1fr);
+    gap: 1em 0;
+  }
+
+  .bar {
+    display: inline-flex;
+    background-color: #ccc;
+    padding: 0.5em;
+    grid-column-start: 1;
+    grid-column-end: var(--value); 
+  }
+}
+`}</style>
