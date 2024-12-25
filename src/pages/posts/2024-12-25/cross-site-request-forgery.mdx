@@ -1,0 +1,61 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-25"
+updatedDate: "2024-12-25"
+title: "Cross-Site Request Forgery（CSRF）の攻撃手法と対策"
+author: ダーシノ
+description: "Cross-Site Request Forgery（CSRF）とは、意図しないリクエストを別のウェブアプリケーションに送信させる攻撃手法のこと。被害者が認証済みのセッションを保持している場合に、攻撃者が被害者の権限を悪用して不正な操作を実行させる可能性がある。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+## 概要
+
+Cross-Site Request Forgery（CSRF）とは、意図しないリクエストを別のウェブアプリケーションに送信させる攻撃手法のこと。被害者が認証済みのセッションを保持している場合に、攻撃者が被害者の権限を悪用して不正な操作を実行させる可能性がある。
+
+また、CSRFは被害者がリクエストを送信するため、攻撃者の追跡が難しいという特徴があり、2012年には[パソコン遠隔操作事件](https://ja.wikipedia.org/wiki/%E3%83%91%E3%82%BD%E3%82%B3%E3%83%B3%E9%81%A0%E9%9A%94%E6%93%8D%E4%BD%9C%E4%BA%8B%E4%BB%B6)では被害者が誤認逮捕されている。
+
+## 攻撃方法の例
+
+
+### フォームを利用した攻撃
+
+攻撃者が以下のような偽フォームを設置し、被害者が操作することで意図しないリクエストが送信される。ここでは被害者のセッションが使用され、不正な送金が行われる。
+```html
+<form action="https://example.com/transfer" method="POST">
+  <input type="hidden" name="account" value="attacker_account">
+  <input type="hidden" name="amount" value="1000">
+  <button type="submit">Click here</button>
+</form>
+```
+
+### 自動的なリクエスト送信
+
+以下のような画像タグを埋め込むことで、被害者がページにアクセスしたタイミングで意図しないGETリクエストが送信される。
+```html
+<img src="https://example.com/user/{name}" />
+```
+以前のmixiにあった問題で、見えないimg要素をページに設置することで、アクセスしたときに`{name}`のユーザーの足跡にアクセス履歴が残ってしまう。
+
+
+## CSRFの対策
+
+### 1. CSRFトークンを使う
+
+アクセスごとにランダムなトークンを生成し、リクエストしたときにサーバでCSRFトークンを検証することで正当性を確認する。
+
+### 2. ワンタイムパスワードを使う
+
+重要な操作の際に、ユーザーにワンタイムパスワードを入力してもらうことも、対策のひとつ。ただやりすぎると利便性を著しく損なうので、送金確定やアイテム削除のときなど限定して使うのが有効。
+
+
+### 3. その他の対策
+
+- SameSite Cookie属性を設定する
+- Referrerヘッダを検証する
+- CORS（Cross-Origin Resource Sharing）の設定をする
+- GET処理でリソースに影響を及ぼすような操作は実装しない
