@@ -1,0 +1,122 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-26"
+updatedDate: "2024-12-26"
+title: "light-dark()を使ったテーマカラー管理手法"
+author: ダーシノ
+description: "light-dark()は、2つの色を関数にわたすことで、ユーザー環境に合わせてテーマカラーを変えることができる。また、メディアクエリのprefers-color-schemeを使わなくてもテーマを変更できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[light-dark()](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark)は、2つの色を関数にわたすことで、ユーザー環境に合わせてテーマカラーを変えることができる。また、メディアクエリの[prefers-color-scheme](https://developer.mozilla.org/ja/docs/Web/CSS/@media/prefers-color-scheme)を使わなくてもテーマを変更できる。
+
+<Baseline featureId={"light-dark"} />
+
+## `light-dark()`の使い方
+
+```css
+:root {
+  /* カラースキームの定義 */
+  color-scheme: light dark;
+}
+body {
+  color: light-dark(black, white);
+  background-color: light-dark(white, black);
+}
+
+/* prefers-color-schemeと違い、OSの環境に関わらずテーマを変更できる */
+:root:has(input[value="dark"]:checked) {
+  color-scheme: dark;
+}
+:root:has(input[value="light"]:checked) {
+  color-scheme: light;
+}
+```
+
+## `light-dark()`を使ったカラー管理
+
+`light-dark()`を使ってカラートークンをあらかじめ設定しておくことで、各コンポーネントで一貫したCSSカスタムプロパティが使えるため可読性が向上する。
+
+```css
+:root {
+  --color: light-dark(black, white);
+  --background-color: light-dark(white, black);
+  --primary-color: light-dark(blue, red);
+  --secondary-color: light-dark(green, yellow);
+}
+
+body {
+  color: var(--color);
+  background-color: var(--background-color);
+}
+
+button {
+  background-color: var(--background-color);
+
+  &.primary {
+    color: var(--primary-color);
+  }
+  &.secondary {
+    color: var(--secondary-color);
+  }
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <fieldset>
+    <legend>color-scheme</legend>
+    <label for="light">
+      <input type="radio" name="color-scheme" id="light" value="light" checked />light mode
+    </label>
+    <label for="dark">
+      <input type="radio" name="color-scheme" id="dark" value="dark" />dark mode
+    </label>
+  </fieldset>
+
+  <p>Hello world!!</p>
+
+  <button type="button" class="primary">Primary</button>
+  <button type="button" class="secondary">Secondary</button>
+</section>
+
+<style>{`
+:root {
+  color-scheme: light dark;
+  --color: light-dark(black, white);
+  --background-color: light-dark(white, black);
+  --primary-color: light-dark(blue, red);
+  --secondary-color: light-dark(green, yellow);
+}
+
+body {
+  color: var(--color);
+  background-color: var(--background-color);
+}
+.primary {
+  color: var(--primary-color);
+  background-color: var(--background-color);
+}
+.secondary {
+  color: var(--secondary-color);
+  background-color: var(--background-color);
+}
+
+button {
+  padding: 0.5em 1em;
+}
+
+:root:has(input[value="dark"]:checked) {
+  color-scheme: dark;
+}
+:root:has(input[value="light"]:checked) {
+  color-scheme: light;
+}
+`}</style>
