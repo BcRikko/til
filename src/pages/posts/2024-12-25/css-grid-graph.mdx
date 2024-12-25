@@ -39,12 +39,10 @@ CSS Grid Layoutを使ったグラフ描画を簡単に説明すると、column�
 .graph {
   display: grid;
   grid-template-columns: repeat(100, 1fr);
-  gap: 1em 0;
 }
 
 .bar {
-  display: inline-grid;
-  background-color: #ccc;
+  /* start位置を変更することで、widthより表現力の高いグラフが実装できる */
   grid-column-start: 1;
   grid-column-end: var(--value); 
 }
