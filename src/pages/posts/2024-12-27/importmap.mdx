@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2024-12-27"
+updatedDate: "2024-12-27"
+title: "importmapで依存関係を管理する"
+author: ダーシノ
+description: "昨今のフロントエンド開発は、バンドル前提が主流になっている。外部パッケージを含めたすべてのコードを、ひとつ、ないし数個のファイルにまとめて提供することで、依存関係の管理が容易になる。反面、頻繁に変更が入るコードとそうでないコードがひとつのファイルとして扱われるため、キャッシュができず、毎回大きなファイルを読み込むため、パフォーマンスが悪化するというデメリットがある。"
+tags: ["HTML", "JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+昨今のフロントエンド開発は、バンドル前提が主流になっている。
+
+外部パッケージを含めたすべてのコードを、ひとつ、ないし数個のファイルにまとめて提供することで、依存関係の管理が容易になる。反面、頻繁に変更が入るコードとそうでないコードがひとつのファイルとして扱われるため、キャッシュができず、毎回大きなファイルを読み込むため、パフォーマンスが悪化するというデメリットがある。（chunkを使った場合はその限りではない）
+
+ブラウザには[importmap](https://developer.mozilla.org/ja/docs/Web/HTML/Element/script/type/importmap)という仕組みが搭載され、依存関係（import元）を管理することができる。なお、`<script defer>`や`<script asyc>`といった属性は指定できない。
+
+<Baseline featureId={"import-maps"} />
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "moduleA": "/path/to/moduleA.js",
+      "moduleB": "https://cdn.example.com/moduleB.js",
+      "prefix/": "/path/to/prefix/"
+    }
+  }
+</script>
+```
+
+```js
+import { moduleA } from 'moduleA'
+import { moduleB } from 'moduleB'
+import { prefix } from 'prefix/moduleC'
+
+moduleA.doSomething()
+moduleB.doSomething()
+```
+
+大規模なウェブアプリケーションでは、importmapを使って管理することは大変かもしれないが、ランディングページやペライチのような小規模なウェブページであれば、バンドラーを使わなくても管理できるかもしれない。
