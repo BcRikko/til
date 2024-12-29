@@ -1,0 +1,55 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-30"
+updatedDate: "2022-09-30"
+title: "TypeScript 4.9 satisfies演算子"
+author: ダーシノ
+description: "TypeScript 4.9 betaでsatisfies演算子が導入された。このようにして、`as const`と`Record<K, V>`のいいとこどりができるようになった。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[TypeScript 4.9 beta](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9-beta/)で`satisfies演算子`が導入された。
+
+## Before
+
+```ts
+const palette = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  bleu: [0, 0, 255]  // ← typo: blueが正解
+}
+
+// palette.red は number[] なので `Array#at()` が使える
+const r = palette.red.at(0)
+
+// palette.green は string なので `String#toUpperCase()` が使える
+const g = palette.green.toUpperCase()
+```
+typoを帽子するために、Union Literal Typeを使っても問題がある。
+```ts
+type Colors = 'red' | 'green' | 'blue'
+type RGB = [r:number, g:number, b:number]
+// Record<K, V> でオブジェクトの key を制限できるので typo防止になる
+const palette: Record<Colors, RGB | string> = { ... }
+
+// Error: Record<Colors, RGB | string> があるので palette.red は (number[] | string)型になり `Array#at()` が使えない
+const r = palette.red.at(0)
+
+// Error: Record<Colors, RGB | string> があるので palette.green は (number[] | string)型になり `String#toUpperCase()` が使えない
+const g = palette.green.toUpperCase()
+```
+
+## After: satisfies演算子が登場
+
+```ts
+const palette = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  blue: [0, 0, 255]
+} satisfies Record<Colors, RGB | string>
+```
+このようにして、`as const`と`Record<K, V>`のいいとこどりができるようになった。
