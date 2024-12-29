@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-15"
+updatedDate: "2022-09-15"
+title: "Broadcast Channel APIで閲覧コンテキスト間で相互通信を行う"
+author: ダーシノ
+description: "Broadcast Channel APIを使うことで、同一デバイス、同一オリジンにおいて任意のチャンネル名を指定し閲覧コンテキスト間（※）で相互通信ができる。※閲覧コンテキストとは、ウィンドウ、タブ、フレーム、iframwのこと。たとえば、ユーザーが別タブで別アカウントでログインしたことを検知してメッセージを表示するなどができる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Broadcast Channel API](https://developer.mozilla.org/ja/docs/Web/API/Broadcast_Channel_API)を使うことで、同一デバイス、同一オリジンにおいて任意のチャンネル名を指定し閲覧コンテキスト間（※）で相互通信ができる。
+
+※閲覧コンテキストとは、ウィンドウ、タブ、フレーム、iframeのこと
+
+たとえば、ユーザーが別タブで別アカウントでログインしたことを検知してメッセージを表示するなどができる。
+
+<Baseline featureId={"broadcast-channel"} />
+
+## Broadcast Channel APIの使い方
+
+```js
+const bc = new BroadcastChannel('my-channel')
+
+// メッセージ送信
+bc.postMessage(...)
+
+// メッセージ受信
+bc.onmessage = ev => console.log(ev.data)
+
+// 切断
+bc.close()
+```
+
+## `window.postMessage()`との違い
+
+[window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)という、Windowオブジェクト間でやりとりできるメソッドもあるが、Broadcast Channel APIはそれをさらに安全に使いやすくしたAPIと言える。
+
+- Broadcast Channel APIは、同一オリジンの閲覧コンテキスト間でのみ通信に限られる
+  - `window.postMessage()`は、他サイトからもメッセージが受信できてしまう
+- Broadcast Channel APIは、任意のチャンネル名を用いて通信できる
+  - コンテキストごとにチャンネル名をわけて管理できる
+
+
