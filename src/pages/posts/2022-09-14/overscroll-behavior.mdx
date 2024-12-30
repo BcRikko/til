@@ -1,0 +1,98 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-14"
+updatedDate: "2022-09-14"
+title: "overscroll-behaviorで他要素のスクロールを防ぐ"
+author: ダーシノ
+description: "overscroll-behaviorを使うことで、スクロール可能な要素が重なっているときにポインターのある要素以外のスクロールを防ぐことができる。たとえばウェブサイトの右下にチャットボットを表示するとき、過去の会話を見ようとスクロールするとメインコンテンツまでスクロールしてしまう、という現象を防ぐことができる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[overscroll-behavior](https://developer.mozilla.org/ja/docs/Web/CSS/overscroll-behavior)を使うことで、スクロール可能な要素が重なっているときにポインターのある要素以外のスクロールを防ぐことができる。
+
+たとえばウェブサイトの右下にチャットボットを表示するとき、過去の会話を見ようとスクロールするとメインコンテンツまでスクロールしてしまう、という現象を防ぐことができる。
+
+<Baseline featureId={"overscroll-behavior"} />
+
+```html
+<main>
+  スクロールが発生するくらい長いコンテンツ
+</main>
+<aside>
+  スクロールが発生するくらい長いコンテンツ
+</aside>
+```
+
+```css
+aside {
+  overscroll-behavior: contain;
+}
+```
+
+- `auto`: UserAgentのデフォルトの挙動を使用する
+- `contain`: 一番下までスクロールしても、他の要素がスクロールされない
+- `none`: 他の要素がスクロールされない（containとはちょっと違う）
+
+
+## デモ
+
+<section id="demo">
+  <fieldset>
+    <legend>overscroll-behavior</legend>
+    <label><input type="radio" name="overscroll-behavior" value="auto" checked />auto</label>
+    <label><input type="radio" name="overscroll-behavior" value="contain" />contain</label>
+    <label><input type="radio" name="overscroll-behavior" value="none" />none</label>
+  </fieldset>
+
+  <div class="main">
+    <h2>メインコンテンツ</h2>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+  </div>
+  <aside class="side">
+    <h2>モードレス</h2>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+  </aside>
+</section>
+
+<style>{`
+:root {
+  --behavior-value: auto;
+}
+
+#demo {
+  position: relative;
+
+  .main {
+    border: solid 4px;
+    height: 400px;
+    overflow: auto;
+  }
+
+  .side {
+    background-color: lightgray; 
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: 200px;
+    border: solid 4px;
+    overflow: auto;
+    overscroll-behavior: var(--behavior-value);
+  }
+}
+`}</style>
+
+<script>{`
+const radio = document.querySelectorAll('input[name="overscroll-behavior"]');
+radio.forEach((r) => {
+  r.addEventListener('change', (e) => {
+    document.documentElement.style.setProperty('--behavior-value', e.target.value);
+  });
+});
+`}</script>
