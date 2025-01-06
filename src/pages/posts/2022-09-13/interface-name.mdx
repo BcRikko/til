@@ -1,0 +1,44 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-13"
+updatedDate: "2022-09-13"
+title: "Interfaceの命名規則"
+author: ダーシノ
+description: "私が元C#erなので、Microsoftっぽい命名規則に則ってInterfaceの名前を決めることが多い。単一メソッドを定義する場合、自分以外を操作するメソッド、または複数メソッドを提供する場合、標準的なクラス操作をする場合"
+tags: ["Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+私が元C#erなので、Microsoftっぽい命名規則に則ってInterfaceの名前を決めることが多い。
+
+## 単一メソッドを定義する場合
+
+`I-`+`-able`という形式で名前をつける。
+
+- IDisposable
+  - `dispose()`メソッドを提供する
+- IComparable
+  - `compareTo()`メソッドを提供する
+- IEnumarable
+  - `getEnumarator()`メソッドを提供する
+
+## 自分以外を操作するメソッド、または複数メソッドを提供する場合
+
+`I-`+`-er/-or`という形式で名前をつける。
+
+- IFormatter
+  - `format()`メソッドを提供する
+- IEnumarator
+  - `next()`や`hasNext()`メソッドを提供する
+
+## 標準的なクラス操作をする場合
+
+`I-` + 名詞という形式で名前をつける。
+
+- IList
+- ICollection
+- IDictionary
