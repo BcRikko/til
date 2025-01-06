@@ -1,0 +1,50 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-05"
+updatedDate: "2025-01-06"
+title: "innerHTMLの代わりにElement#setHTMLUnsafe()"
+author: ダーシノ
+description: "Chrome 105からのExperimentalな機能としてElement#setHTML()が提供された。※2025-01-06現在は、Element#setHTMLUnsafe()に変わっている。昨今、ReactやVueなどのJavaScriptライブラリ/フレームワークを使う事が多いので、文字列をそのままHTMLとして扱うことはほとんどないと思う。ただし、レガシーなシステムでは今でも危険な実装が残っているかもしれないため、注意が必要だ。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+Chrome 105からのExperimentalな機能として[Element#setHTML()](https://developer.mozilla.org/ja/docs/Web/API/Element/setHTML)が提供された。
+
+※2025-01-06現在は、[Element#setHTMLUnsafe()](https://developer.mozilla.org/ja/docs/Web/API/Element/setHTMLUnsafe)に変わっている。
+
+<Baseline featureId={"parse-html-unsafe"} />
+
+昨今、ReactやVueなどのJavaScriptライブラリ/フレームワークを使う事が多いので、文字列をそのままHTMLとして扱うことはほとんどないと思う。ただし、レガシーなシステムでは今でも危険な実装が残っているかもしれないため、注意が必要だ。
+
+## innerHTMLでXSSを踏んじゃうコード
+
+```js
+const input = `<p><script>alert('xss')</scritp></p>`
+document.querySelector('...').innerHTML = input
+```
+
+## setHTMLでサニタイズ
+
+2025-01-06現在は、`Element#setHTMLUnsafe()`としてサポートされたため、`setHTML()`は使えない。
+
+```js
+const input = `<p><script>alert('xss')</scritp></p>`
+const sanitizer = new Sanitizer()
+
+document.querySelector('...').setHTML(input, sanitizer)
+```
+
+- ref: [「サニタイズ言うなキャンペーン」から技術書の正しい書き方を理解する](/til/posts/2024-12-04/dont-say-sanitize)
+
+## Element#setHTMLUnsafe()を使う
+
+```js
+const input = `<p><script>alert('xss')</scritp></p>`
+
+document.querySelector('...').setHTMLUnsafe(input)
+```
