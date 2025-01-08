@@ -1,0 +1,72 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-02"
+updatedDate: "2022-09-02"
+title: "SPA時代のデータ更新時のUI表示戦略"
+author: ダーシノ
+description: "レガシーなウェブUIは、リクエストが完了してから画面をレンダリングするため、ローダーやスピナーなどを表示して、レスポンスがあるまで待たなければならない。GitHubをはじめ、昨今のUIでは非同期で更新し、表示内容は即反映。リクエストに失敗したら元に戻す戦略を取っているサイトが多い。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+## 待つタイプのウェブUI
+
+レガシーなウェブUIは、リクエストが完了してから画面をレンダリングするため、ローダーやスピナーなどを表示して、レスポンスがあるまで待たなければならない。
+
+```jsx
+<Title>{{ book.title }}</Title>
+
+async function update(book, newTitle) {
+  const res = await request.put(
+    `/book/${book.id}`,
+    { title: newTitle }
+  )
+  // リクエストが成功するのを確認してから変更内容を反映する
+  this.book = res
+}
+```
+
+## 非同期で更新し、即時反映するウェブUI
+
+GitHubをはじめ、昨今のUIでは非同期で更新し、表示内容は即反映。リクエストに失敗したら元に戻す戦略を取っているサイトが多い。
+
+```jsx
+<Title>{{ book.title }}</Title>
+
+async function update(book, newTitle) {
+  // ロールバック用のデータ
+  const oldTitle = this.book.title
+
+  // 即時に変更内容を反映する
+  this.book.title = newTitle
+
+  try {
+    const _res = await request.put(
+      `/book/${book.id}`,
+      { title: newTitle }
+    )
+  } catch { 
+    // 失敗したら元に戻す
+    this.book.title = oldTitle
+  }
+}
+```
+
+## Canvas APIを参考にする
+
+```js
+// スナップショットをとる
+entity.save()
+
+entity.changeTitle(newTitle)
+try {
+  await request.put(...)
+} catch {
+  // 失敗したらリストアする
+  entity.restore()
+}
+```
