@@ -1,0 +1,61 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-31"
+updatedDate: "2022-08-31"
+title: "margin-bottomに統一するための方法"
+author: ダーシノ
+description: "marginは相殺が発生するプロパティなため、margin-topとmargin-bottomが混在しているとCSSのメンテがつらくなる。私はmargin-bottom教信者なので、それを布教したい。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`margin`は相殺が発生するプロパティなため、`margin-top`と`margin-bottom`が混在しているとCSSのメンテがつらくなる。私は`margin-bottom`教信者なので、それを布教したい。
+
+## Bootstrapの教え
+
+> margin-top は避けてください。垂直方向のマージンが壊れ, 予期しない結果が生じる可能性があります。 重要なのは単一の方向性がmarginより単純なメンタルモデルであることです。できるだけスタイルを継承して, fontや関連するプロパティの宣言を最小限に抑えてください。
+>
+> https://getbootstrap.jp/docs/5.0/content/reboot/#approach
+
+## 隣接セレクタ（次兄弟結合子）でmargin向きが変わる
+
+`margin-bottom`で統一したいのに、リストコンポーネントのマージンをとるときに隣接セレクタを使用すると`margin-top`が必要になることが多々ある。
+
+```css
+/* margin-bottomに統一 */
+.title {
+  margin-bottom: 1rem;
+}
+.content {
+  margin-top: 1rem;
+}
+
+/* 隣接セレクタを使うとmarginの向きが変わる */
+.item + .item {
+  margin-top: 1rem;
+}
+```
+
+その対処法としては、`:last-child`疑似クラスで`margin-bottom: revert`を使ってmarginをリセットする方法がある。revertを使うことで、`margin-bottom`に統一しつつ、最後の要素には`margin-bottom`を適用しないようにできる。
+
+```css
+.item {
+  margin-bottom: 1rem;
+}
+
+.item:last-child {
+  margin-bottom: revert;
+}
+```
+
+## リストのmarginはgapを使う
+
+昨今のCSS事情を考えるとリストのようなコンポーネントの要素間は`gap`を使うのが良い。
+```css
+.item-list {
+  gap: 1rem;
+}
+```
