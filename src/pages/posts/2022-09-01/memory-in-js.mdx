@@ -1,0 +1,80 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-09-01"
+updatedDate: "2022-09-01"
+title: "JavaScriptとクラスのメモリ使用量"
+author: ダーシノ
+description: "JavaScriptでクラスを使うときに、メンバ変数やStatic Classなどの使い方によっては無駄にメモリを消費してしまうことがある。以下のように大量のインスタンスを生成しテストを行い、ヒープメモリの使用量を調査した。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+JavaScriptでクラスを使うときに、メンバ変数やStatic Classなどの使い方によっては無駄にメモリを消費してしまうことがある。
+
+以下のように大量のインスタンスを生成しテストを行い、ヒープメモリの使用量を調査した。
+```js
+console.log(process.memoryUsage())
+
+const items = []
+for (let i = 0; i < 10_000; i++) {
+  const item = new Item()
+  items.push(item)
+}
+
+console.log(process.memoryUsage())
+
+// メモリを開放させないため
+ console.log(items.length)
+ ```
+
+## メンバ変数を使わないプライベートメソッドはクラスの外側に宣言する
+
+### 無駄なメモリを使っている例
+
+```js
+class Item {
+  // ユーザ定義タイプガード のようなメンバ変数を使わないメソッド
+  #isHoge(val: any): val is Hoge { ... }
+}
+```
+heapTotal: 4,468,736 → 9,240,576
+
+### （たぶん）最適化されている例
+
+```js
+class Item {}
+
+function isHoge(val: any): val is Hoge { ... }
+```
+heapTotal: 4,468,736 → 8,978,432
+
+## Static Classは避ける
+
+namespaceのためだけにStatic Classを作るのは避ける。メソッドを別々に宣言し、必要な分だけimportして使う。
+
+### 無駄なメモリを使っている例
+
+```js
+export class Utilities {
+  static foo() { ... }
+  static bar() { ... }
+}
+
+import { Utilities } from './utilities'
+Utilities.foo()
+```
+heapTotal: 99,962,880 → 100,225,024
+
+### （たぶん）最適化されている例
+
+```js
+export function foo() { ... }
+export function bar() { ... }
+
+import { foo } from './utilities'
+foo()
+```
+heapTotal: 99,962,880 → 99,962,880
