@@ -1,0 +1,41 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-31"
+updatedDate: "2022-08-31"
+title: "アクセシブルなSpinner/Loaderの作り方"
+author: ダーシノ
+description: "SpinnerやLoaderを実装するとき、ローディングを表現するHTML要素がないのでspanやdivでマークアップすることが多い。ただ、そのままではスクリーンリーダーにとっては何も伝わらないのでアクセシブルな実装方法を考える。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+SpinnerやLoaderを実装するとき、ローディングを表現するHTML要素がないので`<span>`や`<div>`でマークアップすることが多い。ただ、そのままではスクリーンリーダーにとっては何も伝わらないのでアクセシブルな実装方法を考える。
+
+## 大前提
+
+> No ARIA is better than bad ARIA.
+>
+> 引用:[Read Me First \| APG \| WAI \| W3C](https://www.w3.org/WAI/ARIA/apg/practices/read-me-first/)
+
+各属性がどのような働きをするかわからないなら、ARIAは使わない方が良い。
+
+## アクセシブルなSpinner/Loaderの作り方
+
+```html
+<span
+  class="spinner"
+  role="status"
+  aria-live="polite"
+  aria-label="Now loading..."
+>
+</span>
+```
+
+- `role="status"`はライブリージョンの一種で、`role="alert"`ほど重要でない情報を表現する
+- [ライブリージョン](https://developer.mozilla.org/ja/docs/Web/Accessibility/ARIA/ARIA_Live_Regions)は動的な変更を通知する仕組み
+- `aria-live="polite"`は適切なタイミングでユーザーに通知する
+  - `<role="alert" aria-live="assertive">`は割り込んで即時に通知する
+  - Spinner/Loader程度は割り込むほど重要ではないので`polite`を使う
