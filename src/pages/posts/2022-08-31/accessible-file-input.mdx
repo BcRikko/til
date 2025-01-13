@@ -1,0 +1,62 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-31"
+updatedDate: "2022-08-31"
+title: アクセシブルなファイル選択（input[type="file"]）の作り方
+author: ダーシノ
+description: "SpinnerやLoaderを実装するとき、ローディングを表現するHTML要素がないのでspanやdivでマークアップすることが多い。ただ、そのままではスクリーンリーダーにとっては何も伝わらないのでアクセシブルな実装方法を考える。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ローカルファイルの読み込みのためにもちいる`<input type="file">`をアクセシブルに実装する。
+
+## よくある良くない例
+
+```html
+<label>
+  ファイル選択
+  <input type="file">
+</label>
+```
+
+```css
+input[type="file"] {
+  display: none;
+}
+```
+
+- `<label>`はクリッカブルな要素ではないためキーボード操作ができない
+- 同様に`tab`によるカーソルの移動ができない
+- `<input>`を`display:none`するとアクセシビリティツリーから削除されるため`<input type="file">`があることを認識できない
+
+## 良い例: アクセシブルなファイル選択
+
+```html
+<button type="button">
+  ファイル選択
+  <input type="file">
+</button>
+```
+
+```css
+input[type="file"] {
+  display: none;
+}
+```
+
+```js
+button.addEventListener('click', () => input.click())
+```
+
+- ボタンは`<button>`としてマークアップすることでブラウザ標準の挙動を踏襲できる
+  - `<label role="button">`だと作り込みが発生する
+- `label`を`button`に変えたので`input[type="file"]`は`display:none`にしても問題なくなった
+- inputの操作はbutton経由で行う
+
+## 参考
+
+- [ウェブアプリケーションからのファイルの使用 \- Web API \| MDN](https://developer.mozilla.org/ja/docs/Web/API/File_API/Using_files_from_web_applications)
