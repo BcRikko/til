@@ -1,0 +1,24 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-16"
+updatedDate: "2025-01-16"
+title: "dialog要素の背面のスクロールを無効化する"
+author: ダーシノ
+description: "<dialog>要素（モーダルダイアログ）を表示するときに注意したいのが、元の要素のスクロール。 overscroll-behaviorで対処できなくはないが、カーソルが外れるとダイアログの裏側要素がスクロールされてしまう。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`<dialog>`要素（モーダルダイアログ）を表示するときに注意したいのが、元の要素のスクロール。
+[overscroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)で対処できなくはないが、カーソルが外れるとダイアログの裏側要素がスクロールされてしまう。
+
+そんなときのTIPS。
+```css
+/* open状態のdiaog要素を持つ要素のスクロールを無効化する。 */
+:has(dialog[open]) {
+  overflow: hidden;
+}
+```
