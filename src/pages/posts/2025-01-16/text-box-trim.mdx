@@ -1,0 +1,47 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-16"
+updatedDate: "2025-01-16"
+title: "CSS text-box-trimでテキストの上下のスペースをカスタマイズする"
+author: ダーシノ
+description: "日本語では気になる場面は少ない。しかし、英語の場合は、テキストの上下のスペースにより中心線がズレて見えたり、スペースのリズムが崩れているように見えたりする。text-boxプロパティを使うことで、開発者自身がテキストの上下のスペースをカスタマイズできるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+日本語では気になる場面は少ない。しかし、英語の場合は、テキストの上下のスペースにより中心線がズレて見えたり、スペースのリズムが崩れているように見えたりする。
+
+`text-box`プロパティを使うことで、開発者自身がテキストの上下のスペースをカスタマイズできるようになった。
+
+<Baseline featureId={"text-box"} />
+
+## 書き方
+```css
+text-box-trim: trim-start | trim-end | trim-both | none;
+text-box-edge: cap | ex | text | leading;
+line-fit-edge: alphabetic | text;
+
+/* ショートハンド */
+text-box: trim-both cap alphabetic;
+```
+
+## 例
+
+```css
+h1 {
+  /* 上下を大文字英字にあわせる */
+  text-box: trim-both cap alphabetic;
+
+  /* 上下を小文字の「x」に合わせる */
+  text-box: trim-both ex alphabetic;
+}
+```
+
+## 参考
+
+- [CSS text\-box\-trim \| Blog \| Chrome for Developers](https://developer.chrome.com/blog/css-text-box-trim?hl=en)
+- [Interactive CSS text\-box](https://codepen.io/web-dot-dev/pen/RNbyooE)
