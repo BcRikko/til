@@ -1,0 +1,19 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "1970-01-01"
+updatedDate: "1970-01-01"
+title: "Insecure Deserializationの攻撃手法と対策"
+author: ダーシノ
+description: "{ページの概要}"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+## 概要
+
+Insecure Deserializationとは、信頼できないデータをデシリアライズする際に発生する脆弱性を利用した攻撃手法のこと。攻撃者はデータを改ざんし、不正なオブジェクトを生成して悪用することが可能になる。
+
+## 攻撃方法の例
