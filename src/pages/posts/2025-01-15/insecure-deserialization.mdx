@@ -1,10 +1,10 @@
 ---
 layout: ../../../layouts/Layout.astro
-pubDate: "1970-01-01"
-updatedDate: "1970-01-01"
+pubDate: "2025-01-15"
+updatedDate: "2025-01-15"
 title: "Insecure Deserializationの攻撃手法と対策"
 author: ダーシノ
-description: "{ページの概要}"
+description: "Insecure Deserializationとは、信頼できないデータをデシリアライズする際に発生する脆弱性を利用した攻撃手法のこと。攻撃者はデータを改ざんし、不正なオブジェクトを生成して悪用することが可能になる。"
 tags: ["Security"]
 ---
 
@@ -17,3 +17,35 @@ import Header from '../../../components/Header.astro'
 Insecure Deserializationとは、信頼できないデータをデシリアライズする際に発生する脆弱性を利用した攻撃手法のこと。攻撃者はデータを改ざんし、不正なオブジェクトを生成して悪用することが可能になる。
 
 ## 攻撃方法の例
+
+### 任意のコードを実行する
+
+悪意のあるコードをシリアライズしアプリケーションに渡すことで、任意のコードを実行することが可能になる。
+
+```ts
+class Unsafe {
+  readonly #code: string
+  constructor(code: string) {
+    this.#code = code;
+  }
+
+  init() {
+    eval(this.#code);
+  }
+}
+
+api.get('/items', (req, res) => {
+  const unsafe = deserialize(req.body.data);
+  unsafe.init();
+});
+```
+
+## 対処法
+
+### デシリアライズの制限
+
+そもそもデシリアライズを行わないようにするのが良い。そのためには、JSONなどの単純なデータフォーマットを利用することで、予期しないオブジェクトが読み込まれることを防ぐことができる。
+
+### デジタル署名を使う
+
+シリアライズされたデータにデジタル署名を追加することで、データが改ざんされていないことを確認する。もし不正な変更があればすぐに検知できるようになる。
