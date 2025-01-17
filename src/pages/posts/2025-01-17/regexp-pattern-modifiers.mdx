@@ -1,0 +1,66 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-17"
+updatedDate: "2025-01-17"
+title: "ECMAScript 正規表現のパターン修飾子の使い方"
+author: ダーシノ
+description: "2024年10月にRegExp Modifiersの提案がStage 4に更新された。おそらくECMAScript 2025に含まれることが予想される。正規表現のフラグはすべてに適用されてしまう。RegExp Modifiersのパターン修飾子を使うと、iなどのフラグを一部にだけ適用することができる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[2024年10月にRegExp Modifiersの提案がStage 4に更新](https://ecmascript-daily.github.io/ecmascript/2024/10/12/ecmascript-proposal-update)された。おそらくECMAScript 2025に含まれることが予想される。
+
+
+## パターン修飾子とは
+
+正規表現のフラグはすべてに適用されてしまう。たとえば以下のように`/test/i`とした場合、`TEST`や`test`、`TeSt`にもマッチする。
+
+```js
+/test/i.test('test') // true
+/test/i.test('TEST') // true
+/test/i.test('Test') // true
+```
+
+そこでRegExp Modifiersのパターン修飾子を使うと、`i`などのフラグを一部にだけ適用することができる。
+
+たとえば`TEST`という文字列の`E`と`S`だけ大文字・小文字を区別しないようにする場合は、`(?i:ES)`と書く。
+```js
+/^t(?i:ES)t$/.test('test') // true
+/^t(?i:ES)t$/.test('tEst') // true
+/^t(?i:ES)t$/.test('teSt') // true
+/^t(?i:ES)t$/.test('tESt') // true
+/^t(?i:ES)t$/.test('TesT') // false
+```
+
+逆に、ベースを大文字・小文字の区別をしないようにして、一部だけ区別したいようにする場合は`(?-i:es)`のように書く。
+```js
+/^t(?-i:es)t$/i.test('test') // true
+/^t(?-i:es)t$/i.test('TesT') // true
+/^t(?-i:es)t$/i.test('tESt') // false
+```
+
+## パターン修飾子の構文
+
+```
+(?<flag>:pattern)
+(?-<flag>:pattern)
+```
+
+- `?`に続く`<flag>`を有効にする
+- `-`に続く`<flag>`を無効にする
+
+## サポートされるフラグ
+
+|flag|意味|
+|`i`|大文字・小文字を区別しない|
+|`m`|複数行チェックする|
+|`s`|ドット（`.`）を改行文字にもマッチさせる|
+
+## 参考
+
+- [GitHub \- tc39/proposal\-regexp\-modifiers: Regular Expression Pattern Modifiers for ECMAScript](https://github.com/tc39/proposal-regexp-modifiers)
+- [ECMAScript feature: regular expression pattern modifiers](https://2ality.com/2025/01/regexp-modifiers.html)
