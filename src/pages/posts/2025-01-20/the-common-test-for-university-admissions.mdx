@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2025-01-21"
-updatedDate: "2025-01-21"
+updatedDate: "2025-01-22"
 title: "現役エンジニアが令和7年共通テスト情報Iを解説する"
 author: ダーシノ
 description: "2025年1月18日（土）、19日（日）の2日間にわたり、令和7年度の大学入学共通テストが行われた。著者は、現役プログラマとしてキャリアを積んでいるので「情報I」程度の問題は全問正解できないといけないので、実際に解いてみた。ついでに自分自身の振り返りも兼ねて解説してみた。"
@@ -141,41 +141,59 @@ Ans. 7
 ## 第2問
 
 ### A. 総合スーパーマーケットのレジ・ECサイト・配送などを含めた総合システムの問題
+
+```mermaid
+classDiagram
+  Receipt "1" --> "*" Detail
+  Detail "1" --> "1" Item
+
+  Receipt "1" --> "1" PointMember
+
+  class Receipt {
+    PointMember: PointMember
+    ShopCode: string
+    ResisterID: string
+    Date: Date
+    Staff: Staff
+    Details: Detail[]
+    getTotal() number
+    Recieved: number
+  }
+
+  class Detail {
+    Item: Item
+    Quantity: number
+  }
+
+  class Item {
+    Code: string
+    Name: string
+    Price: number
+  }
+
+  class PointMember {
+    ID: string
+    Name: string
+    Sex: 'male' | 'female' | 'other'
+    BirthDate: Date
+    Point: number
+  }
+
+  class ECAccount {
+    ID: string
+    Name: string
+    Address1: string
+    Address2: string
+  }
 ```
-Receipt {
-  PointMember
-  ShopCode
-  RegisterID
-  Date
-  Staff
-  Detail[]
-  Total
-  Received
-}
 
-Detail {
-  Item
-  Quantity
-}
+<figure>
 
-Item {
-  Code
-  Name
-  Price
-}
+![](./_shop.svg)
 
-PointMember {
-  ID
-  Name
-  Sex
-  BirthDate
-  Point
-}
+<figcaption>レジシステムのクラス図</figcaption>
 
-ECAccount {
-  Address
-}
-```
+</figure>
 
 #### 問1
 
@@ -285,7 +303,7 @@ function simulate(): [number, number] {
 
   for (let i = 0; i < MEMBER; i++) {
     // 1〜10の乱数を生成
-    const r = Math.ceil(Math.random() * (10 - 1) - 1)
+    const r = Math.ceil(Math.random() * 10))
     if (r <= 3) {
       countOf1_000 += 6
     } else {
@@ -320,3 +338,65 @@ for (let i = 0; i < 10_000; i++) {
 
 ゆえに、 **「タ:2.千円札で支払った人が5人いて、途中でおつりの千円札が不足するケース」** は起こり得ない。
 
+
+## 第3問
+
+生産管理に関する問題。
+
+### 問1
+
+問1に関しては、生産管理というより国語の問題。
+
+|工芸品|1|2|3|4|5|6|7|8|9|
+|---|---|---|---|---|---|---|---|---|---|
+|製作日数|4|1|3|1|3|4|2|4|3|
+
+部員 **「ア:2」** が **「イ:2」** 日目から1日間製作することがわかる。
+
+部員 **「ウ:2」** が **「エ:3」** 日目から **「オ:5」** 日目まで製作する。
+
+### 問2
+
+要素`Akibi[3]`は部員3の空き日が入る。3日までに作業を終えるので空きになるのは **「カ:4」** となる。
+
+```ts
+/** 
+ * 空き日
+ * 各部員が空きになる日付を管理する
+ * 添字が部員番号となる（※出題では1オリジン）
+ * 
+ * Akibi[0] = 部員1の作業が開く日 
+ * Akibi[1] = 部員2の作業が開く日 
+ * Akibi[2] = 部員3の作業が開く日 
+ */
+const Akibi: number[] = [5, 3, 4]
+// const Akibi: number[] = [5, 6, 4, 4, 4]
+
+/**
+ * 部員数
+ */
+const buinsu = 3
+// const buinsu = 5
+
+/**
+ * 次の工芸品担当の部員番号を示す
+ * [改変]配列は0オリジンなので0からはじめる
+ */
+let tantou = 0
+
+// buinを2からbuinsuまで1ずつ増やしながら繰り返す
+// [改変]配列は0オリジンなので1からはじめる
+for (let buin = 1; buin < buinsu; buin++) {
+  // ここでは、となりあう部員番号の人の空き日を比較して、空き日が最小となる部員をtantouに代入する
+  // もし **「キ:1.Akibi[buin] < Akibi[tantou]」** ならば
+  if (Akibi[buin] < Akibi[tantou]) {
+    tantou = buin
+  }
+}
+
+console.log(`次の工芸品の担当は部員${tantou + 1}です。`)
+```
+
+`Akibi = [5, 6, 4, 4, 4]`と`buinsu = 5`の場合、tantouに代入される回数は **「ク:1」** となる。
+
+### 問3
