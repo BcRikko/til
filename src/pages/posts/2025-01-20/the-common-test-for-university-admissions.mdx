@@ -297,7 +297,7 @@ function simulate(): [number, number] {
   return [countOf1_000, countOf10_000]
 } 
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 10_000; i++) {
   const [countOf1_000, countOf10_000] = simulate()
   console.log(
     `千円札:${countOf1_000}枚`,
@@ -318,5 +318,5 @@ for (let i = 0; i < 10; i++) {
 - 3.8人が1万円札で支払うと途中で不足する
 
 
-ゆえに、 **「タ:2.千円札で支払った人が5人いて、途中でおつりの千円札が不足するケース」は起こり得ない。
+ゆえに、 **「タ:2.千円札で支払った人が5人いて、途中でおつりの千円札が不足するケース」** は起こり得ない。
 
