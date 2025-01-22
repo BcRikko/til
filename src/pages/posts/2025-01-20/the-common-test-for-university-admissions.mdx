@@ -363,7 +363,7 @@ for (let i = 0; i < 10_000; i++) {
  * Akibi[1] = 部員2の作業が開く日 
  * Akibi[2] = 部員3の作業が開く日 
  */
-const Akibi: number[] = [5, 3, 4]
+const Akibi = [5, 3, 4]
 // const Akibi: number[] = [5, 6, 4, 4, 4]
 
 /**
@@ -394,3 +394,56 @@ console.log(`次の工芸品の担当は部員${tantou + 1}です。`)
 `Akibi = [5, 6, 4, 4, 4]`と`buinsu = 5`の場合、tantouに代入される回数は **「ク:1」** となる。
 
 ### 問3
+
+```ts
+/**
+ * 各工芸品製作にかかる日数
+ * 添字は工芸品番号と一致する
+ */
+const Nissu = [4, 1, 3, 1, 3, 4, 2, 4, 3]
+
+/**
+ * 製作する工芸品の数（= Nissu.length）
+ */
+const kougeihinsu = 9
+
+/** 
+ * 空き日
+ * 各部員が空きになる日付を管理する
+ * 添字が部員番号となる（※出題では1オリジン）
+ * 初日は全員手が空いているので1日目を基準に初期化する
+ */
+const Akibi = [1, 1, 1]
+
+/**
+ * 部員数
+ */
+const buinsu = 3
+
+// **「ケ:1.kougeihin」** を **「コ:4.kougeihinsu」** まで1ずつ増やしながら繰り返す
+// [改変]配列は0オリジンなので0からはじめる
+for (let kougeihin = 0; kougeihin < kougeihinsu; kougeihin++) {
+  /**
+   * 次の工芸品担当の部員番号を示す
+   * [改変]配列は0オリジンなので0からはじめる
+   */
+  let tantou = 0
+
+  // buinを2からbuinsuまで1ずつ増やしながら繰り返す
+  // [改変]配列は0オリジンなので1からはじめる
+  for (let buin = 1; buin < buinsu; buin++) {
+    // ここでは、となりあう部員番号の人の空き日を比較して、空き日が最小となる部員をtantouに代入する
+    // もし **「キ:1.Akibi[buin] < Akibi[tantou]」** ならば
+    if (Akibi[buin] < Akibi[tantou]) {
+      tantou = buin
+    }
+  }
+
+  // **「サ:2.Nissu[kougeihin] - 1」**
+  console.log(`工芸品${kougeihin + 1}…部員${tantou + 1}:${Akibi[tantou]}日目〜${Akibi[tantou] + Nissu[kougeihin] - 1}日目`)
+
+  // **「シ:0.Nissu[kougeihin]」**
+  Akibi[tantou] = Akibi[tantou] + Nissu[kougeihin]
+}
+```
+
