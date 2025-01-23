@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-23"
+updatedDate: "2025-01-23"
+title: "chownコマンドでグループ指定する際の区切り文字"
+author: ダーシノ
+description: "chown（CHange OWNer）とは、ファイルやディレクトリの所有者情報を変更する際に使用するコマンドである。ユーザやグループ単位でファイル/ディレクトリのパーミッションを管理することができる。区切り文字をドットやコロンを使うことがある。"
+tags: ["Unix"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+`chown`（CHange OWNer）とは、ファイルやディレクトリの所有者情報を変更する際に使用するコマンドである。ユーザやグループ単位でファイル/ディレクトリのパーミッションを管理することができる。
+
+```sh
+chown [オプション] [ユーザ名]:[グループ名] [ファイル/ディレクトリ]
+```
+
+ファイルやディレクトリには、それぞれ所有者とグループが設定されており、`ls`コマンドで確認できる。
+```sh
+ls -l
+
+-rw-r--r--  1 username  group  416  1 23  2025 sample.json
+drwxr-xr-x  7 username  group  224  1 23  2025 src/
+-rw-r--r--  1 username  group 3839  1 23  2025 config.js
+```
+
+## chownコマンドでグループ指定する際の区切り文字
+
+```sh
+chown username:group -R /path/to/dir
+chown username.group -R /path/to/dir
+```
+
+### 大前提
+
+現在ではユーザー名とグループ名を`:`で区切るのが一般的。
+
+### 歴史的背景
+
+古いUNIX系の一部OSでは、`user.group`のように`.`を使うのが標準的だった。`.`は本来ファイル名の区切り文字（拡張子など）としても使われることが多いため、`:`が推奨されるようになった。
+
+そのため、現在でも`user.group`のように古い記法を見かけることがある。
