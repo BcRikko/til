@@ -1,0 +1,106 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-24"
+updatedDate: "2025-01-24"
+title: "CSS @counter-styleを使ったリストマークのカスタマイズ"
+author: ダーシノ
+description: "@counter-styleを使うことで、カウンターによってリストマークをカスタマイズすることができる。同じようにリストマークを変更するlist-styleプロパティもあるのだが、こちらはすべてのリストマークが変更されてしまう。（※nth-childなどを使えば1つずつ変更できないこともない）"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[@counter-style](https://developer.mozilla.org/ja/docs/Web/CSS/@counter-style)を使うことで、カウンターによってリストマークをカスタマイズすることができる。
+
+同じようにリストマークを変更する[list-style](https://developer.mozilla.org/ja/docs/Web/CSS/list-style)プロパティもあるのだが、こちらはすべてのリストマークが変更されてしまう。（※`nth-child`などを使えば1つずつ変更できないこともない）
+
+<Baseline featureId={"counter-style"} />
+
+```html
+<ol class="hands">
+  <li>One</li>
+  <li>Two</li>
+  <li>Three</li>
+  <li>Four</li>
+  <li>Five</li>
+  <li>Six</li>
+  <li>Seven</li>
+  <li>Eight</li>
+  <li>Nine</li>
+  <li>Ten</li>
+</ol>
+```
+
+```css
+/* list-styleを使う場合 */
+.hands {
+  &:nth-child(1) {
+    list-style: url(...);
+  }
+  &:nth-child(2) {
+    list-style: url(...);
+  }
+  ...
+}
+
+/* @counter-styleを使う場合 */
+@counter-style hands {
+  system: additive;
+  additive-symbols: 5 "✋", 4 "☝️🤟", 3 "🤟", 2 "✌️", 1 "☝️";
+  suffix: " ";
+}
+
+.hands {
+  list-style: hands;
+}
+```
+
+## `@counter-style`の仕組み
+
+`@counter-style`には以下のようなプロパティがある。
+
+- `system` … カウンターを変換するためのアルゴリズムを指定する
+  - `cyclic` … カウンターの値を循環する
+  - `fixed` … 有限のシンボルを指定し、すべて循環したら代替スタイルが適用される
+  - `symbolic` … 指定されたシンボルを循環し、1周したら倍になる
+  - `alphabetic` … 指定されたシンボルを桁として、A-Zの26個のカウンターを表現する。1周したら2桁になる。
+  - `numeric` … 0オリジンでカウンターを表示する
+  - `additive` … `additive-symbols`とともに使い、カウンターに適用する
+- `range` … カウンタースタイルを適用する範囲を指定する
+- `symbols` … シンボルを指定する
+- `additive-symbols` … カウントを加算しシンボルを表現する
+
+
+## デモ
+
+<section id="demo">
+  <ol class="hands">
+    <li>One</li>
+    <li>Two</li>
+    <li>Three</li>
+    <li>Four</li>
+    <li>Five</li>
+    <li>Six</li>
+    <li>Seven</li>
+    <li>Eight</li>
+    <li>Nine</li>
+    <li>Ten</li>
+  </ol>
+</section>
+
+<style>{`
+@counter-style hands {
+  system: additive;
+  additive-symbols: 5 "✋", 4 "☝️🤟", 3 "🤟", 2 "✌️", 1 "☝️";
+  suffix: "=";
+}
+
+#demo {
+  .hands {
+    list-style: hands;
+  }
+}
+`}</style>
