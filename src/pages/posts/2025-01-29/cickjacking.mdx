@@ -1,0 +1,33 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-29"
+updatedDate: "2025-01-29"
+title: "Clickjackingの攻撃手法と対策"
+author: ダーシノ
+description: "Clickjackingとは、攻撃者がユーザーに意図しないクリックをさせる攻撃手法のこと。攻撃者は透明な要素（transparentやopacity:0など）や偽装した要素を画面上に配置し、ユーザーが意図しないボタンやリンクをクリックさせるように誘導する。海外のちょっとアレなサイトを見ているときによく遭遇するやつだ。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Clickjackingとは、攻撃者がユーザーに意図しないクリックをさせる攻撃手法のこと。攻撃者は透明な要素（transparentやopacity:0など）や偽装した要素を画面上に配置し、ユーザーが意図しないボタンやリンクをクリックさせるように誘導する。海外のちょっとアレなサイトを見ているときによく遭遇するやつだ。
+
+## 攻撃方法の例
+
+```html
+<button type="submit">送信する</button>
+
+<iframe src="https://example.com/wrong-button.html" style="position: absolute; z-index: 9999999; opacity: 0;"></iframe>
+```
+
+このように本来押したいボタン（今回の場合は「送信する」）の上に、透明なiframeを配置することで、意図しないボタンを押させることができる。または、ボタンを覆うように「閉じる」のような別のラベルにして配置することもある。
+
+## 対策
+
+### HTTPヘッダーを使う
+
+[X-Frame-Options](https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/X-Frame-Options)ヘッダーを付与することで、`<iframe>`や`<embed>`などの要素を中に表示することを許可するかどうかを示せる。
+
+ただし、現在では[Content-Security-Policy](https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/Content-Security-Policy)の`frame-ancestors`ディレクティブが推奨されている。
