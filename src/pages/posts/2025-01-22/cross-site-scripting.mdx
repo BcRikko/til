@@ -1,0 +1,77 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "1970-01-01"
+updatedDate: "1970-01-01"
+title: "Cross-Site Scripting（XSS）の攻撃手法と対策"
+author: ダーシノ
+description: "{ページの概要}"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+## 概要
+
+Cross-Site Scripting（XSS）とは、URLや入力フォームを悪用しスクリプトを埋め込み、その情報を取得した他のユーザーのブラウザ上で実行させる攻撃手法のこと。スクリプトを実行することで、入力データや個人情報などを外部サーバーなどに送信することが可能になる。認証が通ったクライアント上でスクリプトを実行されるため、不正の検知が難しい。
+
+## 攻撃方法の例
+
+### 1.反射型XSS（Reflected XSS）
+
+リクエストに含まれる値（GETパラメータなど）を、そのままレスポンスとして返すようなコードがある場合に発生する脆弱性。
+
+```html
+<form>
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name" />
+  <button type="submit">Submit</button>
+</form>
+
+<p>Hello, <?php echo $_GET['name']; ?></p>
+```
+というフォームに`<script>alert('XSS');</script>`というスクリプトを入力して送信すると、ブラウザ上で`alert('XSS');`が実行される。
+
+### 2.蓄積型XSS（Stored XSS）
+
+悪意のある値がデータベースなどに格納され、それを別のリクエストで取得するようなコードがある場合に発生する脆弱性。
+
+```html
+<form>
+  <label for="comment">Comment</label>
+  <input type="text" id="comment" name="comment" />
+  <button type="submit">Submit</button>
+</form>
+
+<section id="comments">
+  <?php
+    // コメントをデータベースから取得して表示する（例: MySQLなど）
+    echo $_POST['comment'];
+  ?>
+</section>
+```
+
+このフォームに`><script>alert('XSS');</script>`というスクリプトを入力して送信すると、`alert('XSS');`が実行される。
+
+### 3.DOM-based XSS（DOM-based XSS）
+
+DOMを悪用してスクリプトを実行するようなコードがある場合に発生する脆弱性。
+
+```html
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const name = urlParams.get('name');
+  document.getElementById('name').innerHTML = name;
+</script>
+
+<p id="name"></p>
+```
+
+このページで`https://example.com/page?name=<script>alert('XSS');</script>`というURLを開くと、`alert('XSS');`が実行される。
+
+## 対処法
+
+反射型XSSや蓄積型XSSは、ページに値を表示する際に必要なエスケープ処理を行うことが重要である。
+
+[サニタイズいうなキャンペーン](/til/posts/2024-12-04/dont-say-sanitize/)のとおり、正しいAPIやライブラリの使い方をすることが防ぐことができる。
