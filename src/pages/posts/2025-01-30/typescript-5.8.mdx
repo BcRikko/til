@@ -1,0 +1,77 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-30"
+updatedDate: "2025-01-30"
+title: "TypeScript 5.8 リリースノート"
+author: ダーシノ
+description: "TypeScript 5.8の主なアップデートをまとめました。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[TypeScript 5.8 beta](https://devblogs.microsoft.com/typescript/announcing-typescript-5-8-beta/)がリリースされた。
+
+
+## 戻り値の型推論の改善
+
+以下のように、ある条件（`kind`）によって戻り値の型が変わる関数があるとする。
+```ts
+enum Kind { A, B, }
+function pick(
+  kind: Kind,
+  value: readonly string[]
+): string | string[] {
+  // ...
+}
+```
+
+この状態では `string | string[]` が返ってくるため `result.join(',')` がエラーになることがある。さらに実装側でも型にアサインできないというエラーがでる。
+
+```ts
+enum Kind {
+  A,
+  B,
+}
+interface PickReturn {
+  [Kind.A]: string
+  [Kind.B]: string[]
+}
+
+function pick<K extends Kind>(
+  kind: K,
+): PickReturn[K] {
+  const values:string[] = []
+  if (kind === Kind.A) {
+    // TS5.8からはエラーにならない
+    return values[0] // as PickReturn[K]
+    // Type 'string' is not assignable to type 'PickReturn[K]'.
+    //   Type 'string' is not assignable to type 'string & string[]'.
+    //     Type 'string' is not assignable to type 'string[]'
+  } else {
+    // TS5.8からはエラーにならない
+    return values // as PickReturn[K]
+    // Type 'string[]' is not assignable to type 'PickReturn[K]'.
+    //   Type 'string[]' is not assignable to type 'string & string[]'.
+    //     Type 'string[]' is not assignable to type 'string'.
+  }
+}
+```
+
+この場合、`return`しているところで `as PickReturn[K]` とするとエラーは解消できるのだが、TypeScriptの型チェックを無効化してしまうため、バグが検知できなくなってしまう。
+
+TypeScript 5.8からは、コードを分析して絞り込まれた型を返すようになるので、先程のコードがエラーにならなくなる。
+
+
+## TypeScript固有の構文を許可しない
+
+Node.js 23.6で、デフォルトでTypeScriptファイルを直接実行できるようになった。そのため、TypeScript固有の構文があると不都合があるため、`--erasableSyntaxOnly`というオプションが追加された。
+
+フラグを有効にすると以下の構文がサポートされなくなる。
+
+- enum
+- namespace module
+- importエイリアス
+- classのパラメータプロパティ（`constructor(private x: number)`など）
