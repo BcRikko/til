@@ -1,0 +1,70 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-01-29"
+updatedDate: "2025-01-29"
+title: "text-strokeとpaint-orderで縁取り文字や袋文字を表現する"
+author: ダーシノ
+description: "text-strokeとpaint-orderを使うことで、いままで文字が潰れてしまっていた縁取り文字や袋文字がCSSだけで表現できるようになった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[text-stroke](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-stroke)と[paint-order](https://developer.mozilla.org/en-US/docs/Web/CSS/paint-order)を使うことで、いままで文字が潰れてしまっていた縁取り文字や袋文字がCSSだけで表現できるようになった。
+
+<Baseline featureId={"text-stroke-fill"} />
+
+<Baseline featureId={"paint-order"} />
+
+```html
+<h1>HELLO WORLD</h1>
+```
+
+```css
+h1 {
+  color: white;
+  -webkit-text-stroke: 4px black;
+
+  paint-order: stroke;
+}
+```
+
+- `-webkit-text-stroke`は、テキストの輪郭線の幅と色を指定するショートハンドプロパティ
+  - `-webkit-text-stroke-width`
+  - `-webkit-text-stroke-color`
+- `paint-order`は、テキストコンテンツなどを描画するときの塗りつぶしの順番を制御するプロパティ
+  - `paint-order: stroke` … 輪郭→塗りつぶしの順
+  - `paint-order: markers` … マーカー→輪郭の順
+  - 複数指定可能
+
+
+## デモ
+
+<section id="demo">
+  <p class="normal">paint-order: normal</p>
+  <p class="stroke">paint-order: stroke</p>
+  <p class="markers">paint-order: markers</p>
+</section>
+
+<style>{`
+  #demo {
+    p {
+      font-size: 2rem;
+      color: white;
+      -webkit-text-stroke: .08em black;
+    }
+    .normal {
+      paint-order: normal;
+    }
+    .stroke {
+      paint-order: stroke;
+    }
+    .markers {
+      paint-order: markers;
+    }
+  }
+`}
+</style>
