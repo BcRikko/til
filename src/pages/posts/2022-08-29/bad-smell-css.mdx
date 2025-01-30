@@ -1,0 +1,34 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-29"
+updatedDate: "2022-08-29"
+title: "CSSレビューの「きっかけ」を見つける"
+author: ダーシノ
+description: "私がCSSのコードレビューをする際、何を頼りにアタリをつけているかを言語化してみる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+私がCSSのコードレビューをする際、何を頼りにアタリをつけているかを言語化してみる。
+
+1. デフォルトのスタイルが打ち消されている
+   - スタイルが打ち消されている場合は、場当たり的に修正した可能性が高いため
+   - 例
+      - `padding: 0`
+      - `margin: 0`
+      - `outline: none`
+2. widthやheightが設定されている
+   - widthやheightは、基本的に内包するコンテンツによって決まるので、固定値を設定しないほうが良い
+   - 例
+     - `width: 100%`
+     - `height: 100%`
+3. 同じスタイルが複数箇所にある
+   - コンポーネント設計やCSS設計自体が間違っている可能性がある
+   - 例
+     - `.item { padding: 10px 20x; }`
+     - `.status { padding: 10px 20x; }`
+4. `display: flex`が使われている子孫要素
+   - flexboxの仕様を理解していない場合、無効なプロパティが大量に残されている可能性がある
