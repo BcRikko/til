@@ -1,0 +1,70 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-04"
+updatedDate: "2022-08-04"
+title: "Result型でエラーハンドリングする"
+author: ダーシノ
+description: "Result型とは、成功と失敗の両方を表現できる型で、それぞれのハンドリングがしやすくなる。ただし、パターンマッチが使いたくなる。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Result型とは、成功と失敗の両方を表現できる型で、それぞれのハンドリングがしやすくなる。
+
+```ts
+type Result<T, E = Error> =
+  | { ok: true,  value: T }
+  | { ok: false, error: E }
+```
+
+## サンプルコード
+```ts
+// CustomError（ArgumentError、DivideByZeroError）
+function divide(x: number, y: number): Result<
+  number,  // OKのときの型
+  ArgumentError | DivideByZeroError  // Errorのときの型
+> {
+  if (x === y) {
+    return { ok: false, error: new ArgumentError() }
+  }
+  if (y === 0) {
+    return { ok: false, error: new DivideByZeroError() }
+  }
+
+  return { ok: true, value: x / y }
+}
+
+// run
+const ans = divide(x, y)
+if (ans.ok === true) {
+  console.log(ans.value)
+}
+
+if (ans.ok === false) {
+  if (ans.error instanceof ArgumentError) {
+    console.error(ans.error.name) // ArgumentError
+  }
+  if (ans.error instanceof DivideByZeroError) {
+    console.error(ans.error.name) // DivideByZeroError
+  }
+}
+```
+
+## 理想形
+
+Result型を使うときは、パターンマッチが使いたくなる。
+
+```ts
+enum Result<T, E> {
+   Ok(T),
+   Err(E),
+}
+
+match get_value(true) {
+  Ok(result) => println!("success: {}", result),
+  Err(msg) => println!("failure: {}", msg),
+}
+```
