@@ -1,0 +1,41 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-27"
+updatedDate: "2022-08-27"
+title: "Type Guardを強制する"
+author: ダーシノ
+description: "TypeScriptで複数の状態を持つEntityクラスを管理する際に、Type Guardしないと扱えないようにする。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+複数の状態を持つEntityクラスを管理する際に、Type Guardしないと扱えないようにする。
+```ts
+// NOTE: never だと TypeGuard を使っても全部 never になってしまうので若干意味は違うが unknown で代用
+class Entity<P extends Protocol, H extends Health | unknown = unknown> {
+  #health: H = undefined as H
+
+  hasLoaded(this: this): this is Entity<P, Health> {
+    return this.#health !== undefined
+  }
+
+  set health(health: H) {
+    this.#health = health
+  }
+  get health() {
+    return this.#health
+  }
+}
+
+const entity = new Entity()
+
+// Error: Object is of type 'unknown'
+entity.health.status
+
+if (entity.hasLoaded()) {
+  entity.health.status // OK
+}
+```
