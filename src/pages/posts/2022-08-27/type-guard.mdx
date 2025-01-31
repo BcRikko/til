@@ -12,7 +12,7 @@ import Header from '../../../components/Header.astro'
 
 <Header {...frontmatter} />
 
-複数の状態を持つEntityクラスを管理する際に、Type Guardしないと扱えないようにする。
+複数の状態を持つEntityクラスを管理する際に、User-Defined Type Guard（ユーザ定義型ガード）しないと扱えないようにする。
 ```ts
 // NOTE: never だと TypeGuard を使っても全部 never になってしまうので若干意味は違うが unknown で代用
 class Entity<P extends Protocol, H extends Health | unknown = unknown> {
