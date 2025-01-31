@@ -1,0 +1,80 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-01"
+updatedDate: "2025-02-01"
+title: "Open Redirectionの攻撃手法と対策"
+author: ダーシノ
+description: "Open Redirectionとは、任意のURLにリダイレクトさせる攻撃手法のこと。リダイレクトの仕組みを用い、ユーザーの秘匿情報の盗取やマルウェア配布などを行うことができる。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Open Redirectionとは、任意のURLにリダイレクトさせる攻撃手法のこと。リダイレクトの仕組みを用い、ユーザーの秘匿情報の盗取やマルウェア配布などを行うことができる。
+
+## 代表的なリダイレクト処理
+
+リダイレクト処理を実現する代表的な方法は、以下の3種類。
+
+1. HTTPヘッダを用いたリダイレクト
+2. metaタグを用いたリダイレクト
+3. JavaScriptを用いたリダイレクト
+
+
+### 1. HTTPヘッダを用いたリダイレクト
+
+HTTPレスポンスのステータスコードとLocationヘッダを用いてリダイレクトを行う。
+
+#### リダイレクトに関するステータスコード
+- 301 Moved Permanently
+- 302 Found/Moved Temporarily
+- 307 Temporary Redirect
+- 308 Permanent Redirect
+
+#### 具体的なレスポンス
+
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/new-location
+...
+```
+
+### 2. metaタグを用いたリダイレクト
+
+ページのmetaタグを用いてリダイレクトを行う。
+
+```html
+<head>
+  <meta http-equiv="refresh" content="5;URL=http://example.com/" />
+</head>
+```
+※一般的に `http-equiv="refresh"`はアクセシビリティに関する問題があるので使用には注意が必要。
+
+### 3. JavaScriptを用いたリダイレクト
+
+JavaScriptの`document.location.href`などを用いてリダイレクトを行う。
+
+```javascript
+document.location = 'https://example.com/new-location';
+document.location.href = 'https://example.com/new-location';
+document.location.replace('https://example.com/new-location');
+```
+
+## 攻撃手法
+
+URLや入力されたデータを元にリダイレクトする場合、`https://trust.example.com?redirect=https://phishing.example.com`のようなURLを用意し、被害者に送信する。被害者は「trust.example.com」が信頼できるサイトだと思いリンクをクリックすると、悪意のあるページにリダイレクトし、秘匿情報が盗まれる可能性がある。
+
+また、認証情報の窃取（OAuthの悪用）やマルウェアのダウンロードなどが考えられる。
+
+## 対策
+
+1. 外部から受け取った値でURLを生成しない
+2. 外部から受け取る場合
+    - ホワイトリスト化する
+    - 入力内容の制限と適切なバリデーションを行う 
+3. リダイレクト前にクッションページを表示する
+    - 某掲示板で外部リンクに移動するときに挟まる例のページのようなもの
+
+

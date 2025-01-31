@@ -1,0 +1,79 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-01"
+updatedDate: "2025-02-01"
+title: "Header Injectionの攻撃手法と対策"
+author: ダーシノ
+description: "Header Injectionとは、HTTPヘッダを用いて任意のデータを送信する攻撃手法のこと。"
+tags: ["Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Header Injectionとは、アプリケーションがデータを適切に処理せず、ユーザーの入力をヘッダに出力させることで、レスポンスの改ざんやリダイレクト、セッションハイジャックなどを行う攻撃手法のこと。
+
+## HTTPレスポンスとヘッダ
+
+HTTPレスポンスは、Key:Value形式のレスポンスヘッダとボディから構成されている。
+
+```
+# HEAD
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+...
+
+# BODY
+<html>
+<body>
+    <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+## 攻撃手法
+
+### Set-Cookieヘッダの改ざん
+
+Set-Cookieヘッダを悪用したSession Fixation攻撃の例。
+
+1. 攻撃者が自身のセッションIDを取得する
+2. 取得したセッションIDを、攻撃対象ユーザーのCookieに設定する
+3. 攻撃対象ユーザーが攻撃者のセッションIDを用いて操作をする（商品の購入、契約など）
+4. 攻撃者は同じセッションIDを使い、対象者の情報を盗む
+
+### レスポンスボディの改ざん
+
+ヘッダとボディは空行で分割されているので、空行と一緒に悪意のあるコードが挿入できてしまう。
+```
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+...
+Set-Cookie: session_id=1234567890;
+
+# 悪意のあるレスポンスボディ
+<script>悪意のあるレスポンスボディ</script>
+
+# 本来のボディ
+<html>
+<body>
+    <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+### セキュリティ対策の緩和
+
+Access-Control-Allow-Originヘッダを改ざんすることで、Same-Origin Policyなどの制約を無効化する。
+
+
+## 対策
+
+### 入力データをヘッダに出力しない
+
+入力データをヘッダに出力するのは避ける。どうしても出力したい場合は、適切なバリデーションやエスケープを行う。
+
+### 適切にヘッダを処理する関数を使う
+
+入力データをヘッダに出力したい場合は、各言語やライブラリ、フレームワークがもつ適切なヘッダ処理用の関数を使う。
