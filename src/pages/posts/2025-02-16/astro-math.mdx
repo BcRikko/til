@@ -1,0 +1,99 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-16"
+updatedDate: "2025-02-16"
+title: "AstroでKaTeXで書いた数式をMathMLに変換して表示する"
+author: ダーシノ
+description: "当ブログはAstroというSSG（静的サイトジェネレータ）を使っている。また、記事はMarkdownを拡張したMDXというフォーマットを用いて書いている。数学で学んだことを記事にする際、プレーンテキストでは微積分や行列などの数式を表現することが難しい。そのため、KaTeX（LaTeXのJavaScriptライブラリ）の記法を使ってコードブロック内に数式を表現したい。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+当ブログは[Astro](https://astro.build/)というSSG（静的サイトジェネレータ）を使っている。また、記事はMarkdownを拡張した[MDX](https://mdxjs.com/)というフォーマットを用いて書いている。
+
+数学で学んだことを記事にする際、プレーンテキストでは微積分や行列などの数式を表現することが難しい。そのため、KaTeX（LaTeXのJavaScriptライブラリ）の記法を使ってコードブロック内に数式を表現したい。
+
+````md
+```math
+\int_{a}^{b} f(x) dx
+```
+````
+
+## ライブラリ選定基準
+
+- [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML)に変換してほしい
+- 余計なJavaScriptやCSSを使わない（読み込まない）
+
+## rehype-katex
+
+[rehype-katex](https://github.com/remarkjs/remark-math/tree/main/packages/rehype-katex)を使うことにした。READMEには`unified()`を使ったり、JavaScript
+やCSSを読み込んだりという記述があるが、Astroで使う場合には不要だった。
+
+`rehype-katex`をインストールし、`astro.config.mjs`に設定を追加するだけで、`math`のコードブロックをMathMLに変換してくれる。
+```sh
+$ npm install -S rehype-katex
+```
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import rehypeKatex from 'rehype-katex'
+
+// https://astro.build/config
+export default defineConfig({
+  integrations: [
+    mdx(),
+  ],
+  markdown: {
+    rehypePlugins: [rehypeKatex]
+  }
+});
+```
+
+## 設定
+
+`rehype-katex`はデフォルトで、HTMLとMathMLの両方を出力する設定になっているため、`output`オプションでMathMLのみに限定する。
+
+また、mathブロック内で日本語などを使うと警告が出力されるので、あまり良くはないが`strict`モードを無効にした。
+
+```js
+export default defineConfig({
+  integrations: [
+    mdx(),
+  ],
+  markdown: {
+    rehypePlugins: [
+      [
+        rehypeKatex,
+        {
+          strict: false,
+          output: 'mathml'
+        }
+      ]
+    ]
+  }
+});
+```
+
+上記の場合は、Optionsの型が効かないので、以下のような書き方も良さそうだ。
+
+```js
+export default defineConfig({
+  integrations: [
+    mdx(),
+  ],
+  markdown: {
+    rehypePlugins: [
+      (...args) => rehypeKatex({
+        ...args,
+        strict: false,
+        output: 'mathml'
+      })
+    ]
+  }
+});
+```
