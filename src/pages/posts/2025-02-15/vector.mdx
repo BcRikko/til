@@ -1,0 +1,124 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-15"
+updatedDate: "2025-02-15"
+title: "ベクトルと内積"
+author: ダーシノ
+description: "{ページの概要}"
+tags: ["Mathematics"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[妥協しないデータ分析のための 微積分+線形代数入門](https://amzn.to/4k3LnsT)で微積分・線形代数の学び直しをしている。その中で学んだことを忘れないように自分の言葉でまとめたい。
+
+## ベクトルとは
+
+**ベクトル（Vector）とは、値が並んでいるもの**を指す。そして、その**値の個数が次元**と呼ばれる。
+
+```math
+v = \begin{bmatrix} v_1 \\ v_2 \\ v_3 \\ \vdots \\ v_n \end{bmatrix}
+```
+
+上記の場合、`v1, v2, ..., vn ∈ R`のように書く。
+
+### ベクトルの和
+
+BoW（Bag-of-Words）ベクトルとは、文章に含まれる単語の出現回数を数えてベクトルで表現したもの。これはベクトルの和として表現できる。
+
+|WORD|明日|は|明日|の|風|が|吹く|BoWベクトル|
+|---|---|---|---|---|---|---|---|---|
+|明日|1|0|1|0|0|0|0|2|
+|は|0|1|0|0|0|0|0|1|
+|の|0|0|0|1|0|0|0|1|
+|風|0|0|0|0|1|0|0|1|
+|が|0|0|0|0|0|1|0|1|
+|吹く|0|0|0|0|0|0|1|1|
+
+
+```math
+明日 = \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \end{bmatrix}
+\quad
+は = \begin{bmatrix} 0 \\ 1 \\ 0 \\ 0 \\ 0 \\ 0 \end{bmatrix}
+\quad
+明日 = \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \end{bmatrix}
+\quad
+の = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ 0 \end{bmatrix}
+```
+```math
+風 = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \end{bmatrix}
+\quad
+が = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \end{bmatrix}
+\quad
+吹く = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}
+```
+
+```math
+BoW = 明日 + は + 明日 + の + 風 + が + 吹く = \begin{bmatrix} 2 \\ 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}
+```
+
+
+## ベクトルの内積
+
+**内積とは、2つの数値の積の和、または長さや角度などの計算をすることで、類似度として利用できる。**
+
+たとえば、以下のテストの結果からテストの平均点を算出するために内積が使える。
+
+|生徒|国語|数学|理科|英語|化学|
+|---|---|---|---|---|---|
+|Aさん|80|70|90|60|50|
+|Bさん|70|80|60|90|80|
+|Cさん|90|60|70|80|90|
+|Dさん|60|90|80|70|60|
+
+```math
+A_{\text{平均点}} = \frac{1}{5} \cdot \vec{A}
+= \begin{bmatrix} \frac{1}{5} \\ \frac{1}{5} \\ \frac{1}{5} \\ \frac{1}{5} \\ \frac{1}{5} \end{bmatrix}
+\cdot
+\begin{bmatrix} 80 \\ 70 \\ 90 \\ 60 \\ 50 \end{bmatrix}
+= \frac{1}{5} \cdot 80 + \frac{1}{5} \cdot 70 + \frac{1}{5} \cdot 90 + \frac{1}{5} \cdot 60 + \frac{1}{5} \cdot 50
+= 70
+```
+
+また、文系・理系科目のそれぞれの平均点数を計算する場合は、重みをつけたベクトルを使って計算する。
+
+```math
+科目_{\text{文系}} = \begin{bmatrix} \frac{1}{2} \\ 0 \\ 0 \\ \frac{1}{2} \\ 0 \end{bmatrix}
+\quad
+科目_{\text{理系}} = \begin{bmatrix} 0 \\ \frac{1}{3} \\ \frac{1}{3} \\ 0 \\ \frac{1}{3} \end{bmatrix}
+```
+
+```math
+平均点_{\text{文系}} = 科目_{\text{文系}} \cdot \vec{A}
+= \begin{bmatrix} \frac{1}{2} \\ 0 \\ 0 \\ \frac{1}{2} \\ 0 \end{bmatrix}
+\cdot
+\begin{bmatrix} 80 \\ 70 \\ 90 \\ 60 \\ 50 \end{bmatrix}
+= \frac{1}{2} \cdot 80 + \frac{1}{2} \cdot 90
+= 85
+```
+
+```math
+平均点_{\text{理系}} = 科目_{\text{理系}} \cdot \vec{A}
+= \begin{bmatrix} 0 \\ \frac{1}{3} \\ \frac{1}{3} \\ 0 \\ \frac{1}{3} \end{bmatrix}
+\cdot
+\begin{bmatrix} 80 \\ 70 \\ 90 \\ 60 \\ 50 \end{bmatrix}
+= \frac{1}{3} \cdot 70 + \frac{1}{3} \cdot 60 + \frac{1}{3} \cdot 80
+= 70
+```
+
+## ベクトルの内積と幾何
+
+**内積を用いることで、ベクトルの長さや角度を計算できる。**
+
+```math
+\mathbf{v} \cdot \mathbf{v} = |\mathbf{v}|^2
+```
+```math
+\mathbf{v} \cdot \mathbf{w} = |\mathbf{v}| |\mathbf{w}| \cos \theta
+```
+
+ベクトルvを基準にしたとき、ベクトルwの長さは`|w|cosθ`で表される。そのため、`v・w`は`|v||w|cosθ`となる。
+
+また、ベクトルvとwが同じ値の場合、cos0°=1となるため、`v・v = |v|^2`となる。
