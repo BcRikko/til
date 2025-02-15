@@ -1,0 +1,9 @@
+.katex {
+  display: block;
+  margin-block-start: 0;
+  margin-block-end: 1.5em;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
