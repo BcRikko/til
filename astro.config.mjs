@@ -13,7 +13,11 @@ export default defineConfig({
   ],
   markdown: {
     rehypePlugins: [
-      [rehypeKatex, { output: 'mathml' } ]
+      (...args) => rehypeKatex({
+        ...args,
+        output: 'mathml',
+        strict: false
+      })
     ]
   }
 });
