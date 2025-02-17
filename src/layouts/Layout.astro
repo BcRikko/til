@@ -17,7 +17,7 @@ interface Props {
   updatedDate: string;
 }
 
-const { title, description, tags, pubDate, updatedDate } =
+const { title, description, tags, pubDate, updatedDate, url } =
   (Astro.props as any)?.frontmatter ?? Astro.props;
 ---
 
@@ -28,7 +28,7 @@ const { title, description, tags, pubDate, updatedDate } =
     <link rel="icon" type="image/vnd.microsoft.icon" href="/til/favicon.ico" />
     <link rel="sitemap" href="/til/sitemap-index.xml" />
 
-    <Meta title={title} description={description} tags={tags} />
+    <Meta title={title} description={description} tags={tags} url={url} />
     <GoogleFont />
 
     <title>{title} | @bc_rikko</title>

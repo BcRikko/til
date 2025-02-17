@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="browser">
+    <div class="header">
+      <div class="button red"></div>
+      <div class="button yellow"></div>
+      <div class="button green"></div>
+    </div>
+
+    <div class="body">
+      <div class="sitename">Today I learned.</div>
+      <div class="title"></div>
+    </div>
+
+    <div class="footer">
+      <img width="56" height="56" src="https://avatars.githubusercontent.com/u/5305599?v=4">
+      ダーシノ @bc_rikko
+    </div>
+  </div>
+</div>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    /*   margin: 0; */
+    font-size: 20px;
+    color: #333;
+  }
+
+  .container {
+    width: 800px;
+    height: 418px;
+    background: conic-gradient(from 90deg at bottom right, cyan, rebeccapurple);
+    padding: 24px;
+  }
+
+  .browser {
+    position: relative;
+    background-color: #fafafa;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .header {
+    background-color: #333;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .button {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+  }
+
+  .red {
+    background-color: #ff605c;
+  }
+
+  .yellow {
+    background-color: #ffbd44;
+  }
+
+  .green {
+    background-color: #00ca4e;
+  }
+
+  .body {
+    padding: 40px;
+  }
+
+  .sitename {
+    color: #898989;
+  }
+
+  .title {
+    font-size: 48px;
+  }
+
+  .footer {
+    color: #898989;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: end;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+</style>
