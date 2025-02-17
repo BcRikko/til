@@ -9,7 +9,7 @@ interface Props {
 const props = Astro.props;
 
 const ogImage = props.url
-  ? props.url.replace("/til/posts/", "").replace("/", "&")
+  ? `https://bcrikko.github.io/til/og/${props.url.replace("/til/posts/", "").replace("/", "&")}.png`
   : "https://bcrikko.github.io/til/bcrikko.png";
 console.log(ogImage);
 ---
