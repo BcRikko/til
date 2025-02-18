@@ -1,43 +1,53 @@
-import type { APIRoute, GetStaticPaths, GetStaticPathsItem, MDXInstance } from "astro";
-import { createCanvas, loadImage } from "canvas"
+import type { APIRoute, GetStaticPaths, MDXInstance } from "astro";
+import { createCanvas, loadImage, registerFont } from "canvas"
 import fs from "node:fs"
 import path from "node:path"
 
+const FONT = path.resolve(process.cwd(), 'public/NotoSansJP-Bold.ttf')
+const FONT_FAMILY = 'Noto Sans JP' as const
+const COLOR = '#333' as const
+const CANVAS_SIZE = { w: 800, h: 418 } as const
+const FONT_SIZE = 48 as const
+const PADDING = 60 as const
+const IMAGE_TEMPLATE = path.resolve(process.cwd(), 'src/pages/og/_ogimage.png')
+
 async function getOgImage(title: string): Promise<Buffer> {
-  const size = { w: 800, h: 418 } as const
+  const font = path.resolve(process.cwd(), FONT)
+  registerFont(font, { family: FONT_FAMILY, weight: 'bold' })
 
-  const canvas = createCanvas(size.w, size.h)
+  const canvas = createCanvas(CANVAS_SIZE.w, CANVAS_SIZE.h)
   const ctx = canvas.getContext('2d')
-  const src = path.resolve(process.cwd(), 'src/pages/og/_ogimage.png')
-  const img = await loadImage(fs.readFileSync(src))
-  
-  ctx.drawImage(img, 0, 0, size.w, size.h)
 
-  const fontSize = 48 as const
-  ctx.font = `${fontSize}px`
-  ctx.fillStyle = '#333'
+  try {
+    ctx.save()
+    const img = await loadImage(fs.readFileSync(IMAGE_TEMPLATE))
+    ctx.drawImage(img, 0, 0, CANVAS_SIZE.w, CANVAS_SIZE.h)
   
-  const padding = 60 as const
-  let top = 200 as const
-
-  const maxWidth = size.w - padding * 2
+    ctx.font = `${FONT_SIZE}px "${FONT_FAMILY}"`
+    ctx.fillStyle = COLOR
   
-  const words = title.split('')
-  let line = ''
-
-  for (let i = 0; i < words.length; i++) {
-    const testLine = line + words[i]
-    const testWidth = ctx.measureText(testLine).width
-    if (testWidth > maxWidth) {
-      ctx.fillText(line, padding, top)
-      line = words[i]
-      top += fontSize + 20
-    } else {
-      line = testLine
+    const maxWidth = CANVAS_SIZE.w - PADDING * 2
+    
+    let line = ''
+    let top = 200
+  
+    for (const word of title.split('')) {
+      const testLine = line + word
+      const testWidth = ctx.measureText(testLine).width
+      if (testWidth > maxWidth) {
+        ctx.fillText(line, PADDING, top)
+        line = word
+        top += FONT_SIZE + 20
+      } else {
+        line = testLine
+      }
     }
+  
+    ctx.fillText(line, PADDING, top)
+  } finally {
+    ctx.restore()
   }
 
-  ctx.fillText(line, padding, top)
 
   return canvas.toBuffer('image/png')
 }
@@ -51,7 +61,7 @@ function getOgImageAPI(): {
       eager: true,
     }),
   );
-  
+
   return {
     getStaticPaths: async () => {
       return allPosts.map((post, i) => {
@@ -78,8 +88,9 @@ function getOgImageAPI(): {
         })
       }
 
+      const imageBuffer = await getOgImage(post.frontmatter.title)
       return new Response(
-        await getOgImage(post.frontmatter.title),
+        imageBuffer,
         {
           headers: {
             'content-type': 'image/png',
