@@ -1,7 +1,7 @@
-import type { APIRoute, GetStaticPaths, MDXInstance } from "astro";
-import { createCanvas, loadImage, registerFont } from "canvas"
-import fs from "node:fs"
-import path from "node:path"
+import fs from 'node:fs'
+import path from 'node:path'
+import type { APIRoute, GetStaticPaths, MDXInstance } from 'astro'
+import { createCanvas, loadImage, registerFont } from 'canvas'
 
 const FONT = path.resolve(process.cwd(), 'public/NotoSansJP-Bold.ttf')
 const FONT_FAMILY = 'Noto Sans JP' as const
@@ -22,15 +22,15 @@ async function getOgImage(title: string): Promise<Buffer> {
     ctx.save()
     const img = await loadImage(fs.readFileSync(IMAGE_TEMPLATE))
     ctx.drawImage(img, 0, 0, CANVAS_SIZE.w, CANVAS_SIZE.h)
-  
+
     ctx.font = `${FONT_SIZE}px "${FONT_FAMILY}"`
     ctx.fillStyle = COLOR
-  
+
     const maxWidth = CANVAS_SIZE.w - PADDING * 2
-    
+
     let line = ''
     let top = 200
-  
+
     for (const word of title.split('')) {
       const testLine = line + word
       const testWidth = ctx.measureText(testLine).width
@@ -42,7 +42,7 @@ async function getOgImage(title: string): Promise<Buffer> {
         line = testLine
       }
     }
-  
+
     ctx.fillText(line, PADDING, top)
   } finally {
     ctx.restore()
@@ -57,21 +57,19 @@ function getOgImageAPI(): {
   GET: APIRoute
 } {
   const allPosts: MDXInstance<MyPost>[] = Object.values(
-    import.meta.glob(["../posts/**/*.{md,mdx}", "!../posts/**/_*.{md,mdx}"], {
+    import.meta.glob(['../posts/**/*.{md,mdx}', '!../posts/**/_*.{md,mdx}'], {
       eager: true,
     }),
-  );
+  )
 
   return {
-    getStaticPaths: async () => {
-      return allPosts.map((post, i) => {
-        const path = post.url?.split('/').pop()
-        const slug = `${post.frontmatter.pubDate}&${path}`
-        return {
-          params: { slug },
-        };
-      })
-    },
+    getStaticPaths: async () => allPosts.map(post => {
+      const path = post.url?.split('/').pop()
+      const slug = `${post.frontmatter.pubDate}&${path}`
+      return {
+        params: { slug },
+      }
+    }),
     GET: async ({ params }) => {
       const slug = params.slug
       if (slug === undefined) {
@@ -94,11 +92,11 @@ function getOgImageAPI(): {
         {
           headers: {
             'content-type': 'image/png',
-          }
-        }
+          },
+        },
       )
-    }
+    },
   }
 }
 
-export const { getStaticPaths, GET } = getOgImageAPI();
+export const { getStaticPaths, GET } = getOgImageAPI()
