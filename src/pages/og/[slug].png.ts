@@ -63,7 +63,7 @@ function getOgImageAPI(): {
   )
 
   return {
-    getStaticPaths: async () => allPosts.map((post, i) => {
+    getStaticPaths: async () => allPosts.map(post => {
       const path = post.url?.split('/').pop()
       const slug = `${post.frontmatter.pubDate}&${path}`
       return {
