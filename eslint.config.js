@@ -4,7 +4,10 @@ import base from 'eslint-config-bcrikko'
  * @type {import('eslint').Linter.Config}
  */
 const config = [
-  ...base
+  ...base,
+  {
+    ignores: ['dist', '.astro'],
+  },
 ]
 
 export default config
