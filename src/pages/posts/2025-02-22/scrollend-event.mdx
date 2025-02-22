@@ -1,0 +1,131 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-22"
+updatedDate: "2025-02-22"
+title: "scrollendイベントでスクロールの完了タイミングを検知する"
+author: ダーシノ
+description: "scrollendイベントを使うことで、スクロールが完了したタイミングを検知できる。スクロールによるアニメーションやロードなどが使われるようなウェブサイトで効果を発揮する。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[scrollendイベント](https://developer.mozilla.org/ja/docs/Web/API/Document/scrollend_event)を使うことで、スクロールが完了したタイミングを検知できる。スクロールによるアニメーションやロードなどが使われるようなウェブサイトで効果を発揮する。
+
+<Baseline featureId={"scrollend"} />
+
+ユースケースとして、以下のようなことなどが考えられる。
+
+- Infinite Scrollの最適化
+- Lazy Loadingの最適化
+- スクロール終了時のアニメーション実行
+
+## scrollendイベントの使い方
+
+```js
+document.addEventListener('scroll', () => {
+  console.log('Scrolling...')
+})
+
+document.addEventListener('scrollend', () => {
+  console.log('Scroll end!');
+});
+```
+
+
+## デモ
+
+<section id="demo">
+  <div class="container">
+    <div class="item">One</div>
+    <div class="item">Two</div>
+    <div class="item">Three</div>
+    <div class="item">Four</div>
+    <div class="item">Five</div>
+    <div class="item">Six</div>
+    <div class="item">Seven</div>
+    <div class="item">Eight</div>
+    <div class="item">Nine</div>
+    <div class="item">Ten</div>
+    <div class="item">Eleven</div>
+    <div class="item">Twelve</div>
+    <div class="item">Thirteen</div>
+      
+    <aside class="avatar">
+      <img src="https://avatars.githubusercontent.com/u/5305599?v=4" alt="Avatar" />
+      <span>スクロール中は隠れるよ</span>
+    </aside>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  position: relative;
+  transform: translate(0);
+  overflow: hidden;
+
+  .container {
+    height: 400px;
+    border: 4px solid;
+    padding: 1rem;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .item {
+      flex-shrink: 0;
+      width: min(50%, 300px);
+      height: 100px;
+      border: 4px dotted;
+    }
+
+    .avatar {
+      position: fixed;
+      top: 1rem;
+      right: 2rem;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      span {
+        font-size: 0.8rem;
+      }
+      img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+      }
+
+      transition: transform 1s;
+      @starting-style {
+        transform: translateX(0);
+      }
+
+      &.hide {
+        transform: translateX(300%);
+      }
+    }
+  }
+}
+`}</style>
+
+<script>{`
+const container = document.querySelector('#demo .container');
+const avatar = container.querySelector('.avatar');
+
+container.addEventListener('scroll', () => {
+  avatar.classList.add('hide');
+})
+container.addEventListener('scrollend', () => {
+  avatar.classList.remove('hide');
+});
+`}</script>
