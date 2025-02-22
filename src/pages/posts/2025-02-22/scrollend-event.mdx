@@ -63,8 +63,7 @@ document.addEventListener('scrollend', () => {
 
 <style>{`
 #demo {
-  position: relative;
-  transform: translate(0);
+  contain: layout;
   overflow: hidden;
 
   .container {
@@ -111,7 +110,7 @@ document.addEventListener('scrollend', () => {
       }
 
       &.hide {
-        transform: translateX(300%);
+        transform: translateX(200%);
       }
     }
   }
