@@ -1,0 +1,162 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-22"
+updatedDate: "2025-02-22"
+title: "position: fixedの基準を親要素にあわせる"
+author: ダーシノ
+description: "position: fixed;を指定すると、ドキュメントフローから除外され、Initial Containing Block（最初の包含ブロック ≒ viewport ≒ ブラウザの表示領域）を基準に配置される。通常は親要素を基準にしたposition: fixedは使用できない。対策として以下の2つがある。transformプロパティを使ったCSSハック。containプロパティを使った制御（推奨）。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[`position: fixed;`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#fixed)を指定すると、ドキュメントフローから除外され、Initial Containing Block（最初の包含ブロック ≒ viewport ≒ ブラウザの表示領域）を基準に配置される。
+
+## TL;DR
+
+- 通常は親要素を基準にした`position: fixed`は使用できない
+- 対策として以下の2つがある
+  - `transform`プロパティを使ったCSSハック
+  - **`contain`プロパティを使った制御（オススメ）**
+
+## （通常は）親要素を基準に`position: fixed;`ができない
+
+**「overflowが発生するある要素に対し固定位置に配置したい」ということが、通常はできない。**
+
+以下の場合、`.fixed`要素を`.container`要素を基準に配置したくても、viewportの左上の表示されてしまう。
+```html
+<div class="container">
+  <div class="fixed">Fixed</div>]
+  ...
+</div>
+```
+
+```css
+.container {
+  position: relative;
+  overflow: auto;
+}
+
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+```
+
+CSS Container Queries や CSS Anchor Positioning があるのでできそうな気もするが、実装するにはCSSハックが必要になる。
+
+## `transform`を使ったCSSハック（古い）
+
+`transform`プロパティに`none`以外の値が設定されると、Stacking Context（重ね合わせコンテキスト）が生成される。そのため、Containing Block（包含ブロック）として扱われるようになる。
+
+```html
+<div class="containing-block">
+  <div class="content">
+    <!-- Fixed要素は.containing-block要素を基準にレイアウトされる -->
+    <div class="fixed">Fixed</div>
+    ...
+  </div>
+</div>
+```
+
+```css
+.containing-block {
+  transform: translate(0);
+}
+
+.container {
+  overflow: auto;
+}
+
+.fixed {
+  /* #containing-blockを基準に配置 */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+```
+
+### transformを使ったCSSハックのデモ
+
+<section id="demo1">
+  <div class="content">
+    <div class="fixed">Fixed</div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </div>
+</section>
+
+<style>{`
+#demo1 {
+  transform: translate(0);
+
+  .fixed {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+  }
+
+  .content {
+    overflow: auto;
+    border: 4px solid;
+    height: 300px;  
+    margin: auto;
+  }
+}
+`}</style>
+
+
+## containプロパティを使った制御
+
+先述の`transform`プロパティを使った制御は、「CSSハック」というだけあって意図が読み取りづらい。
+
+[containプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/contain)の`layout`を使うことで、要素外のレイアウトに影響を与えることなく`position: fixed;`を使うことができる。
+
+```html
+<div class="layout">
+  <div class="content">
+    <!-- Fixed要素はdiv.layout要素を基準にレイアウトされる -->
+    <div class="fixed">Fixed</div>
+    ...
+  </div>
+</div>
+```
+
+```css
+.layout {
+  contain: layout;
+}
+
+.container {
+  overflow: auto;
+}
+
+.fixed {
+  /* contain: layoutを指定した要素を基準に配置 */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+```
+
+### containプロパティを使ったデモ
+
+<section id="demo1">
+  <div class="content">
+    <div class="fixed">Fixed</div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </div>
+</section>
+
+<style>{`
+#demo2 {
+  contain: layout;
+}
+`}</style>
