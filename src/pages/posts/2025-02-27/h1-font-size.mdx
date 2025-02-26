@@ -1,0 +1,145 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-02-27"
+updatedDate: "2025-02-27"
+title: "階層によってh1要素のfont-sizeがかわる歴史的背景"
+author: ダーシノ
+description: "階層が深くなるにつれ、h1要素のfont-sizeがどんどん小さくなり、3階層目にはh1要素とh2要素のfont-sizeが逆転してしまう。実際にHTML Living Standardの仕様を見てみると以下のようになっていた。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+当ブログのCSSを修正するにあたり、気になるUser Agent Stylesheetがあった。
+
+
+以下のように階層が深くなるにつれ、h1要素のfont-sizeがどんどん小さくなり、3階層目にはh1要素とh2要素のfont-sizeが逆転してしまう。
+```html
+<body>
+  <h1>body h1: 2em</h1>
+  <h2>body h2: 1.5em</h2>
+
+  <section>
+    <h1>body section h1: 1.5em</h1>
+    <h2>body section h2: 1.5em</h2>
+
+    <article>
+      <h1>body section article h1: 1.17em</h1>
+      <h2>body section article h2: 1.5em</h2>
+
+      <section>
+        <h1>body section article section h1: 1em</h1>
+
+        ...
+      </section>
+    </article>
+  </section>
+</body>
+```
+
+実際に[HTML Living Standard](https://html.spec.whatwg.org/multipage/rendering.html#sections-and-headings)の仕様を見てみると以下のようになっていた。
+
+
+```css
+/* 1階層目 */
+h1 {
+  font-size: 2em;
+}
+
+/* 2階層目 */
+:is(article, aside, nav, section)
+h1 {
+  font-size: 1.50em;
+}
+/* 3階層目 */
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+h1 {
+  font-size: 1.17em;
+}
+/* 4階層目 */
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+h1 {
+  font-size: 1.00em;
+}
+/* 5階層目 */
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+h1 {
+  font-size: 0.83em;
+}
+/* 6階層目 */
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+:is(article, aside, nav, section)
+h1 {
+  font-size: 0.67em;
+}
+```
+
+## h1要素のfont-sizeが変わる歴史的背景
+
+### HTML 4.01
+[HTML4の見出し要素の仕様](https://www.w3.org/TR/html401/struct/global.html#h-7.5.5)は、以下のようにh1（最上位）〜h6（最下位）までのレベルがあった。
+
+```xml
+<!ENTITY % heading "H1|H2|H3|H4|H5|H6">
+<!--
+  There are six levels of headings from H1 (the most important)
+  to H6 (the least important).
+-->
+
+<!ELEMENT (%heading;)  - - (%inline;)* -- heading -->
+<!ATTLIST (%heading;)
+  %attrs;                              -- %coreattrs, %i18n, %events --
+  >
+```
+
+HTML4ではセクションを明示的に示す要素（sectionやarticleなど）がなかったため、見出し要素と汎用コンテナ（divなど）を組み合わせて文書構造を表現していた。
+
+h1〜h6は`%heading`として扱われ、とくに**文書にh1は1つだけなどの明確な制限はなかった。**
+
+### HTML 5
+
+HTML5では、[セクショニングコンテンツ](https://www.w3.org/TR/2011/WD-html5-20110405/sections.html#headings-and-sections)という新しい概念が加わり、アウトラインアルゴリズムによって文書構造を解釈するようになった。
+
+具体的には、`<section>`や`<article>`などのセクション要素が導入され、各セクションの最初に出現する見出し要素がそのセクションの見出しとみなされる。そのため、**セクションで区切られていればh1要素を複数回使用できるようになった。**
+```html
+<h1>Heading 1</h1>
+
+<section>
+  <h1>Heading 1: OK</h1>
+
+  <article>
+    <h1>Heading 1: OK</h1>
+  </article>
+</section>
+```
+
+アウトラインアルゴリズムにより階層ごとにh1要素が持つ役割も変わり、font-sizeを変えることで複数使った場合でも自然なリズムを保つことができる。
+
+### HTML 5.1
+
+HTML5.1では、HTML5と同様セクショニングコンテンツごとにh1要素を使うことができた。ただし、**各セクションごとにh1要素を使う方法より、h1→h2→h3→...と順序をつけて使う方法が推奨される**流れとなった。
+
+### HTML Living Standard
+
+他方、HTML Living Standardでは、文書内に見出しがある場合は、少なくとも1つのh1要素が必要である。またレベルのスキップは許容されていない。
+
+> When creating an interactive table of contents, entries should jump the user to the relevant heading.
+> [HTML Living Standard](https://html.spec.whatwg.org/multipage/sections.html#headings-and-outlines:~:text=When%20creating%20an%20interactive%20table%20of%20contents%2C%20entries%20should%20jump%20the%20user%20to%20the%20relevant%20heading.)
+
+上記仕様からはh1要素を複数使っても良いと受け取れるが、**HTML5が廃止され、事実上アウトラインアルゴリズムも廃止されたため、セクションごとに適切なレベルの見出し要素を管理することが推奨される**ようになった。
+
+## まとめ
+
+こういった歴史的な背景があり、現時点ではセクションが深くなるほどh1要素のfont-sizeが小さくなるという仕様になっている。
+
