@@ -1,0 +1,157 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-01"
+updatedDate: "2025-03-01"
+title: "ウェブに関する標準化団体やグループと活動内容"
+author: ダーシノ
+description: "ウェブに関する団体はいくつもあり、どこで何をやっているのか、我々フロントエンドエンジニアにどんな影響があるのか、簡単にまとめる。"
+tags: ["Web"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ウェブに関する団体はいくつもあり、どこで何をやっているのか、我々フロントエンドエンジニアにどんな影響があるのか、簡単にまとめる。
+
+## W3C: World Wide Web Consortium
+
+ウェブで用いられる各種技術の標準化を推進するために1994年にティム・バーナーズ=リーが中心となって設立された非営利の標準化団体。HTMLやCSS、DOM、SVG、アクセシビリティ（Accessibility/a11y）、国際化（Internationalization/i18n）などのワーキンググループがあり、技術仕様の策定を行っている。
+
+### 標準化プロセス
+
+[W3Cが発行する文書](https://www.w3.org/standards/types/)はいくつかあるが、その中でも代表的なものをピックアップしてみる。
+
+1. 編集者草稿（Editor's Draft）
+   - [Working Group](https://www.w3.org/groups/wg/)のメンバーが作成した草稿
+   - 検討・議論するためのもので公式な標準プロセスではない
+2. 作業草稿（Working Draft）
+   - Working Groupによって標準化プロセスの初期段階に作成される草稿
+   - 広くフィードバックを募るために公開される
+   - [W3C standards and drafts](https://www.w3.org/TR/)で公開される
+3. 勧告候補（Candidate Recommendation）
+   - WDで十分なレビューが行われ完成した仕様
+   - 複数のブラウザで実装し、実際の動作を確認するテスト段階
+4. 勧告案（Proposed Recommendation）
+   - [W3Cの諮問委員会](https://www.w3.org/groups/other/ab/)によって承認を得るために作成される
+   - ほぼ最終段階の仕様で、最終レビューと承認を得る
+5. 勧告（Recommendation）
+   - 公式なウェブ標準仕様となったもの
+   - ウェブ標準として確定し、ブラウザなどに実装を促す
+
+### 主なWorking Group
+
+ウェブ開発者にとって身近なWorking Groupをいくつか紹介する。
+
+- HTML WG
+   -  WHATWG HTML/DOM Review Draftsに意見を述べ、W3C勧告に反映させる
+- CSS WG
+   - CSSの開発・保守を行う
+- SVG WG
+   - SVGの開発・保守を行う
+- Internationalization WG
+   - さまざまな言語や文字などでウェブを利用するための技術仕様を策定を行う
+
+他にもWebAssemblyやMedia、PerformanceなどいろいろなWorking Groupがある。
+
+### W3C関連グループ
+
+#### WAI: Web Accessibility Initiative
+
+ウェブアクセシビリティの向上を目的とした組織（イニシアチブ）で、すべての人がウェブにアクセスしやすくなるような技術策定、ガイドライン、ツールの開発を行っている。
+
+以下のような仕様を策定している。
+
+- WCAG: Web Content Accessibility Guidelines
+   - ウェブコンテンツのアクセシビリティ向上を目的としたガイドライン
+   - 日本では[JIS X 8341-3:2016](https://waic.jp/docs/jis2016/understanding/201604/)という基準がある
+- WAI-ARIA: Accessible Rich Internet Applications
+   - 動的コンテンツやウェブアプリケーションのアクセシビリティ向上のための技術仕様
+   - `<button aria-label="送信">`みたいな使い方をする
+- ATAG: Authoring Tool Accessibility Guidelines
+   - コンテンツを作成するツールのアクセシビリティ向上のためのガイドライン
+- UAAG: User Agent Accessibility Guidelines
+   - すべての人がウェブブラウザを利用しやすくするためのガイドライン
+
+#### WICG: Web Incubator Community Group
+
+新しいウェブ技術の実験的な開発を目的としたコミュニティグループで、プロトタイプの開発や標準化の提案を行っている。
+
+Proposalが成熟すると、W3Cの正式なWorking Groupに移行することが多い。[GitHub上でProposalを管理している](https://github.com/WICG/proposals)ため、議論がオープンで誰でも参加できる。
+
+
+#### Open UI Community Group
+
+ウェブプラットフォーム上のUIコンポーネントの標準化と拡張を目指すコミュニティグループで、より強力なネイティブUIコンポーネントを利用できるようにしている。
+
+
+## WHATWG: Web Hypertext Application Technology Working Group
+
+HTMLや関連技術の開発を目的として、AppleやMozilla、Operaによって2004年に設立されたコミュニティ。のちにMicrosoftやGoogleも参加している。
+
+HTML Living Standardを提唱。W3CのHTML5とLiving Standardで仕様が異なり、ブラウザごとに挙動が異なるなどなんだかんだあり、2019年にW3CはHTMLとDOMの策定をやめ、WHATWGのHTML Living Standardを採用することを決定。
+
+WHATWGは、HTML Living Standard（HTMLの仕様）に加え、DOM Standard（DOMの仕様）の策定を行っている。
+
+
+
+## Ecma International
+
+もともとは欧州電子計算機工業会（European Computer Manufacturers Association）として1961年に設立された団体だったが、世界的に活動を行うため、Ecma Internationalと改名。
+
+※ECMAは略称ではなくなったため、「Ecma International」とする表記が正しい
+
+### TC39: Technical Committee 39
+
+Ecmaの中にあるEMCAScript（ECMA-262: JavaScriptの標準仕様）を策定する技術委員会。ECMAScriptは、ウェブブラウザで動作するJavaScriptをはじめ、Node.jsなどサーバー環境などでも多く使われている。
+
+ES3、ES5と続き、ES6/ES2015に大きな転換期を迎え、以降は新しい機能が毎年追加されるようになった。そのため、ES7ではなくES2016やES2017のような西暦でバージョンが表記されるようになった。
+
+ECMAScriptの標準化のプロセスは、[ECMAScriptの標準化プロセスと各Stageの意味と移行条件](https://bcrikko.github.io/til/posts/2024-09-03/ecmascript-process/)を参照。
+
+
+### WinterTC: Web Interoperable Server Runtimes Technical Committee
+
+もともとW3C内でWinterCG（Web Interoperable Runtimes Community Group）という名前で、サーバサイドJavaScriptのランタイム間のAPIの互換性を向上させるための活動を行っていた。2025年にEcma Internationalへ移行し、TC55:WinterTCとして再編された。
+
+
+
+## Interop Project
+
+主要なウェブブラウザ間の互換性を向上させることを目的とした共同プロジェクトで、各ブラウザベンダーが参加している。毎年特定のポイントを設定し、その改善に取り組んでいる。
+
+最近の主なポイントは以下の通り。
+
+- Accessibility
+- CSS Nesting
+- Custom Property
+- Popover
+- Anchor Positioning
+- Core Web Vitals
+- View Transitions
+- WebAssembly
+- `@scope`
+
+などが挙げられる。
+
+
+## OpenJS Foundation
+
+Node.jsとJS Foundationが合併し、2019年にOpenJS Foundationを設立。JavaScriptやウェブ技術などの成長をサポートするための非営利団体。jQueryやNode.js、webpack、ESLintなど多くの人が使っているOSSプロジェクトをホスティングし、中立性を保つ活動をしている。
+
+
+## 参考サイト
+
+- [W3C](https://www.w3.org/)
+   - [W3C standards and drafts](https://www.w3.org/TR/)
+   - [Working Groups](https://www.w3.org/groups/wg/)
+   - [Web Accessibility Initiative \(WAI\)](https://www.w3.org/WAI/)
+      - [W3C Accessibility Standards Overview](https://www.w3.org/WAI/standards-guidelines/)
+   - [Web Incubator Community Group \(WICG\)](https://wicg.io/)
+   - [Open UI Community Group](https://www.w3.org/community/open-ui/)
+- [Web Hypertext Application Technology Working Group \(WHATWG\)](https://whatwg.org/)
+- [Ecma International](https://ecma-international.org/)
+   - [TC39 \- Specifying JavaScript\.](https://tc39.es/)
+   - [WinterTC](https://wintertc.org)
+- [Interop project](https://github.com/web-platform-tests/interop)  
+- [OpenJS Foundation](https://openjsf.org/)
