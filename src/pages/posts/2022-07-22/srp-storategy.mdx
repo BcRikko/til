@@ -1,0 +1,84 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-07-22"
+updatedDate: "2022-07-22"
+title: "単一責任選択の原則とストラテジーパターン"
+author: ダーシノ
+description: "「単一責任の原則（Single Responsibility Principle）」は聞いたことあったが、「単一責任“選択”の原則」は初耳だった。簡単に説明すると「同じ条件分岐を書くなら処理をまとめること」を指している。"
+tags: ["Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+「単一責任の原則（Single Responsibility Principle）」は聞いたことあったが、「単一責任“選択”の原則」は初耳だった。
+
+> ソフトウェアシステムが選択肢を提供しなければならないとき、そのシステムの中の1つのモジュールだけがその選択肢のすべてを把握すべきである。
+> 
+> [オブジェクト指向入門 第2版 原則・コンセプト](https://amzn.to/4ioa0P2)
+
+簡単に説明すると「同じ条件分岐を書くなら処理をまとめること」を指している。
+
+## BAD: 条件武分岐が点在している
+
+```ts
+// MagicTypeによる条件分岐が点在している
+type MagicType = 'fire' | 'thunder' | 'wind'
+
+function costMP(magicType: MagicType): number {
+  switch(magicType) {
+    case 'fire':
+      ...
+    case 'thunder':
+      ...
+  }
+}
+function getName(magicType: MagicType): string {
+  switch(magicType) {
+    case 'fire':
+    ...
+}
+```
+
+## BETTER: 単一責任選択の原則を適用
+
+```ts
+class Magic {
+  constructor(magicType: MagicType) {
+    switch(magicType) {
+      case 'fire':
+        this.#costMP = 10
+        this.#name = 'ファイア'
+        break
+      case 'thunder':
+        ...
+    }
+  }
+}
+```
+
+## GOOD: ストラテジーパターン
+
+```ts
+interface Magic {
+  name(): string
+  costMP(): number 
+}
+
+class Fire implements Magic {
+  name() {
+    return 'ファイア'
+  }
+  costMP() {
+    return 10
+  }
+}
+
+const magics = Map<MagicType, Magic>([ ['fire', Fire], ['thunder', Thunder], ['wind', Wind]])
+function useMagic(magicType: MagicType) {
+  const usingMagic = magics.get(magicType)
+  
+  console.log(`発動:${usingMagic.name()}, 消費MP:${usingMagic.costMP()}`)
+}
+```
