@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-08-03"
+updatedDate: "2022-08-03"
+title: "ネストの深いところにある値の分割代入"
+author: ダーシノ
+description: "分割代入を使うことで、オブジェクトのプロパティを変数として抜き出せる。深いところにあるプロパティを取得するためには、分割代入のときに同じような階層をつくる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+分割代入を使うことで、オブジェクトのプロパティを変数として抜き出せる。
+
+```js
+const obj = { data: 'xxx' }
+
+const { data } = obj
+```
+
+深いところにあるプロパティを取得するためには、分割代入のときに同じような階層をつくる。
+
+```js
+const obj = {
+  foo: {
+      bar: {
+          baz: 'xxx',
+          piyo: 'piyo'
+      },
+      fuga: 'fuga'
+  },
+  hoge: 'hoge'
+}
+
+// 分割代入
+const {
+    foo: {
+        bar: {
+            baz,
+            piyo
+        },
+        fuga
+    },
+    hoge
+} = obj
+
+
+console.log({ baz, hoge, fuga, piyo })
+// {
+//   "baz": "xxx",
+//   "hoge": "hoge",
+//   "fuga": "fuga",
+//   "piyo": "piyo"
+// } 
+
+// foo: Cannot find name 'foo'.
+// bar: Cannot find name 'bar'.
+```
