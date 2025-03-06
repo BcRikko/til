@@ -1,0 +1,46 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-07-21"
+updatedDate: "2022-07-21"
+title: "private constructorで目的別にインスタンス化する"
+author: ダーシノ
+description: "TypeScriptでconstructorをprivateにすることで、目的別にインスタンスを生成できる。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScriptでconstructorをprivateにすることで、目的別にインスタンスを生成できる。
+
+```ts
+class AccountManager {
+  static readonly #Free = 0
+  static readonly #Premium = 100
+  readonly #point: number
+
+  // 外部からはインスタンス化できない
+  private constructor(point: number) {
+    this.#point = point
+  }
+
+  add(point: number) {
+    return new AccountManager(this.#point + point)
+  }
+
+  // 目的別でstaticのファクトリメソッドを用意する
+  static createFreeAccount() {
+    return new AccountManager(this.#Free)
+  }
+  static createPremiumAccount() {
+    return new AccountManager(this.#Premium)
+  }
+}
+
+const freeAccount = AccountManager.createFreeAccount()
+const free2 = freeAccount.add(100)
+
+const premiumAccount = AccountManager.createPremiumAccount()
+const premium2 = premiumAccount.add(100)
+```
