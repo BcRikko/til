@@ -4,7 +4,7 @@ pubDate: "2025-03-11"
 updatedDate: "2025-03-11"
 title: "Popover=hintの使い方"
 author: ダーシノ
-description: "Popover APIの新しいモードとしてhintが導入されようとしている。デフォルトのpopover=autoの場合、が排他的に制御されるため、一度に複数のポップオーバーを表示することができない。popover=hintを使うことで、popoverメニューを表示しながらツールチップを表示するという処理が実現できる。"
+description: "Popover APIの新しいモードとしてhintが導入されようとしている。デフォルトのpopover=autoの場合、popoverで表示した要素が排他的に制御されるため、一度に複数のポップオーバーを表示することができない。popover=hintを使うことで、popoverメニューを表示しながらツールチップを表示するという処理が実現できる。"
 tags: ["HTML"]
 ---
 
@@ -15,7 +15,7 @@ import Baseline from '../../../components/Baseline.astro'
 
 Popover APIの新しいモードとして`hint`が導入されようとしている。
 
-デフォルトの`popover="auto"`の場合、が排他的に制御されるため、一度に複数のポップオーバーを表示することができない。`popover="hint"`を使うことで、popoverメニューを表示しながらツールチップを表示するという処理が実現できる。
+デフォルトの`popover="auto"`の場合、popoverで表示した要素が排他的に制御されるため、一度に複数の要素を表示できない。`popover="hint"`を使うことで、メニューを表示しながらツールチップを表示するという処理が実現できる。
 
 <Baseline featureId={"popover-hint"} />
 
