@@ -1,0 +1,90 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-12"
+updatedDate: "2025-03-12"
+title: "Parse, don't validate（型駆動設計）のメリット"
+author: ダーシノ
+description: "Parse, don’t validateを読んだので、そこで理解した内容をまとめる。Parse, don’t validateとは、データを単に検証（validate）するのではなく、解析（parse）して適切なデータ型や構造に変換しようという考え方だ。"
+tags: ["Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)を読んだので、そこで理解した内容をまとめる。
+
+Parse, don't validateとは、**データを単に検証（validate）するのではなく、解析（parse）して適切なデータ型や構造に変換しよう**という考え方だ。
+
+
+## Validate
+
+まずは検証だけを行う場合を考えてみる。
+```ts
+type Item = { label: string, price: number }
+function isValidItem(item: unknown): boolean {
+  if (!item) {
+    return false
+  }
+
+  if (typeof item !== 'object') {
+    return false
+  }
+
+  if (Object.hasOwn(item, 'label') === false) {
+    return false
+  }
+
+  if (Object.hasOwn(item, 'price') === false) {
+    return false
+  }
+
+  return true
+}
+
+const res = api.get('...')
+if (isValidItem(res)) {
+  const item = res as Item
+}
+```
+
+**`isValidItem()`は、検証するだけ（booleanを返すだけ）で型を保証してくれるわけではない。** そのため、if文を通過したあとにバグを引き起こす可能性がある。
+
+※TypeScriptにはType Predicateという機能があるので、やろうと思えば型を保証できる。
+```ts
+// TypeScriptのType Predicate機能を使った場合
+function isValidItem(item: unknown): item is Item {
+  ...
+}
+```
+
+## Parse
+
+解析して適切なデータに変換する場合を考えてみる。
+
+```ts
+function parseItem(item: unknown): Item {
+  if (!item) {
+    throw new Error('item is required')
+  }
+
+  if (typeof item !== 'object') {
+    throw new Error('item must be an object')
+  }
+
+  if (Object.hasOwn(item, 'label') === false) {
+    throw new Error('item.label is required')
+  }
+
+  if (Object.hasOwn(item, 'price') === false) {
+    throw new Error('item.price is required')
+  }
+
+  return item as Item
+}
+
+const res = api.get('...')
+const item = parseItem(res)
+```
+
+**`parseItem()`は検証と解析を同時に行うため、戻り値に意味（型）を持たせることができる。** そのため、以降のコードで型チェックが不要になり、バグを防ぎやすくなる。また、このようにParseすることで、あり得ない状態を排除できるので、コードやテストが書きやすくなる。
