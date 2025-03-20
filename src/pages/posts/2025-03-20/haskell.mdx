@@ -1,0 +1,342 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-20"
+updatedDate: "2025-03-20"
+title: "フロントエンドエンジニアのためのHaskell入門"
+author: ダーシノ
+description: "Haskellを学ぶため過去3回入門し3回破門されたので、今度こそ免許皆伝したい。普段はTypeScriptで開発を行っているので、Haskellと比較しながら学んでいきたい。"
+tags: ["Haskell", "TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Haskellを学ぶため過去3回入門し3回破門されたので、今度こそ免許皆伝したい。
+
+普段はTypeScriptで開発を行っているので、Haskellと比較しながら学んでいきたい。
+
+
+## 基本構文
+
+### 変数の宣言
+
+```ts
+const x: number = 10
+```
+
+```haskell
+x :: Int
+x = 10
+```
+
+### 関数の宣言
+
+```ts
+function add(x: number, y: number): number {
+  return x + y
+}
+```
+
+```haskell
+add :: Int -> Int -> Int
+add x y = x + y
+```
+
+### アロー関数
+
+```ts
+const add = (x: number, y: number): number => x + y
+```
+
+```haskell
+add :: Int -> Int -> Int
+add = \x y -> x + y
+```
+
+### リスト
+
+```ts
+const list: number[] = [1, 2, 3]
+```
+
+```haskell
+list :: [Int]
+list = [1, 2, 3]
+```
+
+### タプル
+
+```ts
+const tuple: [number, string] = [10, "hello"]
+```
+
+```haskell
+tuple :: (Int, String)
+tuple = (10, "hello")
+```
+
+### 条件分岐
+
+```ts
+if (x > 10) {
+  return 'big'
+} else {
+  return 'small'
+}
+```
+
+```haskell
+if x > 10
+  then "big"
+  else "small"
+```
+
+### パターンマッチ
+
+```ts
+switch(x) {
+  case: 1
+    return 'one'
+  case: 2
+    return 'two'
+  default:
+    return 'other'
+}
+```
+
+```haskell
+case x of
+  1 -> "one"
+  2 -> "two"
+  _ -> "other"
+```
+
+### ループ（for）
+
+```ts
+for (let i = 0; i < 10; i++) {
+  console.log(i)
+}
+```
+
+```haskell
+map print [0..9]
+```
+
+### ループ（while）
+
+```ts
+while(isDone === false) {
+  console.log('not done')
+}
+```
+
+Haskellにはループがないので、再帰や高階関数を使う。
+
+### オブジェクト
+
+```ts
+type Person = {
+  name: string
+  age: number
+}
+
+const person: Person = {
+  name: 'Alice',
+  age: 20
+}
+```
+
+```haskell
+data Person = Person { name :: String, age :: Int }
+person = Person { name = "Alice", age = 20 }
+```
+
+## サンプルプログラム（ToDoリスト）
+
+### TypeScript
+
+```ts
+type Task = {
+  taskID: number
+  title: string
+}
+
+function listTask(taskRef: Task[]) {
+  console.log('Task List:')
+
+  if (taskRef.length === 0) {
+    console.log('No tasks.')
+  } else {
+    taskRef.forEach(({ taskID, title }) => {
+      console.log(`${taskID}. ${title}`)
+    })
+  }
+}
+
+function addTask(taskRef: Task[], title: string) {
+  const newTask = {
+    taskID: taskRef.length + 1,
+    title
+  }
+
+  taskRef.push(newTask)
+  console.log('Task added:', newTask)
+}
+
+function removeTask(taskRef: Task[], targetID: number) {
+  const newTasks = taskRef.filter(({ taskID }) => taskID !== targetID)
+
+  if (taskRef.length === newTasks.length) {
+    console.log('Task not found.')
+  } else {
+    taskRef.splice(0, taskRef.length, ...newTasks)
+    console.log('Task removed:', targetID)
+  }
+}
+
+function main(): void {
+  const tasks: Task[] = [];
+
+  console.log("=== Step 1: Add Tasks ===");
+  addTask(tasks, "Buy broccoli");
+  addTask(tasks, "Walk the dog");
+  addTask(tasks, "Study Haskell");
+
+  console.log("\n=== Step 2: List Tasks ===");
+  listTasks(tasks);
+
+  console.log("\n=== Step 3: Remove Task ===");
+  removeTask(tasks, 2);
+
+  console.log("\n=== Step 4: List Tasks After Removal ===");
+  listTasks(tasks);
+
+  console.log("\n=== Done! ===");
+}
+
+main()
+
+```
+
+### Haskell
+
+```haskell
+-- ミュータブルなデータを扱うためのモジュール
+import Data.IORef
+
+{-
+  Taskのデータ型
+-}
+-- deriving Show はTask型を文字列に変換するための関数を自動生成する
+data Task = Task {
+  taskID :: Int,
+  title :: String
+} deriving Show
+
+{-
+  Task一覧の表示
+-}
+listTasks :: IORef [Task] -> IO ()
+listTasks tasksRef = do
+  -- 引数tasksRefからデータを読み取る
+  tasks <- readIORef tasksRef
+  putStrLn "Task List:"
+
+  if null tasks
+    -- tasks === null なら No tasks.
+    then putStrLn "No tasks."
+    -- Array#map()と同じで無名関数を作っている
+    -- (Task i title)は引数:tasksからtitleを取得する
+    else mapM_ (\(Task taskID title) -> 
+      putStrLn $ show taskID ++ ". " ++ title
+    ) tasks
+
+{-
+  Taskの追加
+-}
+addTask :: IORef [Task] -> String -> IO ()
+addTask tasksRef title = do
+  tasks <- readIORef tasksRef
+
+  -- 引数titleを使って新しいTaskを作成する
+  let newTask = Task {
+    taskID = length tasks + 1,
+    title = title
+  }
+
+  -- modifyIORefはIORefに格納された値を更新するために仕様される
+  -- (++ [newTask])の++はリスト結合の演算子で、tasksRefの末尾にnewTaskを追加する
+  modifyIORef tasksRef (++ [newTask])
+
+  -- putStrLnの引数内で文字結合できないため$をつける
+  putStrLn $ "Task added:" ++ show newTask 
+
+{-
+  Taskの削除
+-}
+removeTask :: IORef [Task] -> Int -> IO ()
+removeTask tasksRef targetID = do
+  tasks <- readIORef tasksRef
+
+  -- tasks.filter(({ taskID }) => taskID !== targetID) と同じ
+  let newTasks = filter (\(Task taskID _) -> taskID /= targetID) tasks
+
+  if length tasks == length newTasks
+    then putStrLn "Task not found."
+    else do
+      -- writeIORefはIORefに新しいTaskリストを書き込む
+      writeIORef tasksRef newTasks
+      putStrLn $ "Task removed." ++ show targetID
+
+{-
+  エントリーポイント
+-}
+main :: IO ()
+main = do
+  -- メモリ上にTaskリストを作成する
+  tasksRef <- newIORef []
+
+  putStrLn "=== Step 1: Add Tasks ==="
+  addTask tasksRef "Buy broccoli"
+  addTask tasksRef "Walk the dog"
+  addTask tasksRef "Study Haskell"
+
+  putStrLn "\n=== Step 2: List Tasks ==="
+  listTasks tasksRef
+
+  putStrLn "\n=== Step 3: Remove Task ==="
+  removeTask tasksRef 2
+
+  putStrLn "\n=== Step 4: List Tasks After Removal ==="
+  listTasks tasksRef
+
+  putStrLn "\n=== Done! ==="
+```
+
+### 実行結果
+
+```text
+=== Step 1: Add Tasks ===
+Task added:Task {taskID = 1, title = "Buy broccoli"}
+Task added:Task {taskID = 2, title = "Walk the dog"}
+Task added:Task {taskID = 3, title = "Study Haskell"}
+
+=== Step 2: List Tasks ===
+Task List:
+1. Buy broccoli
+2. Walk the dog
+3. Study Haskell
+
+=== Step 3: Remove Task ===
+Task removed.2
+
+=== Step 4: List Tasks After Removal ===
+Task List:
+1. Buy broccoli
+3. Study Haskell
+
+=== Done! ===
+```
+
