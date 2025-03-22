@@ -12,6 +12,9 @@ export default defineConfig({
     sitemap(),
   ],
   markdown: {
+    shikiConfig: {
+      theme: 'dark-plus',
+    },
     rehypePlugins: [
       (...args) => rehypeKatex({
         ...args,
