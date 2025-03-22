@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2025-03-20"
-updatedDate: "2025-03-20"
+updatedDate: "2025-03-22"
 title: "フロントエンドエンジニアのためのHaskell入門"
 author: ダーシノ
 description: "Haskellを学ぶため過去3回入門し3回破門されたので、今度こそ免許皆伝したい。普段はTypeScriptで開発を行っているので、Haskellと比較しながら学んでいきたい。"
@@ -157,6 +157,10 @@ person = Person { name = "Alice", age = 20 }
 
 ### TypeScript
 
+<details>
+
+<summary>ソースコード</summary>
+
 ```ts
 type Task = {
   taskID: number
@@ -217,8 +221,9 @@ function main(): void {
 }
 
 main()
-
 ```
+
+</details>
 
 ### Haskell
 
@@ -340,3 +345,251 @@ Task List:
 === Done! ===
 ```
 
+
+
+## サンプルプログラム（JSONパーサー）
+
+### TypeScript
+
+<details>
+  <summary>ソースコード</summary>
+
+```ts
+type JSONValue = 
+  | string
+  | number
+  | JSONObject;
+
+interface JSONObject {
+  [key: string]: JSONValue;
+}
+
+function parseJSON(input: string): JSONValue {
+  const trimmedInput = input.trim();
+  const [result, rest] = parseValue(trimmedInput);
+  if (rest.trim() === "") {
+    return result;
+  } else {
+    throw new Error("Parse error");
+  }
+}
+
+function parseValue(input: string): [JSONValue, string] {
+  const firstChar = input[0];
+
+  if (firstChar === '"') {
+    return parseString(input);
+  } else if (firstChar === '{') {
+    return parseObject(input);
+  } else if (isDigit(firstChar)) {
+    return parseNumber(input);
+  } else {
+    throw new Error("Invalid JSON value");
+  }
+}
+
+function parseString(input: string): [string, string] {
+  const endQuoteIndex = input.indexOf('"', 1);
+  if (endQuoteIndex === -1) {
+    throw new Error("Expected closing quote for string");
+  }
+  const str = input.slice(1, endQuoteIndex);
+  const rest = input.slice(endQuoteIndex + 1);
+  return [str, rest];
+}
+
+function parseObject(input: string): [JSONObject, string] {
+  let rest = input.slice(1).trim(); // Skip the opening '{'
+  const obj: JSONObject = {};
+
+  while (rest[0] !== '}') {
+    const [key, restAfterKey] = parseString(rest);
+    rest = restAfterKey.trim();
+
+    if (rest[0] !== ':') {
+      throw new Error("Expected ':' after key in object");
+    }
+    rest = rest.slice(1).trim(); // Skip the ':'
+
+    const [value, restAfterValue] = parseValue(rest);
+    obj[key] = value;
+    rest = restAfterValue.trim();
+
+    if (rest[0] === ',') {
+      rest = rest.slice(1).trim(); // Skip the ','
+    } else if (rest[0] !== '}') {
+      throw new Error("Expected ',' or '}' in object");
+    }
+  }
+
+  return [obj, rest.slice(1)]; // Skip the closing '}'
+}
+
+function parseNumber(input: string): [number, string] {
+  const match = input.match(/^\d+/);
+  if (!match) {
+    throw new Error("Expected a number");
+  }
+  const numStr = match[0];
+  const rest = input.slice(numStr.length);
+  return [parseInt(numStr, 10), rest];
+}
+
+function isDigit(char: string): boolean {
+  return char >= '0' && char <= '9';
+}
+
+// Example usage
+const jsonText = '{"name":"Alice","age":20}';
+const parsed = parseJSON(jsonText);
+console.log(parsed);
+```
+
+</details>
+
+### Haskell
+
+```haskell
+{-
+  Haskell標準ライブラリのData.Charモジュールを読み込んでいる。
+    isSpace: 与えられた文字が空白文字（スペース、タブ、改行など）かどうかを判定する。
+    isDigit: 与えられた文字が数字（0〜9）かどうかを判定する。
+-}
+import Data.Char (isSpace, isDigit)
+
+{---------------------------------------
+  扱うJSONのデータ構造
+    - JString: JSONの文字列を表すデータ型（JString :: String -> JSON）
+    - JNumber: JSONの数値を表すデータ型（JNumber :: Int -> JSON）
+    - JObject: JSONのオブジェクト（`{...}`）を表すデータ型（JObject :: [(String, JSON)] -> JSON）
+---------------------------------------}
+data JSON
+  = JString String
+  | JNumber Int
+  | JObject [(String, JSON)]
+  deriving Show
+
+{---------------------------------------
+  Stringを受け取ってJSONを返す関数
+    dropWhile
+      条件を満たすまで先頭から要素を捨てていく関数（e.g. dropWhile (< 3) [1,2,3,4,5]） => [3,4,5]）
+      ここでは、isSpace関数を使って空白文字を捨てている
+
+    case parseValue of
+      パターンマッチを行っている
+      parseValueの結果が、(result, "")の形になっている場合、resultを返す。反り外はエラーを返す
+---------------------------------------}
+parseJSON :: String -> JSON
+--
+parseJSON input = case parseValue (dropWhile isSpace input) of
+  (result, "") -> result
+  _ -> error "Parse error"
+
+{---------------------------------------
+  Stringを受け取って(JSON, String)というタプルを返す関数
+    パターンマッチで、入力文字列の先頭文字にもとづいて分岐する
+---------------------------------------}
+parseValue :: String -> (JSON, String)
+{-
+  先頭がダブルクォートの場合
+-}
+parseValue ('"':cs) =
+  -- span関数を使って、ダブルクォートが現れるまでの文字列を分離する
+  --  strには、ダブルクォート内の文字列が入る
+  --  restには、ダブルクォート以降の文字列が入る
+  let (str, rest) = span (/= '"') cs
+  -- 抽出したstrをJString型にする
+  -- drop 1 restで、restの先頭のダブルクォートを削除する
+  in (JString str, drop 1 rest)
+
+{-
+  先頭が`{`の場合
+-}
+parseValue ('{':cs) =
+  -- parsePairs関数を使って、オブジェクトのキーと値のペアを抽出する
+  --  pairsには、キーと値のペアが入る
+  --  restには、オブジェクトの終わりの`}`以降の文字列が入る
+  let (pairs, rest) = parsePairs (dropWhile isSpace cs)
+  -- 抽出したpairsをJObject型にする
+  -- drop 1 restで、restの先頭の`}`を削除する
+  in (JObject pairs, drop 1 rest)
+
+{-
+  先頭が数字の場合
+-}
+parseValue cs@(c:_)
+  -- 入力文字列の先頭がisDigit（数字）の場合、処理が実行されるガード条件
+  | isDigit c =
+    -- span関数を使って、数字が続く部分を抽出する
+    --  numStrには、数字の文字列が入る
+    --  restには、数字以降の文字列が入る
+      let (numStr, rest) = span isDigit cs
+    -- 抽出したnumStrをJNumber型にする
+      in (JNumber (read numStr), rest)
+
+{-
+  上記parseValueでマッチしない場合
+-}
+parseValue _ = error "Invalid JSON value"
+
+
+{---------------------------------------
+  オブジェクトのキーと値のペアを抽出する関数
+---------------------------------------}
+parsePairs :: String -> ([(String, JSON)], String)
+{-
+  先頭が`}`の場合、([], cs)というタプルを返す
+-}
+parsePairs ('}': cs) = ([], cs)
+
+{-
+  JSONオブジェクトKeyとValueのペアを解析する
+-}
+parsePairs cs =
+  -- 1. parseString関数を使ってキーを抽出する。keyにはキー、rest1には残りも文字列が格納される
+  -- 2. dropWhile isSpace (drop 1 rest1)で、先頭の空白文字を削除する
+  -- 3. parseValue関数を使ってキーに対応する値を抽出する。valueには値、rest3には残りの文字列が格納される
+  -- 4. dropWhile isSpace rest3で、先頭の空白文字を削除する
+  -- 5. rest4が`,`の場合、parsePairs関数を再帰的に呼び出す
+  -- 6. rest4が`}`の場合、[(key, value)]というタプルを返す
+  -- 7. それ以外の場合、エラーを返す
+  let (key, rest1) = parseString cs
+      rest2 = dropWhile isSpace (drop 1 rest1)
+      (value, rest3) = parseValue (dropWhile isSpace rest2)
+      rest4 = dropWhile isSpace rest3
+    in case rest4 of
+      (',': rest5) ->
+        let (pairs, rest6) = parsePairs (dropWhile isSpace rest5)
+        in ((key, value): pairs, rest6)
+      ('}': rest5) -> ([(key, value)], rest5)
+      _ -> error "Malformed object"
+
+{---------------------------------------
+  ダブルクォートで囲まれた文字列を抽出する関数
+---------------------------------------}
+parseString :: String -> (String, String)
+{-
+  先頭がダブルクォートの場合
+-}
+parseString ('"': cs)
+  -- span関数を使って、ダブルクォートが現れるまでの文字列を抽出する
+  = let (str, rest) = span (/= '"') cs
+    in (str, drop 1 rest)
+{-
+  上記parseStringでマッチしない場合
+-}
+parseString _ = error "Expected string"
+
+main :: IO ()
+main = do
+  let jsonText = "{\"name\":\"Alice\",\"age\":20}"
+  let parsed = parseJSON jsonText
+  print parsed
+```
+
+
+### 実行結果
+
+```text
+JObject [("name",JString "Alice"),("age",JNumber 20)]
+```
