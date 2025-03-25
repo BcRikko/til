@@ -1,0 +1,71 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-26"
+updatedDate: "2025-03-26"
+title: "CSS Relative Colorsで色を柔軟に扱う"
+author: ダーシノ
+description: "Relative Colorsを使うことで、オリジナルの色に対して、rgba、hsl、lchなどのカラー関数を適用できるようになった。デザイントークンなどhexで定義された色を、hsl関数を用いて彩度や輝度のみを変更したり、rgb関数のRed要素だけを変更したりできる。 アニメーションや:hoverや:activeなどのバリエーション作成に便利。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Relative Colors](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors)を使うことで、オリジナルの色に対して、rgba、hsl、lchなどのカラー関数を適用できるようになった。
+
+<Baseline featureId={"relative-color"} />
+
+構文は以下のように`from`をつけることで、カラー関数の再適用ができる。
+
+```css
+color-function(from origin channel1 channel2 channel3 / alpha)
+```
+
+たとえば、**デザイントークンなどhexで定義された色を、hsl関数を用いて彩度や輝度のみを変更したり、rgb関数のRed要素だけを変更したりできる。** アニメーションや`:hover`や`:active`などのバリエーション作成に便利。
+
+チャンネルを変更しない場合は、rgbなら`r`/`g`/`b`、hslなら`h`/`s`/`l`のように指定するとオリジナルの色を引き継げる。
+```css
+:root {
+  --origin-color: #88CC00;
+}
+
+.origin {
+  background-color: var(--origin-color);
+}
+
+.brighten {
+  background-color: hsl(from var(--origin-color) h s 80%);
+}
+
+.bluely {
+  background-color: rgb(from var(--origin-color) r g 255);
+}
+```
+
+## デモ
+
+<section id="demo">
+  <div class="box origin">Origin</div>
+  <div class="box brighten">Brighten</div>
+  <div class="box bluely">Bluely</div>
+</section>
+
+<style>{`
+#demo {
+  --origin-color: #88CC00;
+
+  .origin {
+    background-color: var(--origin-color);
+  }
+
+  .brighten {
+    background-color: hsl(from var(--origin-color) h s 80%);
+  }
+
+  .bluely {
+    background-color: rgb(from var(--origin-color) r g 255);
+  }
+}
+`}</style>
