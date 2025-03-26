@@ -1,0 +1,50 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-27"
+updatedDate: "2025-03-27"
+title: "名前付きキャプチャグループでString#match()をより使いやすく"
+author: ダーシノ
+description: "ある文字列から正規表現でマッチした部分を抽出する際、String#match()を使う。普通に使うと以下のようにmatch[n]という非常にわかりづらいコードになる。分割代入（Destructuring）を使うことで、ちょっとはわかりやすくなるが、それ以上に名前付きキャプチャグループが使いやすい。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+ある文字列から正規表現でマッチした部分を抽出する際、`String#match()`を使う。普通に使うと以下のように`match[n]`という非常にわかりづらいコードになる。
+
+```js
+const str = "2025-03-27 タイトル @username";
+
+const match = str.match(/(\d{4}-\d{2}-\d{2})\s(.+)\s@(.+)/);
+if (match) {
+  console.log(
+    'date:', match[1],
+    'title:', match[2],
+    'username:', match[3]
+  );
+}
+```
+
+分割代入（Destructuring）を使うことで、ちょっとはわかりやすくなるが、それ以上に[名前付きキャプチャグループ](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group)が使いやすい。
+
+```regex
+(?<name>pattern)
+```
+
+```js
+const str = "2025-03-27 タイトル @username";
+
+const groups = str.match(/(?<date>\d{4}-\d{2}-\d{2})\s(?<title>.+)\s@(?<username>.+)/)?.groups;
+
+if (groups) {
+  console.log(
+    'date:', groups.date,
+    'title:', groups.title,
+    'username:', groups.username
+  );
+}
+```
+
+ただし、TypeScriptで使う場合は`String#match().groups`の型が`Record<string, string>`となるため、型アサーションがあると便利だろう。
