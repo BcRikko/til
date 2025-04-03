@@ -1,0 +1,96 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-04-04"
+updatedDate: "2025-04-04"
+title: "食事する哲学者の問題と解決策"
+author: ダーシノ
+description: "食事する哲学者の問題 / Dining Philosophers Problemとは、デッドロックに関する問題をわかりやすくモデル化した問題のことだ。テーブルには哲学者の間に1本ずつ、計5本のフォークが置かれている。食事をするには、隣接する2本のホークが必要。哲学者はスレッド、フォークは共有リソースのメタファーで、哲学者が全員同時に左のフォークを手に取ると、誰も右のフォークが取れず、デッドロックが発生する。"
+tags: ["Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[食事する哲学者の問題 / Dining Philosophers Problem](https://ja.wikipedia.org/wiki/%E9%A3%9F%E4%BA%8B%E3%81%99%E3%82%8B%E5%93%B2%E5%AD%A6%E8%80%85%E3%81%AE%E5%95%8F%E9%A1%8C)とは、デッドロックに関する問題をわかりやすくモデル化した問題のことだ。
+
+## 概要
+
+この問題は、並行システムでよく発生する以下の課題を表している。
+
+- デッドロック
+- 共有リソースの競合
+- 飢餓状態
+- 公平性
+
+
+5人の哲学者が円卓に座っていて、「考える」「食事する」の2つの行動を繰り返す。
+
+テーブルには哲学者の間に1本ずつ、計5本のフォークが置かれている。食事をするには、隣接する2本のホークが必要。哲学者はスレッド、フォークは共有リソースのメタファーで、哲学者が全員同時に左のフォークを手に取ると、誰も右のフォークが取れず、デッドロックが発生する。
+
+## 解決策の例
+
+- 哲学者のフォークをとる順序を管理する
+- セマフォで1度に4人までしか座れないようにする
+- 非同期メッセージカードパッシングでフォークを借りる仕組みにする
+
+などなど
+
+
+## Semaphoreを使った解決策
+
+複数のスレッドやプロセスが共有リソースにアクセスする際、同時にアクセスできる数を制限するための機能を「セマフォ（Semaphore）」と呼ぶ。
+
+```ts
+/**
+ * セマフォの実装
+ */
+function createSemaphore(limit: number) {
+  // 利用可能なスロット数、使用されたら減り、開放されたら増える
+  let throttle = limit
+  // 実行待ちの処理を保持するキュー
+  const queue = []
+
+  const acquire = () => {
+    return new Promise(resove => {
+      const tryAcquire = () => {
+        if (throttle > 0) {
+          throttle--
+          resolve(() => {
+            throttle++
+            if (queue.length > 0) {
+              const next = queue.shift()
+              next()
+            }
+          })
+        } else {
+          // 利用可能なスロットが満杯ならqueueに退避させる
+          queue.push(tryAcquire)
+        }
+      }
+    })
+
+    tryAcquire()
+  }
+
+  return { acquire }
+}
+```
+
+```ts
+// 同時実行可能数は4
+const semaphore = createSemaphore(4)
+
+const doTask = async (philosopher: Philosopher) => {
+  const release = await semaphore.acquire()
+  await philosopher.takeFork()
+  // 処理が終わったら開放
+  release()
+}
+
+const tasks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  .map(i => new Philosopher(i))
+  .map(philosopher => doTask(philosopher))
+
+await Promise.all(tasks)
+```
