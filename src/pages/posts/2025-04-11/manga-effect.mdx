@@ -1,0 +1,84 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-04-11"
+updatedDate: "2025-04-11"
+title: "CSS Gradientでマンガ風集中線をつくる"
+author: ダーシノ
+description: "CSSのconic-gradientプロパティを使うことで、簡単にマンガ風の集中線エフェクトをつけることができる。repeating-conic-gradientプロパティを用い、0deg→10degは隙間（transparent）、次の1degに線を指定し、それが一回転するまで繰り返すことで、集中線をつくることができる。角度を調整すればもっと密度の高い集中線も作れる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+CSSの[conic-gradientプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient)を使うことで、簡単にマンガ風の集中線エフェクトをつけることができる。
+
+[repeating-conic-gradientプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/repeating-conic-gradient)を用い、0deg→10degは隙間（transparent）、次の1degに線を指定し、それが一回転するまで繰り返すことで、集中線をつくることができる。角度を調整すればもっと密度の高い集中線も作れる。
+
+```html
+<div class="manga-effect">
+  <div class="avater">
+    <img src="..." />
+  </div>
+</div>
+```
+
+```css
+.manga-effect {
+  background-image:
+    radial-gradient(
+      circle at center center,
+      white 0 50px,
+      transparent 100px
+    ),
+    repeating-conic-gradient(
+       transparent 0deg 10deg,
+       #666 10deg 11deg
+    )
+}
+
+.avater img {
+  aspect-ratio: 1/1;
+  width: 100px;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <div class="manga-effect">
+    <div class="avater">
+      <img src="https://avatars.githubusercontent.com/u/5305599?v=4" />
+    </div>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  border: solid 4px;
+
+  .manga-effect {
+    display: grid;
+    place-items: center;
+    height: 400px;
+
+    background-image:
+      radial-gradient(
+        circle at center center,
+        white 0 50px,
+        transparent 100px
+      ),
+      repeating-conic-gradient(
+        transparent 0deg 10deg,
+        #333 10deg 11deg
+      )
+  }
+
+  .avater img {
+    aspect-ratio: 1/1;
+    width: 100px;
+  }
+}
+`}</style>
