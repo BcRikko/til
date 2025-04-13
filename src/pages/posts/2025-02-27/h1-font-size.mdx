@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2025-02-27"
-updatedDate: "2025-02-27"
+updatedDate: "2025-04-14"
 title: "階層によってh1要素のfont-sizeがかわる歴史的背景"
 author: ダーシノ
 description: "階層が深くなるにつれ、h1要素のfont-sizeがどんどん小さくなり、3階層目にはh1要素とh2要素のfont-sizeが逆転してしまう。実際にHTML Living Standardの仕様を見てみると以下のようになっていた。"
@@ -143,3 +143,15 @@ HTML5.1では、HTML5と同様セクショニングコンテンツごとにh1要
 
 こういった歴史的な背景があり、現時点ではセクションが深くなるほどh1要素のfont-sizeが小さくなるという仕様になっている。
 
+
+---
+
+## 追記: 2025-04-14
+
+MDN Blogの[Default styles for h1 elements are changing](https://developer.mozilla.org/en-US/blog/h1-element-styles/)によると、ブラウザのデフォルトスタイル（User Agent Stylesheet）がh1要素の扱いを変更しつつあるようだ。
+
+**先述のとおりアウトラインアルゴリズムに基づき、セクショニング要素内に含まれるh1要素のfont-sizeが自動的に調整されていた。しかし、2022年にアウトラインアルゴリズムはHTML仕様から削除され、User Agent Stylesheetの挙動が残っていたが、現在このスタイルが削除される流れになっている。**
+
+今後、ネストの深さによってfont-sizeが変わらなくなるため、Lighthouseなどのツールで警告が表示される可能性がある。
+
+そのため、h1要素のスタイルを明示的に指定する必要がでてきそうだ。
