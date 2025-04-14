@@ -1,0 +1,145 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-04-15"
+updatedDate: "2025-04-15"
+title: "FlexboxよりGridを使う理由"
+author: ダーシノ
+description: "先日、Grid First, Flex Thirdという記事を読んだ。要約すると「レイアウトを行う際は grid > block > flex の順で使うべき」という主張がなされている。並びのレイアウトはFlexbox、格子状に区切ってどこに何を配置するかはGridを使う派だったのだが、Gridの有用性を再認識した。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+先日、[Grid First, Flex Third](https://alex.party/posts/2025-03-23-grid-first-flex-third/)という記事を読んだ。**要約すると「レイアウトを行う際は grid > block > flex の順で使うべき」という主張**がなされている。
+
+並びのレイアウトはFlexbox、格子状に区切ってどこに何を配置するかはGridを使う派だったのだが、Gridの有用性を再認識した。
+
+## Flexboxの使いづらいところ
+
+**Flexboxで要素を並べると子要素の幅を指定しても圧縮されてしまう。**
+```html
+<section class="layout">
+  <div class="item"></div>
+  <div class="item"></div>
+  ...
+</section>
+```
+```css
+.layout {
+  display: flex;
+  overflow-x: auto;
+}
+
+.item {
+  width: 200px;
+}
+```
+
+<section id="demo01">
+  <section class="layout">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+  </section>
+</section>
+
+子要素の幅を維持するためには、`flex-shrink: 0;`という指定が必要になる。
+
+```css
+.item {
+  width: 200px;
+  flex-shrink: 0;
+}
+```
+
+<section id="demo02">
+  <section class="layout">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+  </section>
+</section>
+
+## Gridを使う
+
+Gridを使うと、Flexboxのような`flex-shrink`の指定が不要になる。
+
+```css
+.layout {
+  display: grid;
+  grid-auto-flow: column;
+  overflow-x: auto;
+}
+```
+
+<section id="demo03">
+  <section class="layout">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+  </section>
+</section>
+
+## まとめ
+
+Flexboxが先発で「横並びの要素には`display:flex`を使う」という意識が強いが、Gridはそれを代替できるほどの機能を持っている。もちろん横1列に収めて並べるレイアウトはFlexboxのほうが得意だし、レンダリングのコストもGridに比べて低い（誤差レベルだが）。一概に「FlexboxではなくGridを使え」とは言えないが、個人的には今後はGridを優先して使っていきたい。
+
+
+
+<style>{`
+:where(#demo01, #demo02, #demo03) {
+  .layout {
+    display: flex;
+    gap: 1em;
+    overflow-x: auto;
+  }
+
+  .item {
+    width: 200px;
+    height: 200px;
+    border: solid 4px;
+  }
+}
+
+#demo02 {
+  .item {
+    flex-shrink: 0;
+  }
+}
+
+#demo03 {
+  .layout {
+    display: grid;
+    grid-auto-flow: column;
+  }
+}
+`}</style>
