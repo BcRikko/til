@@ -1,0 +1,28 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-07-08"
+updatedDate: "2022-07-08"
+title: "ブラウザスクロールフルマラソン"
+author: ダーシノ
+description: "CSSではユニットにcm（センチメートル）を使用できる。ただし、ブラウザのheightの限界は18.94kmなので、ハーフマラソンもできない。"
+tags: ["Browser"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+CSSではユニットに`cm（センチメートル）`を使用できる。
+
+```css
+.full-marathon .course {
+  font-size: 100cm;
+  height: 42195em;
+}
+```
+
+ただし、ブラウザのheightの限界は18.94kmなので、ハーフマラソンもできない。
+
+## 参考
+
+[The World’s Highest Website—a CSS Experiment](https://worlds-highest-website.com/)
