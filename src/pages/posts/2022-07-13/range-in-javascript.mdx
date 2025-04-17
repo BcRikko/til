@@ -1,0 +1,38 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-07-13"
+updatedDate: "2022-07-13"
+title: "JavaScriptでrangeジェネレータを作る"
+author: ダーシノ
+description: "10〜20の範囲の数値をループで処理したい、みたいなケースがある。for文を使うことで実装可能だが、もっとわかりやすくするためにジェネレータを使ってrange関数を実装する。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+10〜20の範囲の数値をループで処理したい、みたいなケースがある。for文を使うことで実装可能だが、もっとわかりやすくするためにジェネレータを使ってrange関数を実装する。
+
+## for文
+
+```js
+for (let i = 10; i <= 20; i++) {
+  console.log(i);
+}
+```
+
+## range関数
+
+for文のインクリメントの処理をジェネレータ内部に隠蔽することで、range関数を実装できる。
+```js
+function* range(start, end) {
+  for (let i = start; i <= end; i++) {
+    yield i;
+  }
+}
+
+for (const i of range(10, 20)) {
+  console.log(i);
+}
+```
