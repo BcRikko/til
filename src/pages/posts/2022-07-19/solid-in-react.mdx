@@ -1,0 +1,43 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-07-19"
+updatedDate: "2022-07-19"
+title: "ReactにSOLID原則を適用する"
+author: ダーシノ
+description: "主にオブジェクト指向プログラミングの文脈において語られるSOLID原則のエッセンスを、Reactを使ったフロントエンド開発に適用するヒント。"
+tags: ["JavaScript", "React"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+主にオブジェクト指向プログラミングの文脈において語られるSOLID原則のエッセンスを、Reactを使ったフロントエンド開発に適用するヒント。
+
+## SRP: 単一責任の原則
+
+- 機能ごとにhooksをわける
+- 機能ごとにcomponentsをわける
+
+## OCP: オープン/クローズドの原則
+
+- コンポーネントの結合を減らす
+- childrenやpropsを使って再利用可能にする
+
+## LSP: リスコフの置換原則
+- Reactでは継承よりコンポジションを勧めている
+    - https://reactjs.org/docs/composition-vs-inheritance.html
+- よって LSP は無視する
+
+## ISP: インターフェース分離の原則
+- 使わないpropsに依存してはならない
+- propsにはオブジェクトではなく必要なプロパティのみ渡す
+
+## DIP: 依存性逆転の原則
+- 具象（component）ではなく抽象（interface）に依存する
+- APIリクエストなどは props でそのメソッドだけを受け取る
+
+
+## 参考
+
+- [Applying SOLID principles in React \| Konstantin Lebedev blog](https://konstantinlebedev.com/solid-in-react/)
