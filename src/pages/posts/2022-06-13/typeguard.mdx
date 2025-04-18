@@ -1,0 +1,40 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-06-13"
+updatedDate: "2022-06-13"
+title: "Type Guardで代入される側の型を絞り込む"
+author: ダーシノ
+description: "TypeScriptでは、Type Predicateの引数に複数値を渡すことで型を検査できる。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScriptでは、Type Predicateの引数に複数値を渡すことで型を検査できる。
+
+```ts
+type FooConfig = { foo: string }
+type BarConfig = { bar: string }
+type Config = FooConfig | BarConfig
+type Source = { type: 'foo', foo: string } | { type: 'bar', bar: string }
+
+const c = {} as Config
+const s = {} as Source
+
+// 代入される側の型が FooConfig と BarConfig のどちらかわからない
+if (s.type === 'foo') {
+    // Property 'foo' does not exist on type 'Config'.
+    c.foo = s.bar
+}
+
+// 代入される側の型を FooConfig に限定する
+if (s.type === 'foo' && useFooConfig(c, s)) {
+    c.foo = s.foo
+}
+
+function useFooConfig(c: Config, s: Source): c is FooConfig {
+    return s.type === 'foo'
+}
+```
