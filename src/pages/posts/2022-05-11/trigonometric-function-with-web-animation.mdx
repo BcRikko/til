@@ -1,0 +1,78 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-05-11"
+updatedDate: "2022-05-11"
+title: "アニメーションで三角関数を使う"
+author: ダーシノ
+description: "Web Animations APIを使うことで簡単にアニメーションを管理できる。CSSの@keyframesで10°ずつ座標を書き表すことは大変だが、JavaScriptを使うことでより柔軟にアニメーションを制御できる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)を使うことで簡単にアニメーションを管理できる。
+
+CSSの`@keyframes`で10°ずつ座標を書き表すことは大変だが、JavaScriptを使うことでより柔軟にアニメーションを制御できる。
+
+```js
+const item = document.querySelector('#item')
+
+const animationFrames = []
+const offset = { x: 100, y: 100 }
+const r = 100
+
+// 0°〜360°の範囲で10°毎の座標を計算し `translate(x, y)` にセットする
+for (let i = 0; i <= 360; i += 10) {
+  // `angle * (Math.PI / 180)` で度数法を弧度法に変換する
+  const x = Math.floor(Math.cos(i * (Math.PI / 180)) * r) + offset.x 
+  const y = Math.floor(Math.sin(i * (Math.PI / 180)) * r) + offset.y
+  
+  animationFrames.push({
+    // (x, y) = (cosθ, sinθ)
+    transform: `translate(${x}px, ${y}px)`
+  })
+}
+
+// Web Animation API
+item?.animate(animationFrames, { duration: 3000, iterations: Infinity })
+```
+
+## デモ
+
+<section id="demo">
+  <div class="item"></div>
+</section>
+
+<style>{`
+#demo {
+  position: relative;
+
+  .item {
+    width: 50px;
+    height: 50px;
+    background-color: #f00;
+    border-radius: 50%;
+  }
+}
+`}</style>
+
+<script>{`
+const item = document.querySelector('.item')
+
+const animationFrames = []
+const offset = { x: 100, y: 100 }
+const r = 100
+
+for (let i = 0; i <= 360; i += 10) {
+  const x = Math.floor(Math.cos(i * (Math.PI / 180)) * r) + offset.x 
+  const y = Math.floor(Math.sin(i * (Math.PI / 180)) * r) + offset.y
+  
+  animationFrames.push({
+    transform: 'translate(' + x + 'px, ' + y + 'px)'
+  })
+}
+
+item?.animate(animationFrames, { duration: 3000, iterations: Infinity })
+`}</script>
