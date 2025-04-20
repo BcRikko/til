@@ -1,0 +1,173 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-05-12"
+updatedDate: "2022-05-12"
+title: "Web Animation APIを使ったアニメーション管理方法"
+author: ダーシノ
+description: Web Animation APIを使うことで、UI上での複雑なアニメーションを管理しやすくなった。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Web Animation API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)を使うことで、UI上での複雑なアニメーションを管理しやすくなった。
+
+<Baseline featureId={"web-animations"} />
+
+## サンプル
+
+1. `Element#animate()`でkeyframeを設定する
+2. `animate()`を呼び出すとすぐにアニメーションが開始されるので`Animation#pause()`で停止する
+3. スタートボタンを押す
+   1. `Element#play()`でアニメーション実行する
+   2. 1000ms止まる
+   3. `Element.reverse()`で逆再生する
+
+```html
+<div class="item">one</div>
+<div class="item">two</div>
+<div class="item">three</div>
+<button type="button" id="start">start</button> 
+```
+
+```js
+const sleep = ms => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), ms)
+  })
+}
+
+async function start() {
+  const items = document.querySelectorAll('.item');
+
+  items.forEach((item, i) => {
+    // 初期位置
+    item.style.transform = `translate(0px, ${i * 20}px)`
+  })
+
+  const animations = Array.from(items).map((item, i) => {
+    // それぞれの要素に keyframe を設定
+    const animation = item.animate([
+      { transform: `translate(0px, ${i * 20}px)` },
+      { transform: `translate(${100 * (i + 1)}px, ${i * 20}px)` },
+    ], {
+      duration: 1000,
+      fill: 'both'
+    })
+
+    // animate()呼び出すとアニメーションが開始されるので即停止
+    animation.pause()
+    return animation
+  })
+
+  const player = animations.map(a => {
+    a.playbackRate = 1
+    // アニメーション実行
+    a.play()
+    // Promiseを返す
+    return a.finished
+  })
+
+  await Promise.all(player)
+
+  await sleep(1000)
+
+  const reverse = animations.map(a => {
+    // 反転
+    a.reverse()
+    // Promiseを返す
+    return a.finished
+  })
+
+  await Promise.all(reverse)
+}
+
+document.querySelector('#start').addEventListener('click', () => {
+  start()
+})
+```
+
+## デモ
+
+<section id="demo">
+  <div class="item">one</div>
+  <div class="item">two</div>
+  <div class="item">three</div>
+  <button type="button" id="start">start</button> 
+</section>
+
+<style>{`
+#demo {
+  display: grid;
+  grid-auto-flow: row;
+  gap: 40px;
+
+  .item {
+    width: 100px;
+    height: 50px;
+    border: solid 4px;
+    text-align: center;
+  }
+}
+`}</style>
+
+
+<script>{`
+const sleep = ms => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), ms)
+  })
+}
+
+async function start() {
+  const items = document.querySelectorAll('.item');
+
+  items.forEach((item, i) => {
+    // 初期位置
+    item.style.transform = 'translate(0px,' + (i * 20) + 'px)'
+  })
+
+  const animations = Array.from(items).map((item, i) => {
+    // それぞれの要素に keyframe を設定
+    const animation = item.animate([
+      { transform: 'translate(0px, ' + (i * 20) + 'px)' },
+      { transform: 'translate(' + ((document.body.scrollWidth / 4) * (i + 1)) + 'px, ' + (i * 20) + 'px)' },
+    ], {
+      duration: 1000,
+      fill: 'both'
+    })
+
+    // animate()呼び出すとアニメーションが開始されるので即停止
+    animation.pause()
+    return animation
+  })
+
+  const player = animations.map(a => {
+    a.playbackRate = 1
+    // アニメーション実行
+    a.play()
+    // Promiseを返す
+    return a.finished
+  })
+
+  await Promise.all(player)
+
+  await sleep(1000)
+
+  const reverse = animations.map(a => {
+    // 反転
+    a.reverse()
+    // Promiseを返す
+    return a.finished
+  })
+
+  await Promise.all(reverse)
+}
+
+document.querySelector('#start').addEventListener('click', () => {
+  start()
+})
+`}</script>
