@@ -1,0 +1,31 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-04-22"
+updatedDate: "2025-04-22"
+title: "ダークモードとライトモードで画像を変える"
+author: ダーシノ
+description: "画像とサイトの背景色の色が同じ時にどこから画像かわからないなど、ダークモードとライトモードで画像を変えたいときがある。picture要素のmedia属性を使うことで、モードに応じた画像を表示できる。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+import { Picture } from 'astro:assets'
+import darkImage from './dark.png'
+import lightImage from './light.png'
+
+<Header {...frontmatter} />
+
+画像とサイトの背景色の色が同じ時にどこから画像かわからないなど、ダークモードとライトモードで画像を変えたいときがある。
+
+[picture要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture)のmedia属性を使うことで、モードに応じた画像を表示できる。
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="dark.jpg">
+  <source media="(prefers-color-scheme: light)" srcset="light.jpg">
+  <img src="default.jpg" alt="fallback">
+</picture>
+```
+
