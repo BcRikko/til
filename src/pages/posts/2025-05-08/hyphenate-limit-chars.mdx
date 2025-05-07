@@ -1,0 +1,86 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-08"
+updatedDate: "2025-05-08"
+title: "hyphenate-limit-charsでハイフネーションされる文字数を制御する"
+author: ダーシノ
+description: "英語の1単語が長く折り返しが発生する場合に、hyphensプロパティを使うことでハイフネーションができる。さらにhyphenate-limit-charsプロパティを使うことで、ハイフネーションを許可する単語の長さや、ハイフン前後の最小文字数を指摘できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+英語の1単語が長く折り返しが発生する場合に、[hyphensプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens)を使うことでハイフネーションができる。
+
+さらに[hyphenate-limit-charsプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/hyphenate-limit-chars)を使うことで、ハイフネーションを許可する単語の長さや、ハイフン前後の最小文字数を指摘できる。
+
+<Baseline featureId={"hyphenate-limit-chars"} />
+
+```css
+p {
+  hyphens: auto;
+  /**
+   * ハイフネーションを許可する単語の最小文字数: 10
+   * ハイフン前の最小文字数: 4
+   * ハイフン後の最小文字数: 4
+   */
+  hyphenate-limit-chars: 10 4 4;
+}
+```
+
+`hyphenate-limit-chars`プロパティは、以下の3つの値を指定できる。
+
+- `<number> <number> <number>`:
+  - 最初の値は、ハイフネーションを許可する単語の最小文字数
+  - 2つ目の値は、ハイフン前の最小文字数
+  - 3つ目の値は、ハイフン後の最小文字数
+- `<number> <number>`:
+  - 最初の値は、ハイフネーションを許可する単語の最小文字数
+  - 2つ目の値は、ハイフン前後の最小文字数
+- `<number>`:
+  - ハイフネーションを許可する単語の最小文字数
+
+
+
+## デモ
+
+<section id="demo" lang="en">
+  <section class="container">
+    <p class="ex1">juxtaposition and acknowledgement</p>
+    <p class="ex2">juxtaposition and acknowledgement</p>
+    <p class="ex3">juxtaposition and acknowledgement</p>
+    <p class="ex4">juxtaposition and acknowledgement</p>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  p {
+    padding: 1rem;
+    border: 4px dashed;
+    hyphens: auto;
+    word-break: normal;
+
+    &.ex2 {
+      hyphenate-limit-chars: 14;
+    }
+
+    &.ex3 {
+      hyphenate-limit-chars: 5 9 2;
+    }
+
+    &.ex4 {
+      hyphenate-limit-chars: 5 2 7;
+    }
+  }
+}
+`}</style>
