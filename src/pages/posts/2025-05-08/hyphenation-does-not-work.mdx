@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-08"
+updatedDate: "2025-05-08"
+title: "hyphensプロパティが効かないときの対処法"
+author: ダーシノ
+description: "hyphenate-limit-charsでハイフネーションされる文字数を制御するの記事を書いているときに、hyphensプロパティを使ってもハイフネーションされないことがあった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[hyphenate\-limit\-charsでハイフネーションされる文字数を制御する](https://bcrikko.github.io/til/posts/2025-05-08/hyphenate-limit-chars/)の記事を書いているときに、[hyphensプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens)を使ってもハイフネーションされないことがあった。
+
+## 可能性1: lang属性が正しくない
+
+先述の問題は、lang属性が正しくないことが原因だった。
+
+lang属性が`ja`になっていると英単語がハイフネーションされないため、正しい言語（`en`）を指定する必要がある。
+```html
+<html lang="en">
+  <p>juxtaposition and acknowledgement</p>
+</html>
+```
+または
+```html
+<html lang="ja">
+  <section lang="en">
+    <p>juxtaposition and acknowledgement</p>
+  </section>
+</html>
+```
+
+## 可能性2: 改行制御プロパティを使っている
+
+[white-space: nowrap](https://developer.mozilla.org/en-US/docs/Web/CSS/white-space)や[overflow: hidden](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)など、改行を制御するプロパティを使っている場合にハイフネーションが効かない。
+
+```html
+<html lang="en">
+  <p style="white-space: nowrap">juxtaposition and acknowledgement</p>
+  <p style="white-space: normal">juxtaposition and acknowledgement</p>
+</html>
+```
