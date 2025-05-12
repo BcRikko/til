@@ -7,7 +7,7 @@ interface Props {
   tags: string[];
 }
 
-const { url, title, pubDate, updatedDate, tags } = Astro.props;
+const { url, title, pubDate, updatedDate: _updatedDate, tags } = Astro.props;
 ---
 
 <article class="article">

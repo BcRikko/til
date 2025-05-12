@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "prebuild": "npx playwright install --with-deps chromium",
     "build": "astro check && astro build",
     "check": "astro check",
     "preview": "astro preview",
