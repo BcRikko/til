@@ -1,0 +1,51 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-14"
+updatedDate: "2025-05-14"
+title: "RegExp.escape()で正規表現のパターンをエスケープする"
+author: ダーシノ
+description: "RegExp.escape()がBaseline 2025になり、全主要ブラウザで使えるようになった。RegExp.escape()を使うことで、正規表現のパターンをエスケープできる。いままでのバックスラッシュを使ったエスケープよりパターンの可読性が上がる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[RegExp.escape()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/RegExp/escape)がBaseline 2025になり、全主要ブラウザで使えるようになった。
+
+<Baseline featureId={"regexp-escape"} />
+
+`RegExp.escape()`を使うことで、正規表現のパターン（`.`や`*`など）をエスケープできる。いままでの`\`（バックスラッシュ）を使ったエスケープよりパターンの可読性が上がる。
+
+```js
+// Before
+if (/^https:\/\/example\.com/.test(url)) {
+  // do something
+}
+
+// After
+const escaped = RegExp.escape("https://example.com");
+if (new RegExp(`^${escaped}`).test(url)) {
+  // do something
+}
+```
+
+また、受け取った文字列を正規表現の一部として使う場合、その文字列にメタ文字（`.`や`+`、`*`など）が含まれていると、意図しない文字列にマッチしてしまうことがある。
+```js
+function isMatch(pattern, text) {
+  // patternにメタ文字が含まれているときに、意図しない文字列にマッチしてしまう
+  return new RegExp(pattern).match(text)
+}
+```
+
+`RegExp.escape()`を使うことで、受け取った文字列をエスケープしてから使うことで、意図しない動作を防げる。
+
+```js
+function isMatch(pattern, text) {
+  // patternにメタ文字が含まれていても、意図しない文字列にマッチしない
+  const escaped = RegExp.escape(pattern);
+  return new RegExp(escaped).match(text)
+}
+```
