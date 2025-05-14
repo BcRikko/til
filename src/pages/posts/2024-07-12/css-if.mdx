@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2024-07-12"
-updatedDate: "2024-07-12"
+updatedDate: "2025-05-15"
 title: "CSSでif()が使えるようになる"
 author: ダーシノ
 description: "Inline conditionals（if()）が CSS Values Module Level 5 の仕様に追加される。"
@@ -36,3 +36,76 @@ import Header from '../../../components/Header.astro'
   prop: if(supports(...), xxx, yyy);
 }
 ```
+
+## 追記: 2025-05-14
+
+[Chrome 137 Beta](https://developer.chrome.com/blog/chrome-137-beta)で`if()`が実装された。
+
+また、[CSS Values and Units Module Level 5](https://www.w3.org/TR/css-values-5/#if-notation)の仕様も少し変わった。
+
+```
+<if()> = if( [ <if-condition> : <declaration-value>? ; ]*
+             <if-condition> : <declaration-value>? ;? )
+<if-condition> = <boolean-expr[ <if-test> ]> | else
+<if-test> =
+  supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
+  media( <media-query> ) |
+  style( <style-query> )
+```
+
+つまり`if(condition: value1; else: value2);`という書き方になった。
+
+```css
+.container {
+  color: if(style(--theme: dark): white; else: black);
+}
+
+.container {
+  display: if(supports(display: grid): grid; else: block);
+}
+
+.container {
+  background-color: if(
+    media(min-width: 1024px): red;
+    media(min-width: 768px): blue;
+    else: green;
+  );
+}
+```
+
+### デモ
+
+<section id="demo">
+  <div class="container" style="--theme: dark">
+    <p>--theme: dark</p>
+  </div>
+  <div class="container" style="--theme: light">
+    <p>--theme: light</p>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  .container {
+    display: grid;
+    height: 100px;
+    border: 4px solid;
+    margin-bottom: 1rem;
+
+    color: if(style(--theme: dark): white; else: black);
+    background-color: if(
+      media(min-width: 1024px): red;
+      media(min-width: 768px): blue;
+      else: green;
+    );
+
+    p {
+      text-align: center;
+      align-self: center;
+    }
+  }
+}
+`}</style>
+
+![if()のデモ](./_if.gif)
+
