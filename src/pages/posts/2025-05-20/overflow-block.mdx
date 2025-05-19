@@ -1,0 +1,67 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-20"
+updatedDate: "2025-05-20"
+title: "overflow-block、overflow-inlineによる柔軟なレイアウト"
+author: ダーシノ
+description: "内包するコンテンツが溢れたときにスクロール or 非表示にするときにはoverflowプロパティを使うのが一般的である。しかし、overflowプロパティは視覚的にX軸またはY軸のどちらかを指定してスクロールを発生させるため、横書きと縦書きコンテンツの両方に対応できない。（対応する場合は2パターン用意する必要がある）overflow-blockやoverflow-inlineは、従来のoverflowプロパティと同様にコンテンツが溢れたときにスクロール or 非表示を設定できる。さらに、論理的プロパティなのでwrithing-modeが変わっても対応できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+内包するコンテンツが溢れたときにスクロール or 非表示にするときには[overflowプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)を使うのが一般的である。しかし、overflowプロパティは視覚的にX軸またはY軸のどちらかを指定してスクロールを発生させるため、横書きと縦書きコンテンツの両方に対応できない。（対応する場合は2パターン用意する必要がある）
+
+[overflow-block](https://developer.mozilla.org/ja/docs/Web/CSS/overflow-block)や[overflow-inline](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-inline)は、従来のoverflowプロパティと同様にコンテンツが溢れたときにスクロール or 非表示を設定できる。さらに、論理的プロパティなので`writhing-mode`が変わっても対応できる。
+
+```css
+.article {
+  overflow-block: auto;
+  overflow-inline: hidden;
+}
+
+.rl {
+  writing-mode: vertical-rl;
+}
+.tb {
+  writing-mode: horizontal-tb;
+}
+```
+
+## デモ
+
+<section id="demo">
+  <article class="article rl">
+    <h2>縦書き</h2>
+    <p>あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。またそのなかでいっしょになったたくさんのひとたち、ファゼーロとロザーロ、羊飼のミーロや、顔の赤いこどもたち、地主のテーモ、山猫博士のボーガント・デストゥパーゴなど、いまこの暗い巨きな石の建物のなかで考えていると、みんなむかし風のなつかしい青い幻燈のように思われます。では、わたくしはいつかの小さなみだしをつけながら、しずかにあの年のイーハトーヴォの五月から十月までを書きつけましょう。</p>
+  </article>
+  <article class="article tb">
+    <h2>横書き</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </article>
+</section>
+
+<style>{`
+#demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+
+  .article {
+    overflow-block: auto;
+    overflow-inline: hidden;
+    border: 4px solid;
+    max-height: 400px;
+    padding: 1em;
+
+    &.rl {
+      writing-mode: vertical-rl;
+    }
+    &.tb {
+      writing-mode: horizontal-tb;
+    }
+  }
+}
+`}</style>
