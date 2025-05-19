@@ -1,0 +1,126 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-20"
+updatedDate: "2025-05-20"
+title: "長文ドキュメントにおけるアクセシビリティとユーザビリティ"
+author: ダーシノ
+description: "Digital Publishing WAI-ARIA Module 1.1では、長文ドキュメント内で容易にナビゲートするための仕様や方法が定義されている。長文ドキュメントの典型であるマニュアルなどはコンテンツの上部に目次があり、そこから各見出しにジャンプできる。単純にidとhrefを使うだけでなく、アクセシビリティの観点も考慮する必要がある。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Digital Publishing WAI\-ARIA Module 1\.1](https://www.w3.org/TR/dpub-aria-1.1/)では、長文ドキュメント内で容易にナビゲートするための仕様や方法が定義されている。
+
+長文ドキュメントの典型であるマニュアルなどはコンテンツの上部に目次があり、そこから各見出しにジャンプできる。単純にidとhrefを使うだけでなく、アクセシビリティの観点も考慮する必要がある。
+
+## 目次: Table of Contents
+
+目次は[role="doc-toc"](https://www.w3.org/TR/dpub-aria-1.1/#doc-toc)を使って作成する。
+
+Digital Publishing WAI-ARIA Module 1.1の[サンプルコード](https://www.w3.org/TR/dpub-aria-1.1/#example-43)には **`role="directory"`が使われているが、ARIA 1.2で非推奨になっているので使わない。**
+
+> Warning: The `directory` role was deprecated in ARIA 1.2  
+> [ARIA: directory role \- ARIA \| MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/directory_role)
+
+```html
+<nav role="doc-toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#chapter1">序論</a></li>
+    <li><a href="#chapter2">本論</a></li>
+    <li><a href="#chapter3">結論</a></li>
+    ...
+  </ol>
+</nav>
+```
+
+## セクションと見出し: Section & Heading
+
+セクションは[role="doc-chapter"](https://www.w3.org/TR/dpub-aria-1.1/#doc-chapter)を使って作成する。またidを指定して目次のリンクと紐づける。
+
+「見出しに`#`アイコンをつけクリックしたらその見出しにジャンプ」というのもよく見かける。Digital Publishing WAI-ARIA Module 1.1で必須、または強く推奨されているわけではないがリンクを共有するときなどに便利だろう。
+
+```html
+<section role="doc-chapter" id="chapter1">
+  <h2>
+    序論
+    <a href="#chapter1" aria-label="序論へのリンク">#</a>
+  </h2>
+  <p>...</p>
+</section>
+
+<section role="doc-chapter" id="chapter2">
+  <h2>
+    本論
+    <a href="#chapter2" aria-label="本論へのリンク">#</a>
+  </h2>
+  <p>...</p>
+</section>
+
+<section role="doc-chapter" id="chapter3">
+  <h2>
+    結論
+    <a href="#chapter3" aria-label="結論へのリンク">#</a>
+  </h2>
+  <p>...</p>
+</section>
+```
+
+
+## 脚注とバックリンク: Notes
+
+本文中に脚注を配置する場合は[role="doc-noteref"](https://www.w3.org/TR/dpub-aria-1.1/#doc-noteref)と[role="doc-footnote"](https://www.w3.org/TR/dpub-aria-1.1/#doc-footnote)を使う。
+
+またバックリンク（脚注から本文に戻るためのリンク）の追加も推奨されている。バックリンクは[role="doc-backlink"](https://www.w3.org/TR/dpub-aria-1.1/#doc-backlink)を使う。
+
+※サンプルコードでは`note6`のように手動でidを振っているが文書内で一意にする必要があるため、自動採番するほうが安全かもしれない。
+
+```html
+<!-- 本文中 -->
+<p>
+  〜については次の脚注を参照ください。
+  <a
+    role="doc-noteref"
+    href="#footnote6"
+    aria-label="脚注へのリンク"
+    id="note6"
+  >[6]</a>
+</p>
+
+<aside id="footnote6" role="doc-footnote">
+  <a
+    role="doc-backlink"
+    href="#note6"
+  >[6]</a>
+  脚注について
+</aside>
+```
+
+セクションやコンテンツの最後にまとめて脚注を配置する場合は、代わりに[role="doc-endnotes"](https://www.w3.org/TR/dpub-aria-1.1/#doc-endnotes)を使う。
+
+```html
+<section role="doc-endnotes">
+  <h2>脚注</h2>
+  <ol>
+    <li id="footnote1">
+      <a
+        role="doc-backlink"
+        href="#note1"
+      >[1]</a>
+      <p>脚注...</p>
+    </li>
+    <li id="footnote2">
+      <a
+        role="doc-backlink"
+        href="#note2"
+      >[2]</a>
+      <p>脚注...</p>
+    </li>
+  </ol>
+</section>
+```
+
+
