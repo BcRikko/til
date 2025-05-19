@@ -124,3 +124,109 @@ Digital Publishing WAI-ARIA Module 1.1の[サンプルコード](https://www.w3.
 ```
 
 
+## デモ
+
+<section id="demo">
+  <article>
+    <h1>長文ドキュメント</h1>
+
+    <nav role="doc-toc">
+      <h2>目次</h2>
+      <ol>
+        <li><a href="#chapter1">序論</a></li>
+        <li><a href="#chapter2">本論</a></li>
+        <li><a href="#chapter3">結論</a></li>
+      </ol>
+    </nav>
+
+    <section role="doc-chapter" id="chapter1">
+      <h2>
+        <a href="#chapter1" aria-label="序論へのリンク">#</a>
+        序論
+      </h2>
+      <p>序論の内容</p>
+      <p>
+        〜については次の脚注を参照ください。
+        <a
+          role="doc-noteref"
+          href="#footnote1"
+          aria-label="脚注へのリンク"
+          id="note1"
+        >[1]</a>
+      </p>
+      <aside id="footnote1" role="doc-footnote">
+        <a
+          role="doc-backlink"
+          href="#note1"
+        >[1]</a>
+        脚注について
+      </aside>
+    </section>
+    <section role="doc-chapter" id="chapter2">
+      <h2>
+        <a href="#chapter2" aria-label="本論へのリンク">#</a>
+        本論
+      </h2>
+      <p>本論の内容</p>
+      <p>
+        〜については次の脚注を参照ください。
+        <a
+          role="doc-noteref"
+          href="#footnote2"
+          aria-label="脚注へのリンク"
+          id="note2"
+        >[2]</a>
+      </p>
+      <aside id="footnote2" role="doc-footnote">
+        <a
+          role="doc-backlink"
+          href="#note2"
+        >[2]</a>
+        脚注について
+      </aside>
+    </section>
+    <section role="doc-chapter" id="chapter3">
+      <h2>
+        <a href="#chapter3" aria-label="結論へのリンク">#</a>
+        結論
+      </h2>
+      <p>結論の内容</p>
+      <p>
+        〜については次の脚注を参照ください。
+        <a
+          role="doc-noteref"
+          href="#footnote3"
+          aria-label="脚注へのリンク"
+          id="note3"
+        >[3]</a>
+      </p>
+      <aside id="footnote3" role="doc-footnote">
+        <a
+          role="doc-backlink"
+          href="#note3"
+        >[3]</a>
+        脚注について
+      </aside>
+    </section>
+
+    <section role="doc-endnotes">
+      <h2>脚注</h2>
+      <ol>
+        <li id="footnote1">
+          <a
+            role="doc-backlink"
+            href="#note1"
+          >[1]</a>
+          脚注...
+        </li>
+        <li id="footnote2">
+          <a
+            role="doc-backlink"
+            href="#note2"
+          >[2]</a>
+          脚注...
+        </li>
+      </ol>
+    </section>
+  </article>
+</section>
