@@ -1,0 +1,183 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-22"
+updatedDate: "2025-05-22"
+title: "overflowプロパティのhiddenとclipの違いとユースケース"
+author: ダーシノ
+description: "overflowプロパティにはhiddenとclipという似たような挙動をする値がある。どちらもコンテンツが溢れたときに非表示にする値だが、ユースケースは異なる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[overflowプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)には`hidden`と`clip`という似たような挙動をする値がある。どちらもコンテンツが溢れたときに非表示にする値だが、ユースケースは異なる。
+
+## overflow: hidden
+
+`hidden`は溢れたコンテンツは非表示にされるが、[スクロールコンテナ](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container)を生成するため[scrollTo](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTo)などのAPIを使うことでJavaScriptからスクロールできる。
+
+さらに`hidden`は`overflow-x`や`overflow-y`で非表示にする方向を指定しても、水平方向（X軸）と垂直方向（Y軸）の両方でクリッピングが発生する。
+
+```html
+<section class="container">
+  <p>...</p>
+  <img class="symbol" src="..." />
+</section>
+```
+
+```css
+.container {
+  overflow-y: hidden;
+  max-height: 200px;
+  position: relative;
+}
+
+.symbol {
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+}
+```
+
+```js
+const container = document.querySelector('.container')
+
+// スクロールすることで非表示コンテンツも表示できる
+container.scrollTo({
+  top: 100,
+})
+```
+
+### デモ: overflow: hidden
+
+<section id="demo1">
+  <button id="demo1-scroll">ScrollTo</button>
+  <div class="container">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <img class="symbol" src="https://avatars.githubusercontent.com/u/5305599?v=4" />
+  </div>
+</section>
+
+<style>{`
+#demo1 {
+  .container {
+    overflow-y: hidden;
+    max-height: 200px;
+    border: 4px solid;
+
+    position: relative;
+  }
+  .symbol {
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+
+    aspect-ratio: 1;
+    width: 200px;
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo1')
+const container = demo.querySelector('.container')
+const scrollButton = demo.querySelector('#demo1-scroll')
+
+let direction = 1
+scrollButton.addEventListener('click', () => {
+  container.scrollTo({
+    behavior: 'smooth',
+    top: direction * 100,
+  })
+
+  direction *= -1
+})
+`}</script>
+
+
+## overflow: clip
+
+`clip`は溢れたコンテンツを非表示にするところは`hidden`と同じだが、スクロールコンテナを生成しないのでJavaScriptを使ってもスクロールできない。
+
+さらに`clip`は`overflow-x`や`overflow-y`で非表示にする方向を指定できる。
+
+```css
+.container {
+  overflow-y: clip;
+  max-height: 200px;
+  max-width: 200px;
+
+  position: relative;
+}
+
+.symbol {
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+}
+```
+
+```js
+const container = document.querySelector('.container')
+
+// スクロールできない
+container.scrollTo({
+  top: 100,
+})
+```
+
+### デモ: overflow: clip
+
+<section id="demo2">
+  <button id="demo2-scroll">ScrollTo</button>
+  <div class="container">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <img class="symbol" src="https://avatars.githubusercontent.com/u/5305599?v=4" />
+  </div>
+</section>
+
+<style>{`
+#demo2 {
+  .container {
+    overflow-y: clip;
+    max-height: 200px;
+    border: 4px solid;
+
+    position: relative;
+  }
+  .symbol {
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+
+    aspect-ratio: 1;
+    width: 200px;
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo1')
+const container = demo.querySelector('.container')
+const scrollButton = demo.querySelector('#demo1-scroll')
+
+let direction = 1
+scrollButton.addEventListener('click', () => {
+  container.scrollTo({
+    behavior: 'smooth',
+    top: direction * 100,
+  })
+
+  direction *= -1
+})
+`}</script>
+
+## まとめ
+
+|特性|`overflow: hidden`|`overflow: clip`|
+|---|---|---|
+|スクロールコンテナの生成|あり|なし|
+|scrollToが使えるか|可|不可|
+|目的|視覚的トリミング|描画領域の制限|
