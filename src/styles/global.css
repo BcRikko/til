@@ -24,7 +24,7 @@ html {
   line-height: 1.5;
 }
 
-p {
+:where(p) {
   word-break: auto-phrase;
   margin-block-start: 0;
   margin-block-end: 1.5em;
@@ -34,28 +34,28 @@ p {
   }
 }
 
-dt {
+:where(dt) {
   font-weight: 600;
 }
 
-pre {
+:where(pre) {
   padding: 1em;
   font-size: 0.8rem;
   line-height: 1.4;
 }
-code {
+:where(code) {
   font-style: italic;
   padding: 0 0.2em;
   background-color: #eeeeee;
 }
-pre > code {
+:where(pre) > :where(code) {
   font-family: Menlo, Monaco, 'Courier New', monospace;
   font-style: initial;
   padding: initial;
   background-color: initial;
 }
 
-blockquote {
+:where(blockquote) {
   margin-block: 2em;
   margin-inline: 0;
   padding-block: 1em;
@@ -64,11 +64,11 @@ blockquote {
   background-color: #eeeeee;
 }
 
-a {
+:where(a) {
   word-break: break-word;
 }
 
-table {
+:where(table) {
   width: 100%;
   overflow-x: auto;
 }
@@ -76,29 +76,31 @@ table {
   padding: 0.3em;
 }
 
-thead tr,
-tr:nth-child(2n) {
+:where(
+  thead tr,
+  tr:nth-child(2n)
+ ) {
   background-color: #eeeeee;
 }
 
-img {
+:where(img) {
   width: 100%;
   height: auto;
 }
 
-strong {
+:where(strong) {
   text-decoration: underline solid rgba(255, 255, 0, 0.5) 0.6ic;
   text-decoration-skip-ink: none;
   text-underline-offset: -0.3ic;
   font-weight: 600;
 
-  a {
+  :where(a) {
     text-underline-offset: initial;
   }
 }
 
 @media (prefers-reduced-motion) {
-  *, *::before, *::after {
+  :where(*, *::before, *::after) {
     animation-duration: 0s !important;
     transition: none !important;
     scroll-behavior: auto !important;
