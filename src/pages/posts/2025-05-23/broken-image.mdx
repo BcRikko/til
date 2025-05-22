@@ -1,0 +1,83 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-23"
+updatedDate: "2025-05-23"
+title: "読み込みに失敗した画像の代わりにaltを表示する"
+author: ダーシノ
+description: "img要素の読み込みに失敗すると、ブラウザが壊れが画像アイコンとともにalt属性に設定してあるテキストを表示してくれる。img要素にfont-styleなどを指定することで、alt属性のテキストを他の文章と区別できる。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[img要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img)の読み込みに失敗すると、ブラウザが壊れが画像アイコンとともにalt属性に設定してあるテキストを表示してくれる。
+
+```html
+<img
+  src="https://example.com/mountain-fuji.png"
+  alt="富士山の雪景色。冬の早朝に撮影されたもの"
+/>
+```
+
+<img alt="富士山の雪景色。冬の早朝に撮影されたもの" src="https://example.com/mountain-fuji.png" />
+
+## 読み込みに失敗した画像をわかりやすくする
+
+img要素にfont-styleなどを指定することで、alt属性のテキストを他の文章と区別できる。
+
+```css
+img {
+  font-style: italic;
+  color: #999;
+}
+```
+
+また、読み込みに失敗した画像には`::before`や`::after`疑似要素が使えるので、壊れた画像アイコン以外の表現もできる。画像が正常に読み込まれたときは疑似用書は表示されないので、特別なclassや属性を付与する必要はない。
+
+```css
+img {
+  position: relative;
+
+  &::after {
+    content: "読み込みに失敗しました: " attr(alt);
+    color: #999;
+    position: absolute;
+    inset: 0;
+    border: 4px solid;
+    background-color: #eee;
+  }
+}
+```
+
+## デモ
+
+<section id="demo">
+  <img alt="富士山の雪景色。冬の早朝に撮影されたもの" src="https://example.com/mountain-fuji.png" />
+
+  <img class="content" alt="富士山の雪景色。冬の早朝に撮影されたもの" src="https://example.com/mountain-fuji.png" />
+</section>
+
+<style>{`
+#demo {
+  display: flex;
+
+  img {
+    position: relative;
+    font-style: italic;
+    color: #999;
+
+    &.content {
+      min-height: 200px;
+      &::after {
+        content:  "読み込みに失敗しました: " attr(alt);
+        position: absolute;
+        inset: 0;
+        border: 4px solid;
+        background-color: #eee;
+      }
+    }
+  }
+}
+`}</style>
