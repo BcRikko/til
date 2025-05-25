@@ -20,6 +20,10 @@ import Baseline from '../../../components/Baseline.astro'
 <Baseline featureId={"starting-style"} />
 <Baseline featureId={"transition-behavior"} />
 
+`@starting-style`で要素が表示されるときの初期状態を定義し、`transition-behavior: allow-discrete`で要素が離散アニメーションを実現している。
+
+なお、「離散アニメーション」とは`display: none`から`display: block`（またはその逆）に切り替えるときなど、ゼロヒャクで切り替わるプロパティの間を補完するアニメーションのこと。
+
 ```html
 <button id="toggle">Show/Hide</button>
 
