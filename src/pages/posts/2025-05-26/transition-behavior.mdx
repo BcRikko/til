@@ -1,0 +1,101 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-05-26"
+updatedDate: "2025-05-26"
+title: "displayプロパティを使ったフェードイン/フェードアウトアニメーション"
+author: ダーシノ
+description: "displayプロパティを使った表示/非表示時のアニメーションは、transitionプロパティの対象にならずフェードイン・フェードアウトができなかった。アニメーションするにはJavaScriptでOpacityを変更し、時間経過でdisplayを切り替える必要があった。現在は、@starting-styleやtransition-behaviorを使うことで、CSSだけでフェードイン・フェードアウトのアニメーションが可能になった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[displayプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/display)を使った表示/非表示時のアニメーションは、[transitionプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)の対象にならずフェードイン・フェードアウトができなかった。アニメーションするにはJavaScriptでOpacityを変更し、時間経過でdisplayを切り替える必要があった。
+
+現在は、[@starting-style](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style)や[transition-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior)を使うことで、CSSだけでフェードイン・フェードアウトのアニメーションが可能になった。
+
+<Baseline featureId={"starting-style"} />
+<Baseline featureId={"transition-behavior"} />
+
+```html
+<button id="toggle">Show/Hide</button>
+
+<div id="target">
+  <p>...</p>
+</div>
+```
+
+```css
+#target {
+  display: none;
+  opacity: 0;
+  transition: opacity 1s, display 1s;
+  transition-behavior: allow-discrete;
+
+  &.show {
+    display: block;
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
+```
+
+```js
+const item = document.querySelector('#target')
+const btn = document.querySelector('#toggle')
+
+btn.addEventListener('click', e => {
+  item.classList.toggle('show')
+})
+```
+
+## デモ
+
+<section id="demo">
+  <button id="toggle">Show/Hide</button>
+  <div id="target">
+    <p>@starting-style + transition-behavior</p>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  #target {
+    display: none;
+    opacity: 0;
+    transition: opacity 1s, display 1s;
+    transition-behavior: allow-discrete;
+
+    padding: 1em;
+    background-color: #ffb3b3;
+    border: 4px solid;
+    text-align: center;
+
+    &.show {
+      display: block;
+      opacity: 1;
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+
+const item = demo.querySelector('#target')
+const btn = demo.querySelector('#toggle')
+
+btn.addEventListener('click', e => {
+  item.classList.toggle('show')
+})
+`}</script>
