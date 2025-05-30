@@ -77,27 +77,22 @@ button {
 
 
 ```ts
-function getLuminance(color: number) {
-  const i = color / 255
-  return i <= 0.03928
-    ? i / 12.92
-    : ((i + 0.055) / 1.055) ** 2.4
-}
+// 例 r: 50, g: 50, b:50
+Rs = r / 255, Gs = g / 255, Bs = b / 255
 
-function getTextColor(backgroundColor: string[]) {
-  const [r, g, b] = backgroundColor
+R = Rs <= 0.03928 ? Rs / 12.92 : ((Rs + 0.055) / 1.055)**2.4
+G = Gs <= 0.03928 ? Gs / 12.92 : ((Gs + 0.055) / 1.055)**2.4
+B = Bs <= 0.03928 ? Bs / 12.92 : ((Bs + 0.055) / 1.055)**2.4
 
-  const R = getLuminance(r)
-  const G = getLuminance(g)
-  const B = getLuminance(b)
-  const Lbg = 0.2126 * R + 0.7152 * G + 0.0722 * B // Luminance of background color
+相対輝度(rl) = 0.2126 * R + 0.7152 * G + 0.0722 * B
 
-  const Lw = 1 as const // Luminance of white
-  const Lb = 0 as const // Luminance of black
+白の相対輝度(lw) = 1
+黒の相対輝度(lb) = 0
 
-  const Cw = (Lw + 0.05) / (Lbg + 0.05) // Contrast ratio of white
-  const Cb = (Lbg + 0.05) / (Lb + 0.05) // Contrast ratio of black
+// (L1+0.05)/(L2+0.05): 輝度がL1>L2になるようにする
+白のコントラスト比(cw) = (lw + 0.05) / (lr + 0.05)
+黒のコントラスト比(cb) = (lr + 0.05) / (lb + 0.05)
 
-  return Cw > Cb ? 'white' : 'black'
-}
+// コントラスト比が大きい方の文字色を使う
+textColor = cw < cb ? 'black' : 'white'
 ```
