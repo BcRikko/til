@@ -1,0 +1,231 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-03"
+updatedDate: "2025-06-03"
+title: "Table要素を使ったtreegridの実装"
+author: ダーシノ
+description: "TreeViewを実現する際、Table要素では行の入れ子構造ができない。そのため、WAI-ARIAとJavaScriptを使って実装する。なお、Table構造にする必要がない場合は、HTMLのみでTreeView UIをつくる のようにdetails要素を使うのが簡単だ。"
+tags: ["HTML", "CSS", "JavaScript", "Accessibility"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TreeViewを実現する際、Table要素では行の入れ子構造ができない。そのため、WAI-ARIAとJavaScriptを使って実装する。
+
+なお、Table構造にする必要がない場合は、[HTMLのみでTreeView UIをつくる](https://bcrikko.github.io/til/posts/2025-03-27/treeview-by-details/) のようにdetails要素を使うのが簡単だ。
+
+
+## 前提知識
+
+テーブル構造を持ちながら、各行に階層構造を持つUIは[role="treegrid"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/treegrid_role)を使う。WindowsにおけるExplorer、macOSにおけるFinderのリストビューがこれに該当する。
+
+treegridを使う場合は、以下のロールや属性を併用する。
+
+- [role="gridcell"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/gridcell_role)
+  - `role="grid"`または`role="treegrid"`の中で、ひとつのデータを表す
+  - table要素に`role="grid"`または`role="treegrid"`が指定されている場合は、td要素が`role="gridcell"`として認識される
+- [aria-level="n"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-level)
+  - 階層化された構造と自身の階層を示すために使用する
+- [aria-expanded="boolean"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-expanded)
+  - 紐づく要素が展開されているかどうかを示す
+- [aria-owns="idrefs"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-owns)
+  - DOM上の親子関係とは異なるアクセシビリティツリー上の所有関係（親子関係）を明示的に示す
+
+
+## 実装例
+### HTML
+
+```html
+<table role="treegrid">
+  <thead>
+    <tr>
+      <th>名前</th>
+      <th>サイズ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr aria-level="1" aria-expanded="true" aria-owns="file01 file02" style="--level: 1;">
+      <td>フォルダA</td>
+      <td>-</td>
+    </tr>
+    <tr aria-level="2" id="file01" style="--level: 2;">
+      <td>ファイル01.txt</td>
+      <td>14KB</td>
+    </tr>
+    <tr aria-level="2" id="file02" style="--level: 2;">
+      <td>ファイル02.txt</td>
+      <td>1MB</td>
+    </tr>
+    <tr aria-level="2" aria-expanded="true" aria-owns="file04 file05" style="--level: 2;">
+      <td>フォルダAA</td>
+      <td>-</td>
+    </tr>
+    <tr aria-level="3" id="file04" style="--level: 3;">
+      <td>ファイル04.txt</td>
+      <td>2MB</td>
+    </tr>
+    <tr aria-level="1" aria-expanded="false" aria-owns="file03" style="--level: 1;">
+      <td>フォルダB</td>
+      <td>-</td>
+    </tr>
+    <tr aria-level="2" id="file03" hidden style="--level: 2;">
+      <td>ファイル03.txt</td>
+      <td>1GB</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+### CSS
+
+```css
+@property --level {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+
+tr > td:first-child {
+  /* attr(aria-*)をしたいがデータが取得できない */
+  /* padding-left: attr(aria-level type<number>) * 1em; */
+
+  padding-left: calc(var(--level) * 1em);
+}
+```
+
+### JavaScript（JSX）
+
+```tsx
+const tree = [
+  {
+    id: 'folderA', name: 'フォルダA', size: '-', children: [
+      { id: 'file01', name: 'ファイル01.txt', size: '14KB' },
+      { id: 'file02', name: 'ファイル02.txt', size: '1MB' },
+      { 
+        id: 'folderAA', name: 'フォルダAA', size: '-', children: [
+          { id: 'file04', name: 'ファイル04.txt', size: '2MB' },
+          { id: 'file05', name: 'ファイル05.txt', size: '3MB' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'folderB', name: 'フォルダB', size: '-', children: [
+      { id: 'file03', name: 'ファイル03.txt', size: '1GB' }
+    ],
+  },
+]
+
+function TreeGrid({ tree }) {
+  const isFolder = item => item.size === '-'
+
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(
+    tree.flat(Infinity).reduce((acc, item) => {
+      if (isFolder(item)) {
+        acc[item.id] = false
+      }
+      return acc
+    }, {})
+  )
+
+  const toggleExpand = item => {
+    setExpanded(prev => ({ ...prev, [item.id]: !prev[item.id] }))
+    item.children.filter(child => isFolder(child)).forEach(child => {
+      setExpanded(prev => ({ ...prev, [child.id]: false }))
+      toggleExpand(child)
+    })
+  }
+
+  const renderRow = (item, level = 1, isHidden = false) => {
+    const isExpanded = expanded[item.id] || false
+    return (
+      <tr
+        aria-level={level}
+        aria-expanded={isFolder(item) && isExpanded}
+        aria-owns={isFolder(item) && item.children?.map(child => child.id).join(' ')}
+        hidden={isHidden}
+        style={{ '--level': level }}
+      >
+        <td
+          onClick={() => isFolder(item) && toggleExpand(item)}
+        >{item.name}</td>
+        <td>{item.size}</td>
+      </tr>
+      {item.children?.map(child => renderRow(child, level + 1, !isExpanded))}
+    )
+  }
+  return (
+    <table role="treegrid">
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>サイズ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tree.map(item => renderRow(item))}
+      </tbody>
+    </table>
+  )
+}
+```
+
+## デモ
+
+<section id="demo">
+  <table role="treegrid">
+    <thead>
+      <tr>
+        <th>名前</th>
+        <th>サイズ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr aria-level="1" aria-expanded="true" aria-owns="file01 file02" style="--level: 1;">
+        <td>フォルダA</td>
+        <td>-</td>
+      </tr>
+      <tr aria-level="2" id="file01" style="--level: 2;">
+        <td>ファイル01.txt</td>
+        <td>14KB</td>
+      </tr>
+      <tr aria-level="2" id="file02" style="--level: 2;">
+        <td>ファイル02.txt</td>
+        <td>1MB</td>
+      </tr>
+      <tr aria-level="2" aria-expanded="true" aria-owns="file04 file05" style="--level: 2;">
+        <td>フォルダAA</td>
+        <td>-</td>
+      </tr>
+      <tr aria-level="3" id="file04" style="--level: 3;">
+        <td>ファイル04.txt</td>
+        <td>2MB</td>
+      </tr>
+      <tr aria-level="1" aria-expanded="false" aria-owns="file03" style="--level: 1;">
+        <td>フォルダB</td>
+        <td>-</td>
+      </tr>
+      <tr aria-level="2" id="file03" hidden style="--level: 2;">
+        <td>ファイル03.txt</td>
+        <td>1GB</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<style>{`
+#demo {
+  @property --level {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
+  }
+
+  tr > td:first-child {
+    padding-left: calc(var(--level) * 2em);
+  }
+
+}
+`}</style>
