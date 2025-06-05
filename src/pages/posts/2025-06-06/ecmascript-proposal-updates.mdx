@@ -1,0 +1,73 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-06"
+updatedDate: "2025-06-06"
+title: "ECMAScript Proposalの2025年6月のアップデート内容"
+author: ダーシノ
+description: "先日108回目のミーティングで、ECMAScriptの各種プロポーザルがアップデートされた。New Proposals, Inspector: Statge 1, More Random Functions: Stage 1, Updated Proposals, Math.clamp: Stage 1→2, SeededPRNG: Stage 1→2, Error.isError: Stage 3→4"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+先日108回目のミーティングで、[ECMAScriptの各種プロポーザルがアップデート](https://ecmascript-daily.github.io/ecmascript/2025/06/05/ecmascript-proposal-update)された。
+
+
+## New Proposals
+
+
+- [Inspector: Statge 1](https://github.com/JakobJingleheimer/proposal-inspector)
+- [More Random Functions: Stage 1](https://github.com/tc39/proposal-random-functions)
+
+
+## Updated Proposals 
+
+- [Math.clamp: Stage 1→2](https://github.com/tc39/proposal-math-clamp)
+- [SeededPRNG: Stage 1→2](https://github.com/tc39/proposal-seeded-random)
+- [Error.isError: Stage 3→4](https://github.com/tc39/proposal-is-error)
+
+
+## ECMAScript 2026に入るProposals
+
+### `Error.isError`
+
+よくある以下のような`instanceof Error`では、実行環境（iframeやnodeのvm modulesなど）によって誤った結果を返す可能性がある。
+```js
+if (error instanceof Error) {
+  // do something
+}
+```
+
+`Array#isArray()`と同じように`Error#isError()`を使うことで、実行環境によらない正確な判定ができるようになる。
+```js
+if (Error.isError(error)) {
+  // do something
+}
+```
+
+## その他のProposals
+
+### `Math.clamp`
+
+数値を上限と下限の間に制限するための関数で、`Math.min()`と`Math.max()`を組み合わせたようなものを`Math.clamp()`として提供する。
+
+```js
+function clamp(number, minimum, maximum) {
+	return Math.min(Math.max(number, minimum), maximum);
+}
+
+const val = clamp(20, 5, 15) // 15
+```
+
+### SeededPRNG
+
+シードを設定して再現可能な乱数を生成できる。C言語のrand関数のようなイメージ。
+
+```js
+const prnd = new Randome.Seeded(0)
+for (let i = 0; i < 10; i++) {
+  console.log(prnd.random())
+}
+```
