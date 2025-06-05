@@ -10,6 +10,11 @@ updates:
     schedule:
       interval: "daily"
       time: "02:00"
+    groups:
+      astro-deps:
+        patterns:
+          - "@astrojs*"
+          - "astro*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
