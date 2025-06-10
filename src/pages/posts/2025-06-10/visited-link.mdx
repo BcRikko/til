@@ -1,0 +1,77 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-10"
+updatedDate: "2025-06-10"
+title: "なぜ:visitedのプライバシー保護対策が必要なのか？"
+author: ダーシノ
+description: "Chrome 136で:visitedのプライバシー保護が強化された。背景と問題点:visitedは閲覧済みリンクを視覚的に区別するために使用されてきた。しかし、この機能をつかって悪意あるサイトが「ユーザーの閲覧履歴を推測する」ことが可能だったため、以前から問題視され、さまざまな対策が講じられてきた。"
+tags: ["Web", "Security"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Chrome 136](https://developer.chrome.com/blog/visited-links)で`:visited`のプライバシー保護が強化された。
+
+
+## 背景と問題点
+
+[:visited](https://developer.mozilla.org/en-US/docs/Web/CSS/:visited)は閲覧済みリンクを視覚的に区別するために使用されてきた。しかし、この機能をつかって悪意あるサイトが「ユーザーの閲覧履歴を推測する」ことが可能だったため、以前から問題視され、さまざまな対策が講じられてきた。
+
+閲覧情報が推測されると、以下のような危険性がある。
+
+- 個人の政治的思想や健康状態などの予測
+- フィッシングの精度向上
+- その他の情報と組み合わせた個人特定
+
+### JavaScriptで閲覧済みのリンクを検出する
+```js
+const links = document.querySelectorAll('[href]');
+const defaultColor = document.body.style.color;
+
+for (const link of links) {
+  const style = window.getComputedStyle(link);
+  if (style.color !== defaultColor) {
+    console.log(`Visited link: ${link.href}`);
+  }
+}
+```
+
+## 現在の対策
+
+プライバシー上の理由から、`:visited`擬似クラスで適用できるスタイルが厳しく制限されており、`color`や`background-color`など色に関するスタイルのみが許可されている。また、[window.getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)では`:visited`でない色の値を返すようになっている。
+
+## Chromeの取り組み
+
+Chrome 136以降では、さらにプライバシー保護を強化するために、`:visited`リンク履歴のパーティショニングを行っている。
+
+パーティショニングをする前は、コンテキストに関係なく閲覧済みの場合は、どのサイトでも`:visited`で閲覧状態がわかってしまった。
+
+パーティショニングでコンテキストによって:`visited`の閲覧情報を隔離することで、意図しない情報漏えいを防ぐことができる。
+
+### Before
+
+```html
+<!-- example.com -->
+<a href="https://bcrikko.github.io">bcrikko.github.io</a>
+```
+
+```html
+<!-- 悪意のあるサイト: evil.example.org -->
+<a href="https://bcrikko.github.io">bcrikko.github.io</a>
+```
+
+1. `example.com`ページを表示する
+2. リンクから`bcrikko.github.io`を閲覧する
+3. `example.com`のページで`:visited`が適用され、リンクの色が変わる
+4. `evil.example.org`のページを表示する
+5. **`bcrikko.github.io`が閲覧済みなので、`:visited`が適用されリンクの色が変わる**
+
+### After
+
+1. `example.com`ページを表示する
+2. リンクから`bcrikko.github.io`を閲覧する
+3. `example.com`のページで`:visited`が適用され、リンクの色が変わる
+4. `evil.example.org`のページを表示する
+5. **`bcrikko.github.io`が閲覧済みであっても、コンテキストが異なるため`:visited`は適用されずリンクの色は変わらない**
