@@ -1,0 +1,65 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-01"
+updatedDate: "2025-06-01"
+title: "Monthly Newsletter 6月号"
+author: "GitHub Copilot"
+description: "2025年5月に公開した記事のまとめ。CSSやJavaScriptの最新機能、アクセシビリティ、HTMLの実践的な知見を中心に解説。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年5月は、CSSの新機能やアクセシビリティ、HTMLの実践的なテクニックに関する記事を多数公開した。各記事では、モダンなウェブ標準やベストプラクティスに基づき、実用的な知識をわかりやすく解説している。
+
+## 5月公開した記事
+
+### [hyphenate-limit-charsでハイフネーションされる文字数を制御する](https://bcrikko.github.io/til/posts/2025-05-08/hyphenate-limit-chars/)
+
+英単語の折り返し制御に使うhyphensプロパティと、hyphenate-limit-charsでハイフネーションを許可する単語の長さや前後の最小文字数を指定する方法を解説。実用例とともに、各値の意味を丁寧に説明している。
+
+### [hyphensプロパティが効かないときの対処法](https://bcrikko.github.io/til/posts/2025-05-08/hyphenation-does-not-work/)
+
+hyphensプロパティが効かない原因として、lang属性の指定ミスや改行制御プロパティの影響を挙げ、正しい言語指定やwhite-space/overflowの設定方法を紹介している。
+
+### [AstroでMermaid記法を使う](https://bcrikko.github.io/til/posts/2025-05-13/astro-mermaid/)
+
+Astro + mdx環境でMermaid記法を利用する方法を解説。rehype-mermaidの導入や、CI環境でのPlaywrightインストール、npm scriptsによる自動化手法を紹介している。
+
+### [RegExp.escape()で正規表現のパターンをエスケープする](https://bcrikko.github.io/til/posts/2025-05-14/regexp-escape/)
+
+RegExp.escape()が主要ブラウザで利用可能になったことを受け、従来のバックスラッシュによるエスケープとの違いや、意図しないマッチを防ぐための使い方を解説している。
+
+### [SSHキーの作成と暗号化アルゴリズムの種類](https://bcrikko.github.io/til/posts/2025-05-14/ssh-keygen/)
+
+ssh-keygenコマンドによるSSHキーの作成方法と、RSA・ED25519など主要な暗号化アルゴリズムの特徴や推奨理由をまとめている。
+
+### [margin-trimで先頭/末尾のmarginを削除する](https://bcrikko.github.io/til/posts/2025-05-16/margin-trim/)
+
+コンテナ要素の先頭・末尾marginを自動で削除できるmargin-trimプロパティの使い方と、従来のmargin制御との違いを解説。Safariのみサポート状況にも触れている。
+
+### [overflow-block、overflow-inlineによる柔軟なレイアウト](https://bcrikko.github.io/til/posts/2025-05-20/overflow-block/)
+
+overflow-block/overflow-inlineプロパティを使い、writing-modeの違いに対応した柔軟なスクロール・非表示制御を実現する方法を紹介している。
+
+### [長文ドキュメントにおけるアクセシビリティとユーザビリティ](https://bcrikko.github.io/til/posts/2025-05-20/accessible-dpub/)
+
+Digital Publishing WAI-ARIA Module 1.1に基づき、長文ドキュメントの目次やセクション、脚注のアクセシビリティ向上手法を具体例とともに解説している。
+
+### [overflowプロパティのhiddenとclipの違いとユースケース](https://bcrikko.github.io/til/posts/2025-05-22/overflow-hidden-vs-clip/)
+
+overflow: hiddenとclipの挙動の違い、scroll containerの生成有無やJavaScriptからの操作性の違いを整理し、適切な使い分けを提案している。
+
+### [読み込みに失敗した画像の代わりにaltを表示する](https://bcrikko.github.io/til/posts/2025-05-23/broken-image/)
+
+img要素のalt属性を活用し、画像読み込み失敗時にテキストを明示的に表示する方法や、CSSによるaltテキストの装飾・疑似要素活用例を紹介している。
+
+### [displayプロパティを使ったフェードイン/フェードアウトアニメーション](https://bcrikko.github.io/til/posts/2025-05-26/transition-behavior/)
+
+@starting-styleやtransition-behaviorを活用し、CSSのみでdisplayの切り替えを伴うアニメーションを実現する方法を解説。従来のJavaScript制御との違いも説明している。
+
+### [contrast-color()で背景色にあわせて適切な色を取得する](https://bcrikko.github.io/til/posts/2025-05-30/contrast-color/)
+
+contrast-color()関数を使い、背景色に応じて自動的に可読性の高い文字色を選択する方法と、WCAGに基づくコントラスト比の計算方法を解説している。
