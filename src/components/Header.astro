@@ -4,9 +4,10 @@ interface Props {
   pubDate: string;
   updatedDate: string;
   tags: string[];
+  author: string;
 }
 
-const { title, pubDate, updatedDate, tags } = Astro.props;
+const { title, pubDate, updatedDate, tags, author } = Astro.props;
 ---
 
 <section>
@@ -44,7 +45,7 @@ const { title, pubDate, updatedDate, tags } = Astro.props;
     </div>
     <div>
       <dt>著者</dt>
-      <dd><a href="/til/aboutme">ダーシノ(@bc_rikko)</a></dd>
+      <dd><a href="/til/aboutme">{author}</a></dd>
     </div>
   </dl>
   <h1>{title}</h1>
