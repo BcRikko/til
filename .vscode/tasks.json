@@ -10,14 +10,9 @@
         "-type",
         "f"
       ],
-      "problemMatcher": [],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
     }
   ],
   "inputs": [

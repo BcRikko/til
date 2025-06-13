@@ -13,7 +13,7 @@ description: 'Generate a new Monthly Newsletter'
 4. 各記事の内容を読み込み、「記事の要約方法」に従って要約してください
 5. 記事をtagsごとに分類して出力してください
   - tagsが複数ある場合は、もっとも関連度の高いタグを使用してください
-
+  
 ## 作成ファイル:
 
 - `./src/pages/posts/{yyyy-mm-dd}/monthly-letter.mdx`というファイルを作成し、その中に出力形式に沿った内容を出力してください。
@@ -46,7 +46,7 @@ import Header from '../../../components/Header.astro'
 
 {以下で紹介する記事のトピックを簡潔にまとめてください。}
 
-## {tag}
+## {tag: 並び順はHTML、CSS、JavaScript、その他のtagの順にしてください}
 
 ### [{title}](記事のURL)
 
