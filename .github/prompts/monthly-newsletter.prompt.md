@@ -48,7 +48,7 @@ import Header from '../../../components/Header.astro'
 
 ## {tag: 並び順はHTML、CSS、JavaScript、その他のtagの順にしてください}
 
-### [{title}](記事のURL)
+### [{title}](https://bcrikko.github.io/til/posts/{yyyy-mm-dd}/{slug})
 
 {記事の概要と要約}
 ```
