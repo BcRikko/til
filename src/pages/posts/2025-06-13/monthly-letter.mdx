@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-04-01"
+updatedDate: "2025-04-01"
+title: "Monthly Newsletter 4月号"
+author: "GitHub Copilot"
+description: "2025年3月に公開した記事のまとめ。HTML、CSS、JavaScript、Web、マインドセット、プログラミングなど幅広いトピックをカバー。各記事の要点を簡潔に紹介する。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年3月に公開した記事を、主要なタグごとにまとめて紹介する。
+
+## HTML
+
+### [Popover=hintの使い方](https://bcrikko.github.io/til/posts/2025-03-11/popover-hint)
+Popover APIの新モード「hint」について解説。従来のpopover="auto"では複数要素の同時表示ができなかったが、hintを使うことでメニューとツールチップの同時表示が可能となる。UIの柔軟な制御が実現できる。
+
+### [Invoker Commands APIのcommand/commandforを使って宣言的に動作を割り当てる](https://bcrikko.github.io/til/posts/2025-03-24/invoker-commands-api)
+Invoker Commands APIを使い、HTML属性で要素同士を宣言的に紐付けて操作できる仕組みを紹介。Popover APIとの違いや、command属性・commandfor属性の使い方、カスタムコマンドの実装例も解説。
+
+### [HTMLのみでTreeView UIをつくる](https://bcrikko.github.io/til/posts/2025-03-27/treeview-by-details)
+listitem要素とdetails要素を活用し、HTMLだけでTreeView UIを実装する方法を紹介。details要素のname属性を使うことで、排他的な開閉処理も可能となる。
+
+## CSS
+
+### [CSS Relative Colorsで色を柔軟に扱う](https://bcrikko.github.io/til/posts/2025-03-26/relative-colors)
+Relative Colorsを使うことで、オリジナルの色に対してhslやrgbaなどのカラーファンクションを柔軟に適用できる。バリエーション作成やアニメーション、状態変化の表現に便利。
+
+## JavaScript
+
+### [名前付きキャプチャグループでString#match()をより使いやすく](https://bcrikko.github.io/til/posts/2025-03-27/named-capturing-group)
+正規表現の名前付きキャプチャグループを使うことで、String#match()の結果を分かりやすく扱える。TypeScriptでの型アサーションの注意点も補足。
+
+## Web
+
+### [ウェブに関する標準化団体やグループと活動内容](https://bcrikko.github.io/til/posts/2025-03-01/web-communities)
+W3CやWHATWG、Ecma Internationalなど、ウェブ技術の標準化を担う団体やグループの役割と活動内容を整理。フロントエンドエンジニアにとって重要なWorking Groupやコミュニティも紹介。
+
+### [Firefox136でAIにページを要約させる](https://bcrikko.github.io/til/posts/2025-03-06/firefox-with-ai)
+Firefox 136の新機能として、サイドバーにAIチャットボット（ChatGPTやGeminiなど）を表示し、ページ内容の要約や説明、クイズ作成などができる機能を解説。設定方法や使い方も紹介。
+
+## Mindset
+
+### [インポスター症候群に耐える](https://bcrikko.github.io/til/posts/2025-03-07/imposter-syndrome)
+自分の能力や成果が過大評価されているのではと感じる「インポスター症候群」について、著者自身の経験と対処法を紹介。努力の証として技術書を眺めることで自信を保つ工夫を述べている。
+
+### [脳が反応する前にブロックするインターネットサバイバル術](https://bcrikko.github.io/til/posts/2025-03-08/internet-survival)
+SNSや記事の拡散で否定的な反応に悩む際、脳が反応する前に物理的に目を逸らす・ミュートするなどの自衛策を紹介。心の平和を守るための実践的な方法をまとめている。
+
+## Programming
+
+### [Parse, don't validate（型駆動設計）のメリット](https://bcrikko.github.io/til/posts/2025-03-12/parse-dont-validate)
+データを単に検証するのではなく、解析して適切な型や構造に変換する「Parse, don't validate」の考え方を解説。TypeScriptでの実装例を交え、型安全性やバグ防止の観点からメリットを述べている。
+
+### [フロントエンドエンジニアのためのHaskell入門](https://bcrikko.github.io/til/posts/2025-03-20/haskell)
+TypeScriptと比較しながらHaskellの純粋関数型プログラミングの基礎を学ぶ入門記事。変数宣言や関数定義、リスト・タプル・条件分岐などの基本構文を丁寧に解説。
