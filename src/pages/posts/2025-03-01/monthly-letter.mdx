@@ -1,0 +1,85 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-03-01"
+updatedDate: "2025-03-01"
+title: "Monthly Newsletter 3月号"
+author: "GitHub Copilot"
+description: "2025年2月に投稿された記事をHTML、CSS、JavaScript、その他のカテゴリごとにまとめて紹介する。各記事の要点を簡潔に要約し、最新の技術動向や知見を振り返る。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年2月に投稿された記事をカテゴリごとにまとめて紹介する。HTMLやCSSの仕様変更、JavaScriptの新機能、セキュリティ、マインドセット、数学など幅広いトピックをカバーしている。
+
+## HTML
+
+### [階層によってh1要素のfont-sizeがかわる歴史的背景](https://bcrikko.github.io/til/posts/2025-02-27/h1-font-size)
+
+HTMLのh1要素のfont-sizeが階層ごとに変化する歴史的背景を解説。HTML4からHTML5、Living Standardまでの仕様の変遷や、アウトラインアルゴリズムの廃止、User Agent Stylesheetの挙動変更についてまとめている。今後はh1のfont-sizeを明示的に指定する必要性が高まることを指摘。
+
+## CSS
+
+### [transform: scale()とzoomプロパティの違い](https://bcrikko.github.io/til/posts/2025-02-19/scale-vs-zoom)
+
+CSSのtransform: scale()とzoomプロパティの違いを整理。scale()は要素の拡大・縮小を行うがページレイアウトには影響しない。一方zoomはレイアウト全体に影響を与える。2024年にzoomがBaseline入りしたことも紹介。
+
+### [position: fixedの基準を親要素にあわせる](https://bcrikko.github.io/til/posts/2025-02-22/position-fixed)
+
+通常、position: fixedはviewport基準だが、transformやcontainプロパティを使うことで親要素基準にできる方法を解説。contain: layoutの活用が推奨されている。
+
+## JavaScript
+
+### [CanvasRenderingContext2D#fillText()を文字長に応じて自動改行する](https://bcrikko.github.io/til/posts/2025-02-18/canvas-linebreak)
+
+Canvas APIのfillText()は自動改行に非対応。measureText()で文字幅を計測し、maxWidthを超えたら改行する処理の必要性と実装例を解説。
+
+### [AstroでKaTeXで書いた数式をMathMLに変換して表示する](https://bcrikko.github.io/til/posts/2025-02-16/astro-math)
+
+AstroとMDXで数式を扱う際、rehype-katexを使ってKaTeX記法をMathMLに変換し、HTMLに埋め込む方法を紹介。strictモードやoutputオプションの設定例も記載。
+
+### [Temporalオブジェクトを使った日付・時刻操作](https://bcrikko.github.io/til/posts/2025-02-12/javascript-temporal)
+
+JavaScriptの新しいTemporalオブジェクトによる日付・時刻操作の基本を解説。従来のDateオブジェクトとの違いや、add/subtractなどのメソッドの使い方をまとめている。
+
+### [scrollendイベントでスクロールの完了タイミングを検知する](https://bcrikko.github.io/til/posts/2025-02-22/scrollend-event)
+
+scrollendイベントを使うことで、スクロール完了時のタイミングを検知できる。Infinite ScrollやLazy Loadingの最適化など、実用的なユースケースを紹介。
+
+## Security
+
+### [Open Redirectionの攻撃手法と対策](https://bcrikko.github.io/til/posts/2025-02-01/open-redirection)
+
+Open Redirectionの代表的な攻撃手法と、リダイレクト前の確認ページ表示や入力値のバリデーションなどの対策を解説。
+
+### [Header Injectionの攻撃手法と対策](https://bcrikko.github.io/til/posts/2025-02-01/header-injection)
+
+Header Injectionの概要と、Set-Cookieヘッダやレスポンスボディの改ざん例、適切なバリデーションやエスケープ処理の重要性をまとめている。
+
+## Mindset
+
+### [意見が合わないときは超好意的に解釈してみる](https://bcrikko.github.io/til/posts/2025-02-14/be-favorably)
+
+意見が合わない相手とのコミュニケーションでストレスを減らすため、相手の主張を好意的に解釈する実践法を紹介。自分の心を守ることの大切さも述べている。
+
+### [オンラインコミュニケーションでのリアクションは過剰なくらいがちょうど良い](https://bcrikko.github.io/til/posts/2025-02-13/over-reaction)
+
+リモートワーク下でのリアクション不足が「無視」と誤解されやすい課題を指摘。意図的に拍手やサムズアップなどのリアクションを増やすことで、安心感と円滑なコミュニケーションを実現できると述べている。
+
+## Programming
+
+### [Clean CodeとA Philosophy of Software Designの共通点と相違点](https://bcrikko.github.io/til/posts/2025-02-26/aposd-vs-clean-code)
+
+2冊の有名なソフトウェア設計書の対談をもとに、設計哲学やメソッドの長さ、コメント、TDDに対する考え方の違いを整理。両者とも「理解しやすいコード」を重視している点が共通している。
+
+### [漏れのある抽象化の法則（The Law of Leaky Abstractions）](https://bcrikko.github.io/til/posts/2025-02-21/the-law-of-leaky-abstractions)
+
+抽象化の限界と、基礎知識の重要性について解説。TCP/IPモデルを例に、抽象化による効率化と、隠蔽された部分の理解が必要な理由を述べている。
+
+## Mathematics
+
+### [ベクトルと内積](https://bcrikko.github.io/til/posts/2025-02-15/vector)
+
+ベクトルの定義や内積の計算方法、類似度や長さ・角度の算出、BoW（Bag-of-Words）ベクトルの例など、線形代数の基礎をわかりやすくまとめている。
