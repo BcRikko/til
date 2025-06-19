@@ -14,7 +14,7 @@ html {
 
 :where(header, footer, main, aside) {
   padding-inline: 0.5ic;
-  max-width: 40ic;
+  max-inline-size: 40ic;
   margin-inline: auto;
 }
 
@@ -69,7 +69,7 @@ html {
 }
 
 :where(table) {
-  width: 100%;
+  inline-size: 100%;
   overflow-x: auto;
 }
 :where(th, td) {
@@ -84,8 +84,8 @@ html {
 }
 
 :where(img) {
-  width: 100%;
-  height: auto;
+  inline-size: 100%;
+  block-size: auto;
 }
 
 :where(strong) {
