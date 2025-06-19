@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-20"
+updatedDate: "2025-06-20"
+title: ":lang()で言語によってスタイルを変える"
+author: ダーシノ
+description: ":lang()擬似クラスを使うことで、要素に適用されている言語（<p lang=ja>など）に基づいてスタイルを変更できる。複数の言語を扱うウェブサイトで、言語ごとにテキストに関するスタイル（text-spacing-trimやtext-autospaceなど）を変更したり、言語切替に対応しているウェブサービスのUIを調整したりできる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[:lang()](https://developer.mozilla.org/en-US/docs/Web/CSS/:lang)擬似クラスを使うことで、要素に適用されている言語（`<p lang="ja">`など）に基づいてスタイルを変更できる。
+
+複数の言語を扱うウェブサイトで、言語ごとにテキストに関するスタイル（text-spacing-trimやtext-autospaceなど）を変更したり、言語切替に対応しているウェブサービスのUIを調整したりできる。
+
+```html
+<html lang="ja">
+  <body>
+    <p>吾輩は<span lang="en">Cat</span>である。<span lang="fr">nom</span>まだない。</p>
+    <p lang="en">I am a <span lang="fr">Chat</span> As yet I have no <span lang="ja">名前</span>.</p>
+  </body>
+</html>
+```
+
+```css
+*:lang(ja) {
+  color: red;
+}
+*:lang(en) {
+  color: blue;
+}
+*:lang(fr) {
+  color: green;
+}
+```
+
+
+## デモ
+
+<section id="demo" lang="ja">
+  <p>吾輩は<span lang="en">Cat</span>である。<span lang="fr">nom</span>まだない。</p>
+  <p lang="en">I am a <span lang="fr">Chat</span> As yet I have no <span lang="ja">名前</span>.</p>
+</section>
+
+<style>{`
+#demo {
+  *:lang(ja) {
+    color: red;
+  }
+  *:lang(en) {
+    color: blue;
+  }
+  *:lang(fr) {
+    color: green;
+  }
+}
+`}</style>
