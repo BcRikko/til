@@ -1,0 +1,99 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-25"
+updatedDate: "2025-06-25"
+title: "width:100%の代わりにwidth:stretchを使う"
+author: ダーシノ
+description: "width:100%とmarginを組み合わせたときに、親要素の幅を超えてしまうことがある。その場合、margin分を減算してwidthに設定する必要がある。そんなときにwidth:stretchを使うと、marginの計算なしで親要素の幅に合わせられる。ただし、執筆時点ではChrome 138/Edge 138のみサポートしている。Firefoxは-moz-available、Safariは-webkit-fill-availableのベンダープレフィックス付きのキーワードが必要。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+`width:100%`と`margin`を組み合わせたときに、親要素の幅を超えてしまうことがある。その場合、`margin`分を減算してwidthに設定する必要がある。
+
+```css
+.button {
+  margin-inline: 1rem;
+  width: calc(100% - 2rem);
+}
+```
+
+そんなときに[`width:stretch`](https://developer.mozilla.org/ja/docs/Web/CSS/width)を使うと、`margin`の計算なしで親要素の幅に合わせられる。
+ただし、執筆時点ではChrome 138/Edge 138のみサポートしている。Firefoxは`-moz-available`、Safariは`-webkit-fill-available`のベンダープレフィックス付きのキーワードが必要。
+
+```css
+.button {
+  margin-inline: 1rem;
+  width: stretch;
+  width: -moz-available; /* Firefox */
+  width: -webkit-fill-available; /* Safari */
+}
+```
+<Baseline featureId={"stretch"} />
+
+
+## デモ
+
+<section id="demo">
+  <div><button type="button" class="auto">width:auto;</button></div>
+  <div><button type="button" class="full">width:100%;</button></div>
+  <div><button type="button" class="calc">width:calc(100% - margin);</button></div>
+  <div><button type="button" class="stretch">width:stretch;</button></div>
+</section>
+
+<style>{`
+#demo {
+  border: 4px solid;
+  position: relative;
+  padding-block: 1rem;
+  margin-inline: 4rem;
+  width: stretch;
+
+  &::before, &::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    width: 4rem;
+    background-color: rgb(250, 170, 0, .5);
+    z-index: -1;
+  }
+  &::before {
+    left: 0;
+  }
+  &::after {
+    right: 0;
+  }
+
+  button {
+    margin-block: .5rem;
+    padding: .5em;
+    border: 4px solid;
+    font-size: 1.5rem;
+    margin-inline: 4rem;
+
+    &.auto {
+      width: auto;
+    }
+    &.full {
+      width: 100%;
+    }
+    &.calc {
+      width: calc(100% - 8rem);
+    }
+    &.stretch {
+      width: stretch;
+      width: -moz-available;
+      width: -webkit-fill-available;
+    }
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+`}</script>
