@@ -22,7 +22,7 @@ import Baseline from '../../../components/Baseline.astro'
 }
 ```
 
-そんなときに[`width:stretch`](https://developer.mozilla.org/ja/docs/Web/CSS/width)を使うと、`margin`の計算なしで親要素の幅に合わせられる。
+そんなときに **[`width:stretch`](https://developer.mozilla.org/ja/docs/Web/CSS/width)を使うと、`margin`の計算なしで親要素の幅に合わせられる。**
 ただし、執筆時点ではChrome 138/Edge 138のみサポートしている。Firefoxは`-moz-available`、Safariは`-webkit-fill-available`のベンダープレフィックス付きのキーワードが必要。
 
 ```css
@@ -97,3 +97,20 @@ import Baseline from '../../../components/Baseline.astro'
 <script>{`
 const demo = document.querySelector('#demo')
 `}</script>
+
+## 追記: 2025-06-25
+
+状況によるため一概には言えないが、 **コンポーネント自体に`margin`を持たせるとコンポーネントの外側に影響を与えるため再利用性が低くなる。** そのため、個人的には親要素に`padding`を設定したい。
+
+```css
+.container {
+  padding-inline: 1rem;
+}
+
+.button {
+  width: 100%;
+}
+```
+
+
+<iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/838ea9ee6f5e42e9b46627a16dd72c2e" title="コンポーネント指向時代のmargin戦略 / Rethinking the relationship between Components and Margins" allowfullscreen="true" style="border: 0px; background: padding-box padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777"></iframe>
