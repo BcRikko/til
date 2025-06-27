@@ -1,0 +1,86 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-06-28"
+updatedDate: "2025-06-28"
+title: "JavaScriptは参照渡しではなく参照の値渡し"
+author: ダーシノ
+description: "プログラミング初心者がつまづきやすい値渡しと共有渡しの言葉を、そのままJavaScriptの文脈で使われることがある。しかし、仕様書を読むとJavaScriptのそれは「共有渡し（Pass-by-Sharing）」であり、「参照渡し（Pass-by-Reference）」とは言えない。※ECMAScriptの言語仕様書には「共有渡し(Pass-by-Sharing)」という用語は明示的に定義されていない。引数の渡し方を説明するために使われる概念的な用語であり、日本語では「オブジェクト参照の値渡し」と呼ばれることもある。"
+tags: ["JavaScript", "Programming"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+プログラミング初心者がつまづきやすい値渡しと共有渡しの言葉を、そのままJavaScriptの文脈で使われることがある。しかし、仕様書を読むとJavaScriptのそれは「共有渡し（Pass-by-Sharing）」であり、「参照渡し（Pass-by-Reference）」とは言えない。
+
+※ECMAScriptの言語仕様書には「共有渡し(Pass-by-Sharing)」という用語は明示的に定義されていない。引数の渡し方を説明するために使われる概念的な用語であり、日本語では「オブジェクト参照の値渡し」と呼ばれることもある。
+
+## JavaScriptが参照渡しでない実例
+
+最初にサンプルコードみたほうが理解しやすいだろう。
+
+```js
+function modify(data) {
+  // ↓元の変数のnameが "Bob" に書き換わる
+  data.name = 'Bob'
+
+  // ↓元の変数には影響を及ぼさない（Bobのまま）
+  data = { name: 'Charlie' }
+}
+
+const item = { name: 'Alice' }
+modify(item)
+
+console.log(item.name) // Bob
+```
+
+このように参照渡しであれば書き換わるはずの値が書き換わらない。
+
+## C#/C++などの純粋な参照渡し
+
+C#/C++などは参照渡しができる。C#においては`ref`を使うことで、元の変数の参照（アドレス）を渡し、関数内で書き換えられる。
+```csharp
+class Program
+{
+  class Person
+  {
+    public string Name;
+  }
+
+  static void Modify(ref Person p)
+  {
+    // ↓元の変数のNameが "Bob" に書き換わる
+    p.Name = "Bob";
+    // ↓元の変数のNameが "Charlie" に書き換わる
+    p = new Person { Name = "Charlie" };
+  }
+
+  static void Main()
+  {
+    Person person = new Person { Name = "Alice" };
+    Modify(ref person);
+
+    Console.WriteLine(person.Name); // Charlie
+  }
+}
+```
+
+
+## 参照渡しとは
+
+サンプルコードでイメージはつかめるだろう。
+
+参照渡しは、関数に引数を渡す際に**変数のコピーではなく、変数自体の参照（アドレス）を渡すこと**を指す。そのため、参照渡しで渡した引数に再代入しても、元のアドレスの値を書き換える。
+
+
+## JavaScriptは共有渡し
+
+JavaScriptでは関数内で再代入が行われたときに、元の編集に影響が及ばない。そのため、「参照渡し」とは言えない。「共有渡し」、または「オブジェクト参照の値渡し」というのが正確だろう。
+
+
+## 参考
+
+- [6.2.5.5 GetValue(V) - ECMAScript® 2026 Language Specification](https://tc39.es/ecma262/#sec-getvalue)
+- [6.2.5.6 PutValue(V) - ECMAScript® 2026 Language Specification](https://tc39.es/ecma262/#sec-putvalue)
+
