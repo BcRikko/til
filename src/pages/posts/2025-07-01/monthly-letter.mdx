@@ -1,0 +1,47 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-01"
+updatedDate: "2025-07-01"
+title: "Monthly Newsletter 6月号"
+author: "GitHub Copilot"
+description: "2025年6月に公開した記事のまとめ。HTML/CSS/JavaScriptの最新トピックや実践的な知見を紹介。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年6月に公開した記事を、タグごとにまとめて紹介する。今月はHTML/CSS/JavaScriptの実践的な話題や仕様動向、アクセシビリティ、セキュリティなど幅広いトピックを扱った。
+
+## HTML
+
+### [Table要素を使ったtreegridの実装](https://bcrikko.github.io/til/posts/2025-06-03/treegrid)
+
+Table要素で階層構造を持つUI（treegrid）を実装する際の課題と、WAI-ARIA属性やJavaScriptを活用した実装方法について解説。ExplorerやFinderのリストビューのようなUIを目指し、role属性やaria-level/aria-expanded/aria-ownsの使い方を整理。table構造でのtreegridが必要ない場合は、details要素を使ったシンプルなTreeViewも紹介している。
+
+## CSS
+
+### [:lang()で言語によってスタイルを変える](https://bcrikko.github.io/til/posts/2025-06-20/css-lang)
+
+:lang()疑似クラスを使い、要素の言語属性に応じてスタイルを切り替える方法を解説。多言語対応サイトでのテキスト装飾やUI調整に役立つテクニックを、実例とともに紹介している。
+
+### [width:100%の代わりにwidth:stretchを使う](https://bcrikko.github.io/til/posts/2025-06-25/width-stretch)
+
+width:100%とmarginを組み合わせた際の問題点と、marginの計算なしで親要素の幅にフィットするwidth:stretchの活用法を解説。Chrome/Edgeの最新サポート状況や、Firefox/Safariでのベンダープレフィックス対応についても触れている。
+
+## JavaScript
+
+### [JavaScriptは参照渡しではなく参照の値渡し](https://bcrikko.github.io/til/posts/2025-06-28/js-is-pass-by-sharing)
+
+JavaScriptの引数の渡し方について、「参照渡し」と「参照の値渡し（Pass-by-Sharing）」の違いを整理。仕様書や他言語（C#/C++）との比較を通じて、JavaScriptの挙動を正確に理解するためのポイントをまとめている。
+
+### [ECMAScript Proposalの2025年6月のアップデート内容](https://bcrikko.github.io/til/posts/2025-06-06/ecmascript-proposal-updates)
+
+2025年6月のECMAScript会議で議論された新規・更新プロポーザルの概要を紹介。InspectorやMore Random Functions、Math.clamp、SeededPRNG、Error.isErrorなど、今後の仕様動向を簡潔にまとめている。
+
+## その他
+
+### [なぜ:visitedのプライバシー保護対策が必要なのか？](https://bcrikko.github.io/til/posts/2025-06-10/visited-link)
+
+:visited疑似クラスを悪用した閲覧履歴の推測リスクと、Chrome 136以降で強化されたプライバシー保護策について解説。セキュリティ上の背景や、現状の仕様・ブラウザの対応状況を整理している。
