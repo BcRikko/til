@@ -1,0 +1,89 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-02"
+updatedDate: "2025-07-02"
+title: "usingを使い明示的なリソース管理（解放）を行う"
+author: ダーシノ
+description: "JavaScriptはガベージコレクションを備えているため、スコープを外れると自動的にメモリから解放される。しかし、非メモリリソース（データベースやファイルストリームなど）を扱う場合は、明示的な解放（cleanup）をしないとリソースリークが発生してしまう。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+JavaScriptはガベージコレクションを備えているため、スコープを外れると自動的にメモリから解放される。しかし、非メモリリソース（データベースやファイルストリームなど）を扱う場合は、明示的な解放（cleanup）をしないとリソースリークが発生してしまう。
+
+従来のようにtry-finally句を使いコネクションの解放やストリームのクローズ処理を行う場合、忘れずに解放処理を書くことが開発者に委ねられる。そういった煩わしさを解消するために[using](https://github.com/tc39/proposal-explicit-resource-management)が提案された。
+
+執筆時点では、Stage 3に到達しており、[TypeScript 5.2](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/#using-declarations-and-explicit-resource-management)で先行実装されている。
+
+## usingの使い方
+
+usingを使うためには、Disposable、またはAsyncDisposableインターフェースを実装する。
+
+### Disposable
+
+```js
+class FileStream implements Disposable {
+  #stream = null;
+  open() {
+    this.#stream = openFileStream();
+    return this.#stream;
+  }
+  read() {
+    return this.#stream.read();
+  }
+  [Symbol.dispose]() {
+    if (this.#stream) {
+      this.#stream.close();
+      this.#stream = null;
+    }
+  }
+}
+
+function main() {
+  console.log('ファイルを読み込みます');
+  {
+    using stream = new FileStream();
+    stream.open();
+    const data = stream.read();
+    console.log(data);
+  }
+  // ブロックスコープを抜けるとdisposeが自動で呼ばれてリソースを解放する
+}
+```
+
+### AsyncDisposable
+```js
+class Database implements AsyncDisposable {
+  #conn = null;
+
+  async connect() {
+    this.#conn = await createConnection();
+    return this.#conn;
+  }
+
+  async query(sql) {
+    return await this.#conn.execute(sql);
+  }
+
+  [Symbol.asyncDispose]() {
+    if (this.#conn) {
+      await this.#conn.close();
+      this.#conn = null;
+    }
+  }
+}
+
+async function main() {
+  console.log('データベースに接続します');
+  {
+    using conn = await new Database().connect();
+    const users = await conn.query('SELECT * FROM users');
+    console.log(users.length);
+  }
+  // ブロックスコープを抜けるとasyncDisposeが自動で呼ばれてリソースを解放する
+}
+```
+
