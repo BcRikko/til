@@ -2,7 +2,7 @@
 layout: ../../../layouts/Layout.astro
 pubDate: "2025-07-02"
 updatedDate: "2025-07-02"
-title: "usingを使い明示的なリソース管理（解放）を行う"
+title: "usingを使いリソース管理（解放）を行う"
 author: ダーシノ
 description: "JavaScriptはガベージコレクションを備えているため、スコープを外れると自動的にメモリから解放される。しかし、非メモリリソース（データベースやファイルストリームなど）を扱う場合は、明示的な解放（cleanup）をしないとリソースリークが発生してしまう。"
 tags: ["JavaScript"]
@@ -12,7 +12,7 @@ import Header from '../../../components/Header.astro'
 
 <Header {...frontmatter} />
 
-JavaScriptはガベージコレクションを備えているため、スコープを外れると自動的にメモリから解放される。しかし、非メモリリソース（データベースやファイルストリームなど）を扱う場合は、明示的な解放（cleanup）をしないとリソースリークが発生してしまう。
+JavaScriptはガベージコレクションを備えているため、スコープを外れると自動的にメモリが解放される。しかし、非メモリリソース（データベースやファイルストリームなど）を扱う場合は、明示的な解放（cleanup）をしないとリソースリークが発生してしまう。
 
 従来のようにtry-finally句を使いコネクションの解放やストリームのクローズ処理を行う場合、忘れずに解放処理を書くことが開発者に委ねられる。そういった煩わしさを解消するために[using](https://github.com/tc39/proposal-explicit-resource-management)が提案された。
 
@@ -25,7 +25,8 @@ usingを使うためには、Disposable、またはAsyncDisposableインター�
 ### Disposable
 
 ```js
-class FileStream implements Disposable {
+// class FileStream implements Disposable
+class FileStream  {
   #stream = null;
   open() {
     this.#stream = openFileStream();
@@ -56,7 +57,8 @@ function main() {
 
 ### AsyncDisposable
 ```js
-class Database implements AsyncDisposable {
+// class Database implements AsyncDisposable
+class Database {
   #conn = null;
 
   async connect() {
