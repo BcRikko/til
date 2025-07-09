@@ -19,6 +19,8 @@ import Baseline from '../../../components/Baseline.astro'
 
 マウスで選択した部分のスタイルを変更する[::selection](https://developer.mozilla.org/en-US/docs/Web/CSS/::selection)や、`#:~:text=***`のようにURLのハッシュを使って特定のテキストの選択してスタイルを変更する[::target-text](https://developer.mozilla.org/en-US/docs/Web/CSS/::target-text)のような強調表示のぎ疑似要素を拡張して、任意の範囲をハイライトするためのAPIである。
 
+Highlight APIは、不要な要素を追加せずにCSSの疑似要素でスタイルを適用できるため、パフォーマンスやアクセシビリティの向上にもつながる。
+
 ```html
 <p class="message">Hello world. This is a message to highlight.</p>
 ```
