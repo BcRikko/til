@@ -1,0 +1,137 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-10"
+updatedDate: "2025-07-10"
+title: "CSS Custom Highlight APIで任意のテキストをハイライトする"
+author: ダーシノ
+description: "CSS Custom Highlight APIを使うことで、JavaScriptで範囲を指定し、任意のスタイル（ハイライトなど）を適用できる。マウスで選択した部分のスタイルを変更する::selectionや、#:~:text=***のようにURLのハッシュを使って特定のテキストの選択してスタイルを変更する::target-textのような強調表示のぎ疑似要素を拡張して、任意の範囲をハイライトするためのAPIである。"
+tags: ["JavaScript", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[CSS Custom Highlight API](https://developer.mozilla.org/en/docs/Web/API/CSS_Custom_Highlight_API)を使うことで、JavaScriptで範囲を指定し、任意のスタイル（ハイライトなど）を適用できる。
+
+<Baseline featureId={"highlight"} />
+
+マウスで選択した部分のスタイルを変更する[::selection](https://developer.mozilla.org/en-US/docs/Web/CSS/::selection)や、`#:~:text=***`のようにURLのハッシュを使って特定のテキストの選択してスタイルを変更する[::target-text](https://developer.mozilla.org/en-US/docs/Web/CSS/::target-text)のような強調表示のぎ疑似要素を拡張して、任意の範囲をハイライトするためのAPIである。
+
+```html
+<p class="message">Hello world. This is a message to highlight.</p>
+```
+
+```js
+const node = document.querySelector('.message').firstChild;
+
+const target = 'message'
+const start = node.textContent.indexOf(target);
+const end = start + target.length;
+
+// 1.Rangeオブジェクトを作成する
+const range = new Range()
+range.setStart(node, start)
+range.setEnd(node, end)
+
+// 2.Highlight APIを使ってハイライトする
+const highlight = new Highlight(range)
+CSS.highlights.set('selected', highlight)
+
+// 3. ハイライトを削除する
+// CSS.highlights.delete('highlight')
+// CSS.highlights.clear()
+```
+
+```css
+::highlight(selected) {
+  background-color: #333;
+  color: #fff;
+}
+```
+
+
+
+## デモ
+
+<section id="demo">
+  <div class="field">
+    <label for="search">検索する文字列:</label>
+    <input type="text" id="search" placeholder="highlight" />
+  </div>
+
+  <section class="text">
+    <p>The CSS Highlight API allows developers to highlight specific parts of text on a web page without changing the HTML structure.</p>
+    <p>By using JavaScript to create a Range and adding it to a Highlight object, you can define which words or phrases should be styled.</p>
+    <p>Then, using the ::highlight() pseudo-element in CSS, you can set the background color or other styles.</p>
+    <p>This API is useful for search results, grammar tools, and any feature that needs dynamic text highlighting.</p>
+  </section>
+
+</section>
+
+<style>{`
+#demo {
+  ::highlight(selected) {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .field {
+    display: flex;
+    margin-block-end: 1rem;
+
+  }
+  .text {
+    border: 4px solid;
+    padding: 1rem;
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+const searchInput = demo.querySelector('#search')
+const text = demo.querySelector('.text')
+
+const treeWalker = document.createTreeWalker(
+  text,
+  NodeFilter.SHOW_TEXT,
+  null,
+  false
+)
+const allTextNodes = []
+let currentNode = treeWalker.nextNode()
+while (currentNode) {
+  allTextNodes.push(currentNode)
+  currentNode = treeWalker.nextNode()
+}
+
+searchInput.addEventListener('input', (event) => {
+  const searchTerm = event.target.value.trim().toLowerCase()
+  CSS.highlights.clear()
+
+  const ranges = allTextNodes.map(a => (
+    { node: a, text: a.textContent.toLowerCase() }
+  ))
+  .map(({ text, node}) => {
+      const indices = []
+      let startPos = 0
+      while (startPos < text.length) {
+        const index = text.indexOf(searchTerm, startPos)
+        if (index === -1) break
+        indices.push(index)
+        startPos = index + searchTerm.length
+      }
+      return indices.map((index) => {
+        const range = new Range()
+        range.setStart(node, index)
+        range.setEnd(node, index + searchTerm.length)
+        return range
+      });
+  })
+
+  const highlight = new Highlight(...ranges.flat())
+  CSS.highlights.set('selected', highlight)
+})
+`}</script>
