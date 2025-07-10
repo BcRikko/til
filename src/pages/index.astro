@@ -2,6 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import Article from "../components/Article.astro";
 import type { MDXInstance } from "astro";
+import Tags from "../components/Tags.astro";
+
 const allPosts: MDXInstance<MyPost>[] = Object.values(
   import.meta.glob(["./posts/**/*.{md,mdx}", "!./posts/**/_*.{md,mdx}"], {
     eager: true,
@@ -21,32 +23,38 @@ const tags = ["frontend", "web", "javascript", "html", "css"];
 >
   <h1>Today I learned.</h1>
   <p>日々学んだことを公開するサイトです。</p>
-  <ul>
-    {
-      allPosts
-        .sort(
-          (a, b) =>
-            new Date(b.frontmatter.pubDate).getTime() -
-            new Date(a.frontmatter.pubDate).getTime(),
-        )
-        .slice(0, 7)
-        .map((post) => (
-          <li>
-            <Article
-              url={post.url!}
-              title={post.frontmatter.title}
-              pubDate={post.frontmatter.pubDate}
-              updatedDate={post.frontmatter.updatedDate}
-              tags={post.frontmatter.tags}
-            />
-          </li>
-        ))
-    }
-  </ul>
 
-  <nav class="more">
-    <a href="/til/1">もっと読む</a>
-  </nav>
+  <section>
+    <h2>記事一覧:</h2>
+    <ul>
+      {
+        allPosts
+          .sort(
+            (a, b) =>
+              new Date(b.frontmatter.pubDate).getTime() -
+              new Date(a.frontmatter.pubDate).getTime(),
+          )
+          .slice(0, 7)
+          .map((post) => (
+            <li>
+              <Article
+                url={post.url!}
+                title={post.frontmatter.title}
+                pubDate={post.frontmatter.pubDate}
+                updatedDate={post.frontmatter.updatedDate}
+                tags={post.frontmatter.tags}
+              />
+            </li>
+          ))
+      }
+    </ul>
+
+    <nav class="more">
+      <a href="/til/1">もっと読む</a>
+    </nav>
+  </section>
+
+  <Tags pages={allPosts} />
 </Layout>
 
 <style>

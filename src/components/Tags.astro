@@ -1,0 +1,58 @@
+---
+import type { MDXInstance } from "astro";
+
+interface Props {
+  pages: MDXInstance<MyPost>[];
+}
+
+const { pages } = Astro.props;
+
+type Tag = {
+  name: string;
+  count: number;
+};
+
+const tags = pages
+  .reduce<Tag[]>((acc, post) => {
+    post.frontmatter.tags.forEach((tag) => {
+      if (tag.trim() === "") return;
+      const existingTag = acc.find((t) => t.name === tag);
+      if (existingTag) {
+        existingTag.count++;
+      } else {
+        acc.push({ name: tag, count: 1 });
+      }
+    });
+    return acc;
+  }, [])
+  .sort((a, b) => b.count - a.count);
+---
+
+<section class="tags">
+  <h2>タグ一覧:</h2>
+  <ul class="tag-list">
+    {
+      tags.map((tag) => (
+        <li class="tag">
+          <a href={`/til/tags/${tag.name}`}>
+            {tag.name} ({tag.count})
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .tags {
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      padding-inline: 1rem;
+    }
+    .tag {
+      display: inline-block;
+    }
+  }
+</style>
