@@ -26,8 +26,7 @@ html {
 
 :where(p) {
   word-break: auto-phrase;
-  margin-block-start: 0;
-  margin-block-end: 1.5em;
+  margin-block: 1.5em;
 
   &:last-child {
     margin-block-end: 0;
