@@ -28,29 +28,25 @@ const tags = pages
   .sort((a, b) => b.count - a.count);
 ---
 
-<section class="tags">
-  <h2>タグ一覧:</h2>
-  <ul class="tag-list">
-    {
-      tags.map((tag) => (
-        <li class="tag">
-          <a href={`/til/tags/${tag.name}`}>
-            {tag.name} ({tag.count})
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-</section>
+<ul class="tag-list">
+  {
+    tags.map((tag) => (
+      <li class="tag">
+        <a href={`/til/tags/${tag.name}`}>
+          {tag.name} ({tag.count})
+        </a>
+      </li>
+    ))
+  }
+</ul>
 
 <style>
-  .tags {
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-      padding-inline: 1rem;
-    }
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding-inline: 1rem;
+
     .tag {
       display: inline-block;
     }

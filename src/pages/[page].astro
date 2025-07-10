@@ -2,7 +2,7 @@
 import type { Page, GetStaticPaths, MDXInstance } from "astro";
 
 import Layout from "../layouts/Layout.astro";
-import Article from "../components/Article.astro";
+import ArticleList from "../components/ArticleList.astro";
 
 const title = "Today I learned.";
 const description = "日々学んだことを公開するサイトです。";
@@ -38,44 +38,33 @@ const { page } = Astro.props as { page: Page };
 >
   <h1>Today I learned.</h1>
   <p>日々学んだことを公開するサイトです。</p>
-  <ul>
-    {
-      page.data.map((post) => (
-        <li>
-          <Article
-            url={post.url}
-            title={post.frontmatter.title}
-            pubDate={post.frontmatter.pubDate}
-            updatedDate={post.frontmatter.updatedDate}
-            tags={post.frontmatter.tags}
-          />
-        </li>
-      ))
-    }
-  </ul>
+  <section>
+    <h2>記事一覧:</h2>
+    <ArticleList posts={page.data} />
 
-  <nav class="pagination" aria-label="ページネーション">
-    <ul>
-      {
-        page.url.prev && (
-          <li>
-            <a href={page.url.prev} aria-label="前のページに移動する">
-              ≪ 前へ
-            </a>
-          </li>
-        )
-      }
-      {
-        page.url.next && (
-          <li>
-            <a href={page.url.next} aria-label="次のページに移動する">
-              次へ ≫
-            </a>
-          </li>
-        )
-      }
-    </ul>
-  </nav>
+    <nav class="pagination" aria-label="ページネーション">
+      <ul>
+        {
+          page.url.prev && (
+            <li>
+              <a href={page.url.prev} aria-label="前のページに移動する">
+                ≪ 前へ
+              </a>
+            </li>
+          )
+        }
+        {
+          page.url.next && (
+            <li>
+              <a href={page.url.next} aria-label="次のページに移動する">
+                次へ ≫
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </nav>
+  </section>
 </Layout>
 
 <style>

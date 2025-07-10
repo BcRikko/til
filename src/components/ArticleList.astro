@@ -1,0 +1,28 @@
+---
+import type { MDXInstance } from "astro";
+import Article from "./Article.astro";
+
+interface Props {
+  posts: MDXInstance<MyPost>[];
+}
+
+const { posts } = Astro.props;
+---
+
+<ul class="article-list">
+  {
+    posts.map((post) => (
+      <li>
+        <Article
+          url={post.url!}
+          title={post.frontmatter.title}
+          pubDate={post.frontmatter.pubDate}
+          updatedDate={post.frontmatter.updatedDate}
+          tags={post.frontmatter.tags}
+        />
+      </li>
+    ))
+  }
+</ul>
+
+<style></style>
