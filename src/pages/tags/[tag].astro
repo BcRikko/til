@@ -2,6 +2,7 @@
 import type { GetStaticPathsItem, MDXInstance } from "astro";
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
+import ArticleList from "../../components/ArticleList.astro";
 
 export async function getStaticPaths(): Promise<GetStaticPathsItem[]> {
   const allPosts: MDXInstance<MyPost>[] = Object.values(
@@ -52,19 +53,5 @@ const tags = [tag];
 >
   <h1>Today I learned.</h1>
   <p>{`[${tag}]のタグが付いた記事を表示しています。`}</p>
-  <ul>
-    {
-      posts.map((post) => (
-        <li>
-          <Article
-            url={post.url}
-            title={post.frontmatter.title}
-            pubDate={post.frontmatter.pubDate}
-            updatedDate={post.frontmatter.updatedDate}
-            tags={post.frontmatter.tags}
-          />
-        </li>
-      ))
-    }
-  </ul>
+  <ArticleList posts={posts} />
 </Layout>
