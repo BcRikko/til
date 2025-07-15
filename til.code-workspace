@@ -1,0 +1,32 @@
+{
+  "folders": [
+    {
+      "name": "🌴 Root",
+      "path": "."
+    },
+    {
+      "name": "📝 Posts",
+      "path": "src/pages/posts",
+    },
+    {
+      "name": "🐙 GitHub",
+      "path": ".github"
+    },
+    {
+      "name": "⚙️ VSCode",
+      "path": ".vscode"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/2022-*": true,
+      "**/2023-*": true,
+      "**/2024-*": true
+    }
+  }
+}
