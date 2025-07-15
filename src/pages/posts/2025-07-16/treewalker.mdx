@@ -1,0 +1,98 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-16"
+updatedDate: "2025-07-16"
+title: "TreeWalkerを使ってDOMツリーを効率的に走査する"
+author: ダーシノ
+description: "TreeWalkerオブジェクトでNodeFilterを使うことでDOMツリーを効率的に走査できる。以下のサンプルではNodeFilter.SHOW_ELEMENTでElementノードのみを走査している。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+[TreeWalkerオブジェクト](https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker)でNodeFilterを使うことでDOMツリーを効率的に走査できる。
+
+以下のサンプルコードでは`NodeFilter.SHOW_ELEMENT`でElementノードのみを走査している。ちなみにNodeFilterはenumなので`NodeFilter.SHOW_ELEMENT = 1`のようになっている。
+```html
+<section id="target">
+  <p>One</p>
+  <div>
+    <p>Two</p>
+    <div>
+      <p>Three</p>
+    </div>
+  </div>
+  <p class="skip">Four</p >
+</section>
+```
+```js
+const target = document.querySelector('#target')
+
+const walker = document.createTreeWalker(
+  target,
+  NodeFilter.SHOW_ELEMENT,
+  (node) => {
+    // class="skip"は除外
+    return node.classList.contains('skip')
+      ? NodeFilter.FILTER_SKIP
+      : NodeFilter.FILTER_ACCEPT
+  }
+)
+
+let current = walker.nextNode()
+while (current) {
+  console.log(current)
+  current = walker.nextNode()
+}
+```
+```output
+1. <p>One</p>
+2. (
+  <div>
+    <p>Two</p>
+    <div>
+      <p>Three</p>
+    </div>
+  </div>
+)
+3. <p>Two</p>
+4. <div>
+    <p>Three</p>
+  </div>
+5. <p>Three</p>
+6. [SKIP]
+```
+
+他にも `NodeFilter.SHOW_TEXT`をした場合はテキストノードのみを走査できる。
+```js
+const walker = document.createTreeWalker(
+  target,
+  NodeFilter.SHOW_TEXT,
+  (node) => {
+    // HTMLに含まれるインデントスペースも含まれるので除外する
+    return node.textContent.trim() === ''
+      ? NodeFilter.FILTER_SKIP
+      : NodeFilter.FILTER_ACCEPT
+  }
+)
+
+let current = walker.nextNode()
+while (current) {
+  console.log(current.textContent)
+  current = walker.nextNode()
+}
+```
+```output
+1. One
+2. Two
+3. Three
+4. Four
+```
+
+## 利用事例
+
+- [CSS Custom Highlight APIで任意のテキストをハイライトする](http://localhost:4321/til/posts/2025-07-10/custom-highlight-api)
+- [コピーした要素のスタイルや属性を含めて貼り付ける](https://bcrikko.github.io/til/posts/2022-10-21/copy-and-paste-with-style/)
