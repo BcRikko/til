@@ -9,7 +9,11 @@
       "path": "src/pages/posts",
     },
     {
-      "name": "🐙 GitHub",
+      "name": "💡 Drafts",
+      "path": "src/pages/posts/draft"
+    },
+    {
+      "name": "⚙️ GitHub",
       "path": ".github"
     },
     {
