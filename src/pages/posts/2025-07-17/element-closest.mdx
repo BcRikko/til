@@ -1,0 +1,52 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-17"
+updatedDate: "2025-07-17"
+title: "Element.closest()で親方向に検索して要素を取得する"
+author: ダーシノ
+description: "Element.closest()を使うことで、現在の要素から親方向に向かって検索し、CSSセレクターに一致するノードを取得する。親方向に向かって検索するための機能なので、#current → .ancestor → .parent:last-child のような兄弟要素や .parent:has(.xxx) のような自身の祖先以外の要素は取得できない。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Element.closest()](https://developer.mozilla.org/en-US/docs/Web/API/Element/closest)を使うことで、現在の要素から親方向に向かって検索し、CSSセレクターに一致するノードを取得する。
+
+```html
+<div class="ancestor">
+  <div class="parent">
+    <div class="child"></div>
+    <div class="child">
+      <!-- 現在の要素 -->
+      <div id="current"></div>
+    </div>
+  </div>
+  <div class="parent">取得できない</div>
+  <div class="parent">取得できない</div>
+  ...
+</div>
+```
+
+```js
+const current = document.querySelector('#current')
+
+const ancestor = current.closest('.ancestor')
+console.log(ancestor)
+// <div class="ancestor">...</div>
+```
+
+
+## 注意点
+
+親方向に向かって検索するための機能なので、`#current` → `.ancestor` → `.parent:last-child` のような兄弟要素や `.parent:has(.xxx)` のような自身の祖先以外の要素は取得できない。
+
+対応するなら以下のようなことが考えられる。
+
+```js
+const current = document.querySelector('#current')
+const ancestor = current.closest('.ancestor')
+
+const parentHasItem = ancestor.closest('.parent:has(.item)')
+```
