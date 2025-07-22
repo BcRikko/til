@@ -1,0 +1,132 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-23"
+updatedDate: "2025-07-23"
+title: "sibling-indexとsibling-countで作るリングメニュー"
+author: ダーシノ
+description: "sibling-indexとsibling-countを使うと、CSSで兄弟要素の全数とその中での位置を取得できる。要素の全数と位置を取得できるので、たとえば角度の計算が必要なリングメニューのようなUIを簡単に実装できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[sibling-index](https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-index)と[sibling-count](https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-count)を使うと、CSSで兄弟要素の全数とその中での位置を取得できる。
+
+<Baseline featureId={"sibling-count"} />
+
+```css
+.item {
+  width: calc(sibling-count() * 100px);
+  margin-inline-start: calc(sibling-index() * 10px);
+}
+```
+
+要素の全数と位置を取得できるので、たとえば角度の計算が必要なリングメニューのようなUIを簡単に実装できる。
+
+
+```html
+<div class="ring-menu" role="menu">
+  <div class="item" role="menuitem">1</div>
+  <div class="item" role="menuitem">2</div>
+  <div class="item" role="menuitem">3</div>
+  <div class="item" role="menuitem">4</div>
+  <div class="item" role="menuitem">5</div>
+  ...
+</div>
+```
+
+```css
+.ring-menu {
+  position: relative; 
+  width: 300px;
+  height: 300px;
+
+  .item {
+    position: absolute;
+    background-color: #333;
+    color: #eee;
+    inline-size: 50px;
+    block-size: 50px;
+    border-radius: 50%;
+    text-align: center;
+    align-content: center;
+
+    --angle: calc(360deg / sibling-count() * (sibling-index() - 1));
+
+    --x: var(calc(50% + sin(var(--angle)) * 100px));
+    --y: var(calc(50% + cos(var(--angle)) * 100px));
+
+    top: var(--y);
+    left: var(--x);
+  }
+}
+```
+
+## デモ
+
+<section id="demo">
+  <button type="button" class="add-item">アイテムを追加</button>
+  <button type="button" class="remove-item">アイテムを削除</button>
+
+  <div class="ring-menu" role="menu">
+    <div class="item" role="menuitem">1</div>
+    <div class="item" role="menuitem">2</div>
+    <div class="item" role="menuitem">3</div>
+    <div class="item" role="menuitem">4</div>
+    <div class="item" role="menuitem">5</div>
+  </div>
+</section>
+
+<style>{`
+#demo {
+  .ring-menu {
+    position: relative; 
+    width: 300px;
+    height: 300px;
+
+    .item {
+      position: absolute;
+      background-color: #333;
+      color: #eee;
+      inline-size: 50px;
+      block-size: 50px;
+      border-radius: 50%;
+      text-align: center;
+      align-content: center;
+
+      --angle: calc(360deg / sibling-count() * sibling-index());
+
+      --x: calc(50% + cos(var(--angle)) * 100px - 25px);
+      --y: calc(50% + sin(var(--angle)) * 100px - 25px);
+
+      top: var(--y);
+      left: var(--x);
+    }
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+const ringMenu = demo.querySelector('.ring-menu')
+const addItemButton = demo.querySelector('.add-item')
+const removeItemButton = demo.querySelector('.remove-item')
+
+let itemCount = 5
+
+addItemButton.addEventListener('click', () => {
+  const item = document.createElement('div')
+  item.classList.add('item')
+  item.setAttribute('role', 'menuitem')
+  item.textContent = itemCount++
+  ringMenu.appendChild(item)
+})
+
+removeItemButton.addEventListener('click', () => {
+  ringMenu.removeChild(ringMenu.lastElementChild)
+  itemCount--
+})
+`}</script>
