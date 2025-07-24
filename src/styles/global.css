@@ -54,9 +54,16 @@ html {
   margin-block: 2em;
   margin-inline: 0;
   padding-block: 1em;
-  padding-inline: 0.2em;
+  padding-inline: 0.5em;
   border-left: 8px solid #CACACA;
   background-color: #eeeeee;
+  margin-trim: block; /* Only Safari */
+}
+:where(blockquote :first-child) {
+  margin-block-start: 0;
+}
+:where(blockquote :last-child) {
+  margin-block-end: 0;
 }
 
 :where(a) {
