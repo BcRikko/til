@@ -1,0 +1,96 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-07-29"
+updatedDate: "2025-07-29"
+title: "font-sizeとデバイス間の課題と解決"
+author: ダーシノ
+description: "ページ全体のフォントサイズを設定する際、ブラウザのデフォルト値（16px）を使うのが一般的だ。しかし、ブラウザのユーザー設定フォントサイズは9〜24pxと幅広く、推奨値以外を設定した場合、デザインが崩れたり、ユーザー体験が損なわれたりする可能性がある。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+ページ全体のフォントサイズを設定する際、ブラウザのデフォルト値（16px）を使うのが一般的だ。
+
+```css
+html {
+  /* ブラウザのデフォルト値を使う */
+  font-size: 1rem;
+}
+```
+
+しかし、ブラウザのユーザー設定フォントサイズは9〜24pxと幅広く、推奨値以外を設定した場合、デザインが崩れたり、ユーザー体験が損なわれたりする可能性がある。
+
+## 例:Chromeのフォントサイズ
+
+- 極小: 9px
+  - ※2024年頃に`font-size: 10px`未満でもレンダリングできるようになった
+- 小: 12px
+- 中（推奨）: 16px
+- 大: 20px
+- 極大: 24px
+
+## ユーザー設定フォントサイズの解決案
+
+### 1. 上限/下限のガードレールを設定する
+
+許容できるfont-sizeの大きさをもとに、[clamp](https://developer.mozilla.org/en-US/docs/Web/CSS/clamp)を使ってユーザー設定のフォントサイズを制限することでデザインの崩れを防ぐ。
+
+```css
+html {
+  /* フォントサイズ上限 */
+  --MAX: 20px;
+  /* フォントサイズ下限 */
+  --MIN: 12px;
+
+  font-size: clamp(var(--MIN), 1em, var(--MAX));
+}
+```
+
+### 2. 加重平均でデフォルトとユーザー設定のバランスをとる
+
+デザイナー・開発者が想定するデフォルトのフォントサイズと、ユーザー設定のフォントサイズを加重平均を使ってバランスをとる。ユーザー設定がそのまま反映されないが、フォントサイズを大きく（または小さく）したいという意図が尊重できる。
+
+
+```css
+html {
+  /* ページのフォントサイズの重み */
+  --WEIGHT-SITE: 0.6;
+  /* ユーザー設定の重み */
+  --WEIGHT-USER: 0.4;
+  --DEFAULT-FONT-SIZE: 16px;
+
+  font-size: calc(
+    var(--WEIGHT-SITE) * var(--DEFAULT-FONT-SIZE) +
+    var(--WEIGHT-USER) * 1em
+  );
+}
+```
+
+
+
+## デモ
+
+<section id="demo">
+  <p class="guard">フォントサイズ上限:20px、下限:12px</p>
+  <p class="avg">フォントサイズの重み:サイト60%、ユーザー40%</p>
+</section>
+
+<style>{`
+#demo {
+  font-size: 1rem;
+  .guard {
+    font-size: clamp(12px, 1em, 20px);
+  }
+  .avg {
+    font-size: calc(0.6 * 16px + 0.4 * 1em);
+  }
+}
+`}</style>
+
+## 参考
+
+- [Designing for User Font\-size and Zoom \| OddBird](https://www.oddbird.net/2025/07/22/size-preferences/)
