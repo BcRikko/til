@@ -1,0 +1,48 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-04-05"
+updatedDate: "2022-04-05"
+title: "CSS Cascade LayersでCSSフレームワークの詳細度を気にせずスタイリングする"
+author: ダーシノ
+description: "CSS Cascade Layersが使えるようになると、CSSフレームワークを利用するときに詳細度の関係でカスタムスタイルが当たらないような状況に悩まされずにすむ。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[CSS Cascade Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)が使えるようになると、CSSフレームワークを利用するときに詳細度の関係でカスタムスタイルが当たらないような状況に悩まされずにすむ。
+
+<Baseline featureId={"cascade-layers"} />
+
+## CSS Cascade Layersを使わない場合
+
+CSSフレームワークのスタイルを上書きするには、それ以上に高い詳細度を使う必要があった。
+```css
+/* 詳細度が高いスタイル */
+div.my-grid > div > table > thead > tr > td,
+div.my-grid > div > table > tbody > tr > td {
+  padding: 4px 8px 0 8px;
+}
+
+/* override.css ... classを追加して詳細度を稼ぐ */
+div.my-grid > div > table > thead > tr > td.someclass,
+div.my-grid > div > table > tbody > tr > td.someclass {
+  padding: 20px;
+}
+```
+
+## CSS Cascade Layersを使う場合
+
+```css
+@import "./reset.css" layer(reset);
+@import "./my.css" layer(flagrate);
+@layer reset, flagrate;
+
+/* orverride.css */
+.my-grid .td {
+  padding: 20px;
+}
+```
