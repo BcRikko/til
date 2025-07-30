@@ -1,0 +1,41 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-04-04"
+updatedDate: "2022-04-04"
+title: "input要素で入力された値をvalueAsNumber、valueAsDateで取得する"
+author: ダーシノ
+description: 'input要素で入力されたものをinput#valueで取得すると、すべて文字列になってしまう。ただ<input type="number">や<input type="date">の場合は、文字列ではなく数値や日付オブジェクトとして取得したい。そのときにvalueAsNumberやvalueAsDateを使うことで、数値や日付オブジェクトとして取得できる。'
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+input要素で入力されたものを`input#value`で取得すると、すべて文字列になってしまう。
+
+ただ`<input type="number">`や`<input type="date">`の場合は、文字列ではなく数値や日付オブジェクトとして取得したい。そのときに[valueAsNumber](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/valueAsNumber)や[valueAsDate](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/valueAsDate)を使うことで、数値や日付オブジェクトとして取得できる。
+
+```html
+<input type="number" value="123" >
+
+<input type="date" value="2022-04-04">
+```
+
+```js
+const num = document.querySelector('input[type="number"]')
+console.log(
+  num.value, // "123"
+  typeof num.value, // "string"
+  num.valueAsNumber, // 123
+  typeof num.valueAsNumber // "number"
+)
+
+const date = document.querySelector('input[type="date"]')
+console.log(
+  date.value, // "2022-04-04"
+  typeof date.value, // "string"
+  date.valueAsDate, // "2022-04-04T00:00:00.000Z"
+  typeof date.valueAsDate // "object"
+)
+```
