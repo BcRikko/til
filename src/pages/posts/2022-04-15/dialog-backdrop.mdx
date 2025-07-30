@@ -1,0 +1,37 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-04-15"
+updatedDate: "2022-04-15"
+title: "dialog要素に::backdrop擬似要素が使えるようになった"
+author: ダーシノ
+description: 'Safari 15.4がdialog要素と::backdrop疑似要素をサポートし、全モダンブラウザで利用可能になった。dialog.style.display = "none" や dialog.style.display = "block" のようなスタイルの変更を行わずに、ダイアログの背景を制御できるようになった。'
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Safari 15.4が[dialog要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)と[::backdrop疑似要素](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop)をサポートし、全モダンブラウザで利用可能になった。
+
+`dialog.style.display = "none"` や `dialog.style.display = "block"` のようなスタイルの変更を行わずに、ダイアログの背景を制御できるようになった。
+
+```html
+<dialog id="confirm-dialog">
+   ...
+</dialog>
+```
+
+```css
+dialog::backdrop {
+  /* マスクの背景色 */
+  background-color: rgba(0, 0, 0, .3);
+}
+```
+
+```js
+const dialog = document.querySelector('#confirm-dialog')
+
+dialog.showModal()
+dialog.close()
+```
