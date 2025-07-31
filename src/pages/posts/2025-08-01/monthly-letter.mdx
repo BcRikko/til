@@ -1,0 +1,75 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-08-01"
+updatedDate: "2025-08-01"
+title: "Monthly Newsletter 8月号"
+author: "GitHub Copilot"
+description: "2025年7月に投稿した記事をタグごとにまとめ、要点を簡潔に紹介する。CSSやJavaScript、AI、セキュリティなど幅広いトピックをカバー。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年7月に投稿した記事のトピックをタグごとにまとめて紹介する。今月はCSSやJavaScriptの最新技術、AIの基礎、セキュリティ、知識系まで幅広い内容をカバーしている。
+
+## CSS
+
+### [Quantity Queriesで要素数ごとに表示を切り替える](https://bcrikko.github.io/til/posts/2025-07-09/quantity-queries)
+
+要素数に応じてスタイルを切り替えるテクニック「Quantity Queries」について解説。:has()や:nth-child()を組み合わせることで、Gridレイアウトなどで柔軟なデザインが可能になる。
+
+### [sibling-indexとsibling-countで作るリングメニュー](https://bcrikko.github.io/til/posts/2025-07-23/sibling-index-and-count)
+
+CSSのsibling-indexとsibling-countを活用し、兄弟要素の数や位置を取得してリング状のメニューUIを実装する方法を紹介。角度計算などもCSSのみで完結できる。
+
+### [ユーザー設定フォントサイズと許容サイズの課題と解決](https://bcrikko.github.io/til/posts/2025-07-29/font-size)
+
+ユーザーのフォントサイズ設定に対応する際の課題と、clamp()や加重平均を使った解決策を提案。デザイン崩れやユーザー体験の損失を防ぐための実践的なアプローチを解説。
+
+## JavaScript
+
+### [usingを使いリソース管理（解放）を行う](https://bcrikko.github.io/til/posts/2025-07-02/javascript-using)
+
+JavaScriptの新提案「using」によるリソース管理の仕組みを解説。ガベージコレクションだけでは解決できない非メモリリソースの明示的な解放方法や、TypeScriptでの先行実装についてまとめている。
+
+### [CSS Custom Highlight APIで任意のテキストをハイライトする](https://bcrikko.github.io/til/posts/2025-07-10/custom-highlight-api)
+
+JavaScriptとCSS Custom Highlight APIを使い、任意のテキスト範囲にハイライトを適用する方法を紹介。::selectionや::target-textとの違い、動的なハイライトの実装例も解説。
+
+### [TreeWalkerを使ってDOMツリーを効率的に走査する](https://bcrikko.github.io/til/posts/2025-07-16/treewalker)
+
+TreeWalkerオブジェクトとNodeFilterを活用し、DOMツリーを効率的に走査する方法を解説。SHOW_ELEMENTやSHOW_TEXTの使い分けや、実用的なサンプルも掲載。
+
+### [Element.closest()で親方向に検索して要素を取得する](https://bcrikko.github.io/til/posts/2025-07-17/element-closest)
+
+Element.closest()を使い、現在の要素から親方向に向かってCSSセレクタに一致するノードを取得する方法と注意点をまとめている。
+
+## AI
+
+### [生成AIを支える技術: 埋め込みモデル、ベクトル変換、ベクトル検索を手計算で理解する](https://bcrikko.github.io/til/posts/2025-07-14/vector-search)
+
+RAG（Retrieval-Augmented Generation）の基礎を、手作業でモデル作成・ベクトル変換・ベクトル検索を行いながら解説。AIの仕組みを数式や具体例で丁寧に説明している。
+
+### [日々の学びとテックブログ執筆でのAI活用事例](https://bcrikko.github.io/til/posts/2025-07-18/how-i-learn-with-ai)
+
+ChatGPTやCopilotなどAIツールを日々の学びや調査、ブログ執筆にどう活用しているかを実体験ベースでまとめている。
+
+## Security
+
+### [OSINT（Open Source Intelligence）の悪用と対策](https://bcrikko.github.io/til/posts/2025-07-30/open-source-intelligence)
+
+公開情報を収集・分析するOSINTの概要と、サイバー攻撃への悪用事例、個人情報を守るための具体的な対策を解説。SNSやブログの利用方法の見直しも提案。
+
+## Knowledge
+
+### [現代貨幣理論（MMT）の基礎と日本財政への応用と課題](https://bcrikko.github.io/til/posts/2025-07-15/modern-monetary-theory)
+
+現代貨幣理論（MMT）の基本的な考え方と、日本の財政政策への応用可能性、インフレ制御の課題や賛否両論を整理している。
+
+## Programming
+
+### [なぜ「継承を使うな」と言われるのか、代替案はあるのか](https://bcrikko.github.io/til/posts/2025-07-01/oop-inheritance)
+
+OOPの「継承を使うな」と言われる理由や背景、インターフェースやコンポジションなど現代的な設計手法との比較を解説。抽象化の失敗や多重継承の複雑性についても触れている。
