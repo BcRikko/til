@@ -88,7 +88,7 @@ function getOgImageAPI(): {
 
       const imageBuffer = await getOgImage(post.frontmatter.title)
       return new Response(
-        imageBuffer,
+        new Uint8Array(imageBuffer),
         {
           headers: {
             'content-type': 'image/png',
