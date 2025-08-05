@@ -74,14 +74,18 @@ const routes = [
     },
   },
   {
-    pattern: new URLPattern({ pathname: "/images/*" }),
+    pattern: new URLPattern({ pathname: "/images/*", search: "size=:size" }),
     handler: (match) => {
       console.log(`Image path: ${match.pathname.input}`)
+      console.log(`Image size: ${match.search.groups.size}`)
     },
   },
 ]
 
+
 const url = "https://blog.example.com/posts/url-pattern"
+// const url = "https://blog.example.com/magazine/2025-08-06"
+// const url = "https://blog.example.com/images/test.jpg?size=large"
 
 for (const route of routes) {
   if (route.pattern.test(url)) {
