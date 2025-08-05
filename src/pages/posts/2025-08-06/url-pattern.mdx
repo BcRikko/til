@@ -1,0 +1,93 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-08-06"
+updatedDate: "2025-08-06"
+title: "URLPatternを使ったパターンマッチングと実用例"
+author: ダーシノ
+description: "URL Pattern APIを使うことで、URLのパーツ（プロトコル、ホスト名、パス、クエリパラメータ、ハッシュなど）をパターンマッチングで抽出できる実験的なWeb APIである。このWeb APIを使うことで、URLパターンマッチングがやりやすくなるので、ルーティングやアクセス制御などURLを扱う処理が簡潔に書けるようになる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[URL Pattern API](https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API)を使うことで、URLのパーツ（プロトコル、ホスト名、パス、クエリパラメータ、ハッシュなど）をパターンマッチングで抽出できる実験的なWeb APIである。
+
+このWeb APIを使うことでURLパターンマッチングがやりやすくなるので、ルーティングやアクセス制御などURLを扱う処理が簡潔に書けるようになる。
+
+<Baseline featureId={"urlpattern"} />
+
+## URLPatternの基本的な使い方
+
+```js
+const pattern = new URLPattern({
+  pathname: "/users/:id",
+})
+
+const url = "https://manage.example.com/users/123"
+
+if (pattern.test(url)) {
+  // match!!
+  const result = pattern.exec(url)
+  console.log(
+    match.protocol.input, // "https:"
+    match.hostname.input, // "manage.example.com"
+    match.pathname.input, // "/users/123"
+    match.pathname.groups.id, // "123"
+  )
+}
+```
+
+### メソッド
+- `.test(url)`: URLがパターンに合致するか
+- `.exec(url)`: 合致した部分を名前付きグループで抽出する
+
+### プロパティ
+
+- protocol
+- hostname
+- port
+- pathname
+- search
+- hash
+- hasRegExpGroups
+- username
+- password
+
+
+## 実用例: ルーティング
+
+```js
+const routes = [
+  {
+    pattern: new URLPattern({ pathname: "/posts/:slug" }),
+    handler: (match) => {
+      console.log(`Post slug: ${match.pathname.groups.slug}`)
+    },
+  },
+  {
+    pattern: new URLPattern({ pathname: "/magazine/:date(\\d{4}-\\d{2}-\\d{2})" }),
+    handler: (match) => {
+      console.log(`Magazine date: ${match.pathname.groups.date}`)
+    },
+  },
+  {
+    pattern: new URLPattern({ pathname: "/images/*" }),
+    handler: (match) => {
+      console.log(`Image path: ${match.pathname.input}`)
+    },
+  },
+]
+
+const url = "https://blog.example.com/posts/url-pattern"
+
+for (const route of routes) {
+  if (route.pattern.test(url)) {
+    const match = route.pattern.exec(url)
+    route.handler(match)
+    break
+  }
+}
+```
