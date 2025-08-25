@@ -1,0 +1,139 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-08-26"
+updatedDate: "2025-08-26"
+title: "CSSで3Dテキストを表示する"
+author: ダーシノ
+description: "テキスト用の要素を複数個用意し、1つずつtranslateZ()で奥方向（Z軸方向）にずらしていくことで、CSSだけでワードアートのような3Dテキスト表現が実現できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+テキスト用の要素を複数個用意し、1つずつ`translateZ()`で奥方向（Z軸方向）にずらしていくことで、CSSだけでワードアートのような3Dテキスト表現が実現できる。
+
+
+```html
+<section clas="scene">
+  <div class="layered">
+    <span>Hello World!!</span>
+
+    <div class="layers" aria-hidden="true">
+      <div style="--i: 1;">Hello World!!</div>
+      <div style="--i: 2;">Hello World!!</div>
+      <div style="--i: 3;">Hello World!!</div>
+      ...
+      <div style="--i: 19;">Hello World!!</div>
+      <div style="--i: 20;">Hello World!!</div>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.scene {
+  * {
+    perspective: 400px;
+    transform-style: preserve-3d;
+  }
+
+  .layered {
+    position: relative;
+    animation: wobble 12s infinite linear;
+  }
+  .layers, .layers > div {
+    position: absolute;
+    inset: 0;
+  }
+  .layers > div {
+    --n: calc(var(--i) / 20);
+
+    /* translateZで奥行きを出す */
+    transform: translateZ(calc(var(--i) * 3px));
+    color: hsl(100 50% calc(var(--n) * 100%));
+  }
+}
+
+@keyframes wobble {
+  from { transform: rotate(0deg) rotateX(30deg) rotate(360deg); }
+  to { transform: rotate(360deg) rotateX(30deg) rotate(0deg); }
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <div class="layered">
+    <span>Hello World!!</span>
+
+    <div class="layers" aria-hidden="true">
+      <div style="--i: 1;">Hello World!!</div>
+      <div style="--i: 2;">Hello World!!</div>
+      <div style="--i: 3;">Hello World!!</div>
+      <div style="--i: 4;">Hello World!!</div>
+      <div style="--i: 5;">Hello World!!</div>
+      <div style="--i: 6;">Hello World!!</div>
+      <div style="--i: 7;">Hello World!!</div>
+      <div style="--i: 8;">Hello World!!</div>
+      <div style="--i: 9;">Hello World!!</div>
+      <div style="--i: 10;">Hello World!!</div>
+      <div style="--i: 11;">Hello World!!</div>
+      <div style="--i: 12;">Hello World!!</div>
+      <div style="--i: 13;">Hello World!!</div>
+      <div style="--i: 14;">Hello World!!</div>
+      <div style="--i: 15;">Hello World!!</div>
+      <div style="--i: 16;">Hello World!!</div>
+      <div style="--i: 17;">Hello World!!</div>
+      <div style="--i: 18;">Hello World!!</div>
+      <div style="--i: 19;">Hello World!!</div>
+      <div style="--i: 20;">Hello World!!</div>
+    </div>
+    </div>
+</section>
+
+<style>{`
+#demo {
+  font-size: 3rem;
+  perspective: 400px;
+  background-color: #333;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1rem;
+  
+  * {
+    transform-style: preserve-3d;
+  }
+
+  .layered {
+    position: relative;
+    animation: wobble 12s infinite linear;
+  }
+  .layers, .layers > div {
+    position: absolute;
+    inset: 0;
+  }
+  .layers > div {
+    --n: calc(var(--i) / 20);
+
+    transform: translateZ(calc(var(--i) * 3px));
+    color: hsl(100 50% calc(var(--n) * 100%));
+  }
+}
+
+@keyframes wobble {
+  from { transform: rotate(0deg) rotateX(30deg) rotate(360deg); }
+  to { transform: rotate(360deg) rotateX(30deg) rotate(0deg); }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+`}</script>
+
+## 参考
+
+- [3D Layered Text: Motion and Variations | CSS-Tricks](https://css-tricks.com/3d-layered-text-motion-and-variations/)
