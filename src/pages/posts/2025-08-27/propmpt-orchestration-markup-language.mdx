@@ -1,0 +1,71 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-08-27"
+updatedDate: "2025-08-27"
+title: "POMLでAIプロンプトを構造化して管理する"
+author: ダーシノ
+description: "主流なAI（GPT）では、プロンプト（指示）を自然言語で与えて、タスクを実行させる。ただし、誰もが一度は「自然言語を使った指示はあいまいで、実行ごとに結果が困って困る」「利用者によってプロンプトのフォーマットが異なるので管理しづらい」と思ったことがあるだろう。"
+tags: ["AI"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+主流なAI（GPT）では、プロンプト（指示）を自然言語で与えて、タスクを実行させる。
+
+そこで、誰もが一度は「自然言語を使った指示はあいまいで、実行ごとに結果が困って困る」「利用者によってプロンプトのフォーマットが異なるので管理しづらい」と思ったことがあるだろう。
+
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">自然言語は「あいまいさ」があって実行ごとに結果が異なる場合はあるので、DSLで厳密な指示をしたい気持ちが大きくなってきた</p>&mdash; ダーシノ / NES.css (@bc_rikko) <a href="https://twitter.com/bc_rikko/status/1953230609708663092?ref_src=twsrc%5Etfw">August 6, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+そんなことを思っていたところ、Microsoftが[POML（Prompt Orchestration Markup Language）](https://github.com/microsoft/poml)を公開した。**XMLでプロンプトのロールやタスク、例、アウトプットのフォーマット、マルチモーダルデータの統合などを構造化して定義できる。**
+
+## POMLの基本構文
+
+ファイルには`*.poml`という拡張子をつける。
+```xml
+<poml>
+  <role>あなたは{役割}です。</role>
+  <task>以下の画像を使って{タスク}をしてください。</task>
+  <img src="example.png" alt="◯◯の図解" />
+  <output-format>
+    100文字以内で説明してください。
+  </output-format>
+</poml>
+```
+
+```xml
+<poml>
+  <!-- コードを使う場合 -->
+  <code inline="true">const x = 42;</code>
+  <code lang="javascript">
+    const ans = 42;
+    console.log('ans', ans);
+  </code>
+
+  <!-- リスト -->
+  <list>
+    <item>Item 1</item>
+    <item>Item 2</item>
+  </list>
+
+  <!-- 例示 -->
+  <example>
+    <input>{country}の首都は？</input>
+    <output>{country}の首都は{capital}です。</output>
+  </example>
+
+  <!-- ステップバイステップの指示 -->
+  <stepwise-instructions>
+    <list>
+      <item>調査対象の{country}を受け取る</item>
+      <item>{country}の首都を調べる</item>
+      <item>結果を{capital}として出力する</item>
+    </list>
+  </stepwise-instructions>
+</poml>
+```
+
+## さいごに
+
+POMLが公開されて日が浅いため、今後どのように変わっていくかはわからない。ただ、構造化してやりたいことを明確に指示できるのは便利なので、今後も注目していきたい。
