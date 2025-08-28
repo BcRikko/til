@@ -1,0 +1,88 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-08-29"
+updatedDate: "2025-08-29"
+title: "URLのフラグメント（#）からdetails要素を開く"
+author: ダーシノ
+description: "details要素を使うことで、アコーディオンメニューのようなものが簡単に実装できる。ただし、details要素を開いた状態にするにはopen属性を付ける必要があり、内包される情報が隠蔽されてしまう。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+
+[details要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details)を使うことで、アコーディオンメニューのようなものが簡単に実装できる。ただし、details要素を開いた状態にするには[open属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#open)を付ける必要があり、内包される情報が隠蔽されてしまう。
+
+そんなときは[フラグメント](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment)を使うことで、URLの`#`で指定した要素が含まれるdetails要素を開いた状態でページを表示できる。
+
+以下のようなHTMLがあるときに、`https://example.com/page#fragment1` のようにフラグメントをつけると、「詳細情報」が展開される。
+```html
+<details>
+  <summary>詳細情報</summary>
+
+  <section>
+    <h3 id="fragment1">
+      <a href="#fragment1">フラグメント1</a>
+    </h3>
+    <p>ここに詳細な情報を記述します。</p>
+  </section>
+</details>
+```
+
+
+## デモ
+
+<section id="demo">
+  <ul>
+    <li>
+      <a href="">フラグメントを削除する</a>
+    </li>
+    <li>
+      <a href="#fragment1-1">詳細情報1を開く</a>
+    </li>
+  </ul>
+
+  <details>
+    <summary>詳細情報1</summary>
+    
+    <section>
+      <h3 id="fragment1-1">
+        <a href="#fragment1-1">フラグメント1-1</a>
+      </h3>
+      <p>ここに詳細な情報を記述します。</p>
+    </section>
+
+    <section>
+      <h3 id="fragment1-2">
+        <a href="#fragment1-2">フラグメント1-2</a>
+      </h3>
+      <p>ここに詳細な情報を記述します。</p>
+    </section>
+  </details>
+
+  <details>
+    <summary>詳細情報2</summary>
+    
+    <section>
+      <h3 id="fragment2-1">
+        <a href="#fragment2-1">フラグメント2-1</a>
+      </h3>
+      <p>ここに詳細な情報を記述します。</p>
+    </section>
+
+    <section>
+      <h3 id="fragment2-2">
+        <a href="#fragment2-2">フラグメント2-2</a>
+      </h3>
+      <p>ここに詳細な情報を記述します。</p>
+    </section>
+  </details>
+
+</section>
+
+
+## 参考
+
+- [Opening a Details Element from the URL – Frontend Masters Blog](https://frontendmasters.com/blog/opening-a-details-element-from-the-url/)
