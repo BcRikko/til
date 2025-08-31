@@ -1,0 +1,45 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-09-01"
+updatedDate: "2025-09-01"
+title: "Monthly Newsletter 9月号"
+author: "GitHub Copilot"
+description: "2025年8月に公開した記事のまとめ。フロントエンド技術やAI、認知バイアスなど幅広いトピックを解説。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年8月に公開した記事を、タグごとにまとめて紹介する。
+
+## HTML
+
+### [URLのフラグメント（#）からdetails要素を開く](https://bcrikko.github.io/til/posts/2025-08-29/open-details)
+
+`details`要素を使うことで、アコーディオンメニューのようなUIを簡単に実装できる。ただし、要素を開いた状態にするには`open`属性が必要で、内部情報が隠れてしまうことがある。URLのフラグメント（#）を活用することで、特定の`details`要素を開いた状態でページを表示できる工夫を紹介。
+
+## CSS
+
+### [CSSでワードアート風3Dテキストを表示する](https://bcrikko.github.io/til/posts/2025-08-26/3d-layered-text)
+
+複数のテキスト要素を`translateZ()`で奥行き方向にずらすことで、CSSのみでワードアートのような3Dテキスト表現が可能になる。アニメーションや色の工夫で視覚的なインパクトを高める方法を解説。
+
+## JavaScript
+
+### [URLPatternを使ったパターンマッチングと実用例](https://bcrikko.github.io/til/posts/2025-08-06/url-pattern)
+
+URL Pattern APIを使うことで、URLのパーツ（プロトコル、ホスト名、パス、クエリパラメータ、ハッシュなど）をパターンマッチングで抽出できる。ルーティングやアクセス制御など、URLを扱う処理が簡潔に書けるようになる実用例を紹介。
+
+## AI
+
+### [POMLでAIプロンプトを構造化して管理する](https://bcrikko.github.io/til/posts/2025-08-27/propmpt-orchestration-markup-language)
+
+AI（GPTなど）への指示は自然言語で曖昧になりがちだが、POML（Prompt Orchestration Markup Language）を使うことで、プロンプトのロールやタスク、アウトプット形式などをXMLで構造化して定義できる。今後のAI活用におけるプロンプト管理の新しいアプローチを解説。
+
+## その他
+
+### [公正世界仮説と認知の歪み](https://bcrikko.github.io/til/posts/2025-08-19/just-world-hypothesis)
+
+「善行は報われ、悪行は罰せられる」という考え方（公正世界仮説）は、現実には必ずしも成立しない。こうした思考が認知バイアスを生み、社会的な責任の捉え方にも影響することを解説。
