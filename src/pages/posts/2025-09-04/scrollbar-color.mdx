@@ -1,0 +1,55 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-09-04"
+updatedDate: "2025-09-04"
+title: "scrollbar-colorプロパティでスクロールバーの色を変える"
+author: ダーシノ
+description: "scrollbar-colorプロパティを使うことで、スクロールバーの色を変更できる。Safari TP 227でサポートされたので、近々全主要ブラウザで利用可能になりそうだ。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[scrollbar-colorプロパティ](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color)を使うことで、スクロールバーの色を変更できる。
+
+[Safari TP 227](https://webkit.org/blog/17324/release-notes-for-safari-technology-preview-227/)でサポートされたので、近々全主要ブラウザで利用可能になりそうだ。
+
+<Baseline featureId={"scrollbar-color"} />
+
+
+```css
+.container {
+  /* User-Agentのスタイルが適用される*/
+  scrollbar-color: auto;
+
+  /* 1つ目:スクロールバーのつまみ、2つ目:スクロールバーのトラック */
+  scrollbar-color: #eee #333;
+}
+```
+
+- auto: デフォルトのスタイル、User-Agentやプラットフォームのスタイルが適用される
+- `<color> <color>`: スクロールバーのつまみとトラックの色を指定する
+
+
+## デモ
+
+<section id="demo">
+  <section class="container">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  .container {
+    padding-inline: 2rem;
+    border: solid 4px;
+    height: 6ic;
+    overflow-y: scroll;
+    scrollbar-color: #eee #333;
+  }
+}
+`}</style>
