@@ -101,6 +101,10 @@ html {
   }
 }
 
+:where(main > iframe) {
+  width: 100%;
+}
+
 @media (prefers-reduced-motion) {
   :where(*, *::before, *::after) {
     animation-duration: 0s !important;
