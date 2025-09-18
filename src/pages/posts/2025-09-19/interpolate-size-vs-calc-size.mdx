@@ -1,0 +1,131 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-09-19"
+updatedDate: "2025-09-19"
+title: "interpolate-sizeとcalc-size()のアニメーションの仕方と使い分け"
+author: ダーシノ
+description: "CSSアニメーションの鬼門に、height: autoのトランジションがうまくできない問題がある。height:0→autoをトランジションするでは、Experimentalなcalc-size()という関数をつかって実現していた。interpolate-sizeプロパティは、アニメーションやトランジションを行うときに、実際のheightなどのサイズとauto、fit-content、max-content などの内在サイズを補間するために使用する。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+CSSアニメーションの鬼門に、`height: auto`のトランジションがうまくできない問題がある。
+
+## `calc-size()`
+
+以前紹介した[height:0→autoをトランジションする](https://bcrikko.github.io/til/posts/2024-07-01/height-transition/)では、Experimentalな[calc-size()](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size)という関数をつかって実現していた。
+
+<Baseline featureId={"calc-size"} />
+
+```css
+.panel {
+  transition: height .5s;
+  height: 0;
+
+  &.expanded {
+    height: calc-size(auto);
+
+    /**
+     * 固定値を使うことでトランジションできるが、内包するコンテンツによってはスタイルが崩れる
+     * height: 500px;
+     *
+     * そもそもトランジションしない
+     * height: auto;
+     */
+  }
+}
+```
+
+内在サイズを数値に変換した結果を返す関数で、`calc-size(auto)`を`500px`のように実際の値を計算し、トランジションを可能にしていた。ただし、計算を伴うので複数要素への適用や頻繁な状態変更にはパフォーマンスの懸念があった。
+
+## interpolate-size
+
+[interpolate-size](https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size)プロパティは、アニメーションやトランジションを行うときに、実際のheightなどのサイズとauto、fit-content、max-content などの内在サイズを補間するために使用する。
+
+※interpolate…[動]補完する、内挿する
+
+取りうる値は以下の2つ。
+
+- `allow-keywords`: length と 内在サイズの間の補間処理を有効にする
+- `numeric-only`: （初期値）補間処理をしない
+
+<Baseline featureId={"interpolate-size"} />
+
+```css
+:root {
+  interpolate-size: allow-keywords;
+}
+
+.panel {
+  transition: height .5s;
+  height: 0;
+  
+  &.expanded {
+    height: auto;
+  }
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <label>
+    <input type="checkbox" checked/>
+    <span>interpolate-sizeを有効にする</span>
+  </label>
+
+  <button type="button" id="toggle">開く / 閉じる</button>
+
+  <section class="panel">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </section>
+
+</section>
+
+<style>{`
+#demo {
+  &:has(input:checked) {
+    interpolate-size: allow-keywords;
+  }
+  &:has(input:not(:checked)) {
+    interpolate-size: numeric-only;
+  }
+
+  label {
+    display: block;
+  }
+
+  .panel {
+    overflow: hidden;
+    transition: height .5s;
+    height: 0;
+    background: #eee;
+    padding: 0 1rem;
+
+    &.expanded {
+      height: auto;
+      padding: 1rem;
+    }
+  }
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo');
+console.log(demo);
+
+const btn = demo.querySelector('#toggle');
+const panel = demo.querySelector('.panel');
+btn.addEventListener('click', () => {
+  panel.classList.toggle('expanded');
+});
+`}</script>
+
+
+## 関連:
+
+- [height:0→autoをトランジションする \| @bc\_rikko](https://bcrikko.github.io/til/posts/2024-07-01/height-transition/)
