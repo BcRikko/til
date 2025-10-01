@@ -1,0 +1,36 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2025-10-01"
+updatedDate: "2025-10-01"
+title: "Monthly Newsletter 10月号"
+author: "GitHub Copilot"
+description: "2025年9月に公開された記事のまとめ。HTML、CSS、JavaScript、その他のトピックをタグごとに分類して紹介します。"
+tags: ["Newsletter"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+2025年9月はCSSの新機能やデザインTips、AI技術の活用事例、心理学的な知見など幅広いテーマの記事を公開した。フロントエンドの最新動向から日常に役立つ考え方まで、実践的かつ分かりやすくまとめているので、ぜひ各トピックをチェックしてほしい。
+
+## CSS
+
+### [scrollbar-colorプロパティでスクロールバーの色を変える](https://bcrikko.github.io/til/posts/2025-09-04/scrollbar-color)
+`scrollbar-color`プロパティを使うことで、スクロールバーの色を簡単に変更できる。Safari TP 227でサポートされ、今後主要ブラウザで利用可能になる見込み。デフォルトのスクロールバーはWebデザインで浮いてしまうことがあるが、カスタマイズすることでデザインの幅が広がる。ただし、ユーザーは慣れ親しんだスタイルを他サイトにも期待するため、奇抜な変更は避けるべき。
+
+### [YouTubeのサムネのシークバーを見やすくする](https://bcrikko.github.io/til/posts/2025-09-08/youtube-seekbar)
+YouTubeのサムネイルには動画の視聴位置を示す赤色のシークバーが表示されるが、赤は警告色で目立つため、投稿者がサムネイル枠に赤色を使うとシークバーが見えにくくなる。Chrome拡張のStylusを使い、シークバーの視認性を上げるためにパターン背景を適用する方法を紹介している。
+
+### [interpolate-sizeとcalc-size()のアニメーションの仕方と使い分け](https://bcrikko.github.io/til/posts/2025-09-19/interpolate-size-vs-calc-size)
+CSSアニメーションで`height: auto`のトランジションがうまくできない問題に対し、Experimentalな`calc-size()`関数を使って解決していた。`interpolate-size`プロパティは、アニメーションやトランジション時に実際のサイズとautoなどの内在サイズを補間するために使う。これにより、より自然なアニメーションが可能になる。
+
+## AI
+
+### [Claude Code + さくらのAI EngineではじめるAgentic Coding](https://bcrikko.github.io/til/posts/2025-09-30/claude-code-with-ai-engine)
+Claude Codeは有料でPro/Maxプランでないと使えないが、Claude Code Routerを使うことで好きなプロバイダーでClaude Codeを利用できる。さくらのAI Engineは月3,000リクエストまで無料で使えるため、Claude Code Routerと組み合わせてAgentic Codingを体験した。インストール手順やAPIキー取得方法、設定ファイルの作成方法などを解説している。
+
+## その他
+
+### [セルフ・ハンディキャッピングと正しく負ける難しさ](https://bcrikko.github.io/til/posts/2025-09-02/self-handicapping)
+セルフ・ハンディキャッピングとは、失敗の可能性によって自尊心が傷つくことを回避するために努力を避ける認知戦略である。テスト前に勉強しない、徹夜するなど、自ら不利になる行動を取ることで失敗時の言い訳を作り、自尊心を守る。しかし、これが癖になると自己成長を妨げるため、正しく負ける勇気が重要である。結果より過程に注目し、自分の価値と実力を切り離して考える視点が役立つ。
