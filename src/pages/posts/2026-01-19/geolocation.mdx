@@ -1,0 +1,113 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-01-19"
+updatedDate: "2026-01-19"
+title: "geolocation要素による位置情報の取得方法"
+author: ダーシノ
+description: "JavaScriptのGeolocation APIよりも権限要求や位置情報取得の実装が簡略化された。Geolocation APIでは予期せぬタイミングで権限要求のダイアログが表示されたり、ブラウザがブロックしたり、ユーザー体験が阻害されるケースがあったが、<geolocation>要素ではユーザーの明示的な操作により開始されるので意図とタイミングが明確になった。"
+tags: ["HTML"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Chrome 144以降で`<geolocation>`要素がサポート](https://developer.chrome.com/blog/geolocation-html-element)された。
+
+JavaScriptの[Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)よりも権限要求や位置情報取得の実装が簡略化された。Geolocation APIでは予期せぬタイミングで権限要求のダイアログが表示されたり、ブラウザがブロックしたり、ユーザー体験が阻害されるケースがあったが、`<geolocation>`要素ではユーザーの明示的な操作により開始されるので意図とタイミングが明確になった。
+
+```html
+<!-- 手動実行 -->
+<geolocation id="geo-manual">
+  Fallback: Geolocation element is not supported
+</geolocation>
+
+<!-- 自動実行 -->
+<geolocation id="geo-auto" autolocate>
+  Fallback: Geolocation element is not supported
+</geolocation>
+```
+
+```js
+const geoManual = document.getElementById('geo-manual')
+const geoAuto = document.getElementById('geo-auto')
+
+function output(event) {
+  console.log('タイムスタンプ', event.timeStamp)
+  console.log('緯度', event.target.position.coords.latitude)
+  console.log('経度', event.target.position.coords.longitude)
+}
+
+geoManual.onlocation = output
+geoAuto.onlocation = output
+```
+
+`autolocate`属性を指定すると、権限がある場合は自動的に位置情報の取得ができる。
+
+
+## デモ
+
+<section id="demo">
+
+  <section>
+    <h3>手動で位置情報を取得</h3>
+    <geolocation id="geo-manual">
+      Geolocation element is not supported
+    </geolocation>
+  </section>
+
+  <section>
+    <h3>自動で位置情報を取得</h3>
+    <geolocation id="geo-auto" autolocate>
+      Geolocation element is not supported
+    </geolocation>
+  </section>
+
+  <section>
+    <h3>Output:</h3>
+    <output id="output">位置情報取得の権限を許可してください</output>
+  </section>
+
+</section>
+
+<style>{`
+#demo {
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+
+const manual = demo.querySelector('#geo-manual')
+const auto = demo.querySelector('#geo-auto')
+const output = demo.querySelector('#output')
+
+manual.onlocation = (event) => {
+  console.log(event)
+  output.innerHTML = createOutput(event)
+}
+auto.onlocation = (event) => {
+  output.innerHTML = createOutput(event)
+}
+
+function createOutput(event) {
+  const dl = document.createElement('dl')
+
+  function append(title, value) {
+    const dt = document.createElement('dt')
+    dt.textContent = title
+    const dd = document.createElement('dd')
+    dd.textContent = value
+    dl.appendChild(dt)
+    dl.appendChild(dd)
+  }
+
+  append('タイムスタンプ', event.timeStamp)
+  append('緯度', event.target.position.coords.latitude)
+  append('経度', event.target.position.coords.longitude)
+
+  return dl.outerHTML
+}
+
+`}</script>
