@@ -21,7 +21,7 @@
     "baseline-status": "^1.1.1",
     "canvas": "^3.2.1",
     "rehype-katex": "^7.0.1",
-    "rehype-mermaid": "^2.1.0",
+    "rehype-mermaid": "^3.0.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
