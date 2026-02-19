@@ -1,0 +1,305 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-02-20"
+updatedDate: "2026-02-20"
+title: "Promiseの静的メソッド（all/allSettled/any/race）の違いを理解する"
+author: ダーシノ
+description: "JavaScriptで非同期処理に使うPromiseオブジェクトには、以下のような静的メソッドがある。Promise.all()はよく使うものの他はあまり使ったことがないので、すぐ使い方を忘れてしまう。そこで、ユースケースと視覚的にわかりやすく解説する。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+JavaScriptで非同期処理に使う[Promiseオブジェクト](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)には、以下のような静的メソッドがある。
+
+- `all()`
+- `allSettled()`
+- `any()`
+- `race()`
+
+`Promise.all()`はよく使うものの他はあまり使ったことがないので、すぐ使い方を忘れてしまう。そこで、ユースケースと視覚的にわかりやすく解説する。
+
+## Promiseの静的メソッドの違い
+
+### Promise.all()
+
+[Promise.all()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)は、引数に渡したPromiseオブジェクトがすべてResolveするまで待つ。ただし、ひとつでも失敗すると即座にRejectする。
+
+依存関係のあるデータの並行取得などで使う。
+
+```ts
+try {
+  const [fetchTeams, fetchUsers] = await Promise.all([
+    fetch('/api/teams'),
+    fetch('/api/users'),
+  ])
+} catch (e) {
+  window.alert('データの取得に失敗しました。')
+}
+```
+
+### Promise.allSettled()
+
+[Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)は、引数に渡したPromiseオブジェクトが成功、失敗問わずにすべて完了するまで待つ。失敗してもエラーを投げない。
+
+エラーも含めて集計するときなどで使う。
+
+```ts
+const results = await Promise.allSettled([
+  fetch('/api/status'),
+  fetch('/api/schedules'),
+])
+
+const hasSomeError = results.some(result => result.status === 'rejected')
+```
+
+### Promise.any()
+
+[Promise.any()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any)は、引数に渡したPromiseオブジェクトのうち、ひとつでもResolveすれば成功とみなす。ただし、すべてRejectすると[AggregateError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)を投げる。
+
+複数あるミラーやフォールバックのうち最初に成功したものだけで十分なときなどで使う。
+
+```ts
+try {
+  const data = await Promise.any([
+    fetch('/mirror/tokyo/items'),
+    fetch('/mirror/nagoya/items'),
+    fetch('/mirror/osaka/items'),
+  ])
+
+  console.log('データの取得に成功しました。', data)
+
+} catch (e) {
+  window.alert('データの取得に失敗しました。')
+}
+```
+
+### Promise.race()
+
+[Promise.race()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)は、引数に渡したPromiseオブジェクトのうち、最初にResolveしたものを採用する。成功しても失敗しても、最初に完了したものが結果になる。
+
+タイムアウト処理の実装などで使う。
+
+```ts
+const waitForUserAction = ...
+const timeout = (ms: number) => ...
+
+await Promise.race([
+  waitForUserAction(),
+  timeout(60 * 1000),
+])
+```
+
+## デモ
+
+<section id="demo">
+  <h3>Promise静的メソッドのデモ</h3>
+
+  <form>
+    <ol id="tasks"></ol>
+
+  <button id="addTask" type="button">タスク追加</button>
+
+    <fieldset id="method">
+      <legend>Promiseの実行方法</legend>
+      <label><input type="radio" name="method" value="all" checked />Promise.all()</label>
+      <label><input type="radio" name="method" value="allSettled" />Promise.allSettled()</label>
+      <label><input type="radio" name="method" value="race" />Promise.race()</label>
+      <label><input type="radio" name="method" value="any" />Promise.any()</label>
+    </fieldset>
+
+    <button id="run" type="button">実行</button>
+  </form>
+
+  <output id="timeline"></output>
+
+  <output id="result"></output>
+
+  <output id="log"></output>
+</section>
+
+<style>{`
+#demo {
+  .task {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .bar-container {
+    height: 24px;
+    margin-bottom: 10px;
+  }
+
+  #method {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bar {
+    height: 24px;
+    width: 0%;
+    background: gray;
+    transition: width linear;
+  }
+  .bar.fulfilled {
+    background: lightgreen;
+  }
+  .bar.rejected {
+    background: lightcoral;
+  }
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+
+let taskCount = 0;
+const tasksEl = demo.querySelector('#tasks');
+const timelineEl = demo.querySelector('#timeline');
+const resultEl = demo.querySelector('#result');
+const logEl = demo.querySelector('#log');
+
+function addTask(defaultDuration = 1000, defaultStatus = "success") {
+  const id = taskCount++;
+  const li = document.createElement('li');
+  li.className = 'task';
+
+  const title = document.createElement('span');
+  title.textContent = 'Task ' +  id;
+
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.value = defaultDuration;
+  input.min = 100;
+  input.step = 100;
+
+  const select = document.createElement('select');
+  const optionSuccess = document.createElement('option');
+  optionSuccess.value = 'success';
+  optionSuccess.textContent = 'success';
+  if (defaultStatus === 'success') optionSuccess.selected = true;
+  const optionFail = document.createElement('option');
+  optionFail.value = 'fail';
+  optionFail.textContent = 'fail';
+  if (defaultStatus === 'fail') optionFail.selected = true;
+
+  select.appendChild(optionSuccess);
+  select.appendChild(optionFail);
+
+  li.appendChild(title);
+  li.appendChild(input);
+  li.appendChild(select);
+
+  tasksEl.appendChild(li);
+}
+
+function createPromise(duration, shouldResolve, label) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const result = [
+        '[' + duration + 'ms]',
+        label,
+        shouldResolve ? "fulfilled" : "rejected"
+      ].join(' ');
+
+      log(result);
+
+      shouldResolve ? resolve(label) : reject(label);
+    }, duration);
+  });
+}
+
+function log(message) {
+  const p = document.createElement('div');
+  p.textContent = message;
+  logEl.appendChild(p);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function clearUI() {
+  timelineEl.innerHTML = '';
+  resultEl.textContent = '';
+  logEl.innerHTML = '';
+}
+
+demo.querySelector('#addTask').addEventListener('click', () => addTask());
+
+demo.querySelector('#run').addEventListener('click', () => {
+  clearUI();
+
+  const method = demo.querySelector('input[name="method"]:checked').value;
+  const taskDivs = Array.from(demo.querySelectorAll('.task'));
+
+  const promises = [];
+  let maxDuration = 0;
+
+  taskDivs.forEach((div, index) => {
+    const duration = parseInt(div.querySelector('input').value, 10);
+    const status = div.querySelector('select').value;
+    const shouldResolve = status === "success";
+    const label = 'Task' + index;
+
+    maxDuration = Math.max(maxDuration, duration);
+
+    const barContainer = document.createElement('div');
+    barContainer.className = 'bar-container';
+
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.transitionDuration = duration + "ms";
+
+    barContainer.appendChild(bar);
+    timelineEl.appendChild(barContainer);
+
+    setTimeout(() => {
+      bar.style.width = "100%";
+    }, 10);
+
+    const p = createPromise(duration, shouldResolve, label)
+      .then(value => {
+        bar.classList.add('fulfilled');
+        return value;
+      })
+      .catch(err => {
+        bar.classList.add('rejected');
+        throw err;
+      });
+
+    promises.push(p);
+  });
+
+  let combined;
+
+  switch (method) {
+    case "all":
+      combined = Promise.all(promises);
+      break;
+    case "allSettled":
+      combined = Promise.allSettled(promises);
+      break;
+    case "race":
+      combined = Promise.race(promises);
+      break;
+    case "any":
+      combined = Promise.any(promises);
+      break;
+  }
+
+  combined
+    .then(res => {
+      resultEl.textContent = "Resolved: " + JSON.stringify(res);
+    })
+    .catch(err => {
+      resultEl.textContent = "Rejected: " + (err instanceof AggregateError ? "AggregateError" : err);
+    });
+});
+
+// 初期タスク
+addTask(500, "success");
+addTask(1500, "fail");
+addTask(2500, "success");
+
+`}</script>
