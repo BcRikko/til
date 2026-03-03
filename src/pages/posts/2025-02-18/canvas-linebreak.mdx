@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2025-02-18"
-updatedDate: "2025-02-18"
+updatedDate: "2026-03-03"
 title: "CanvasRenderingContext2D#fillText()を文字長に応じて自動改行する"
 author: ダーシノ
 description: "Canvas APIは、ブラウザでゲーム開発や画像生成をするためには必要不可欠なAPIだ。しかし、テキストを描画するCanvasRenderingContext2D#fillText()には、自動改行できないという弱点がある。第3引数でmaxWidthを指定できるのではみ出すことはないが、改行ではなく文字列が圧縮されてしまう。そこでCanvasRenderingContext2D.measureText()を使って、文字列の幅を計測し、maxWidthに到達しそうになったら改行するという処理が必要になる。"
@@ -48,7 +48,7 @@ for (const word of text.split('')) {
   const testLine = line + word
   const testWidth = ctx.measureText(testLine).width
 
-  if (textWidth > maxWidth) {
+  if (testWidth > maxWidth) {
     // 文字列がmaxWidthを超えたので描画してから改行する
     ctx.fillText(line, x, y)
     line = word
