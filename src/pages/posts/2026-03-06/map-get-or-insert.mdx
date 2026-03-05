@@ -1,0 +1,114 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-06"
+updatedDate: "2026-03-06"
+title: "Map.getOrInsert()やMap.getOrInsertComputed()で効率よくMapを使う"
+author: ダーシノ
+description: "UpsertのプロポーザルがStage 4に到達し、Map#getOrInsertやMap#getOrInsertComputedが主要ブラウザで利用できるようになった。 Map内にキーが存在すればその値を返し、存在しなければデフォルト値を返すメソッドだ。キャッシュや遅延初期化などで活用できる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Upsert](https://github.com/tc39/proposal-upsert)のプロポーザルがStage 4に到達し、[Map#getOrInsert](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/getOrInsert)や[Map#getOrInsertComputed](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/getOrInsertComputed)が主要ブラウザで利用できるようになった。
+
+Map内にキーが存在すればその値を返し、存在しなければデフォルト値を返すメソッドだ。キャッシュや遅延初期化などで活用できる。
+
+<Baseline featureId={"getorinsert"} />
+
+
+```js
+const map = new Map([
+  ['0001', { name: 'Alice' }],
+  ['0002', { name: 'Bob' }],
+  ['0003', { name: 'Chris' }]
+])
+
+// { name: 'Alice' }
+console.log(map.getOrInsert('0001', { name: 'Dave' }))
+
+// { name: 'Dave' }
+console.log(map.getOrInsert('0004', { name: 'Dave' }))
+
+// ↓以下と同じ
+const name1 = (() => {
+  if (map.has('0001') === false) {
+    map.set('0001', { name: 'Dave' })
+  }
+  return map.get('0001')
+})()
+```
+
+**`Map#getOrInsert`は、キーが存在するかどうかに関係なくデフォルト値を評価する**ため、巨大なMapを扱うときにパフォーマンスの問題が発生する可能性がある。
+
+**`Map#getOrInsertComputed`は、キーが存在しない場合のみデフォルト値を評価する**ため、パフォーマンスの問題を回避できる。
+
+```js
+const defaultCreator = key => {
+  console.log(`Creating default value for ${key}`)
+  return { name: 'Dave' }
+}
+
+// { name: 'Alice' }
+console.log(map.getOrInsertComputed('0001', defaultCreator))
+
+// { name: 'Dave' }
+console.log(map.getOrInsertComputed('0004', defaultCreator))
+```
+
+
+## ユースケース: ストリーム処理（Map#getOrInsert()）
+
+初期化処理が軽量であれば`Map#getOrInsert`が有用だ。
+
+```ts
+type Event = {
+  type: string
+  payload: any
+}
+
+const logs = new Map<string, payload[]>()
+const onEvent = (event: Event) => {
+  logs.getOrInsert(event.type, []).push(event.payload)
+}
+
+
+onEvent({ type: 'click', payload: { x: 100, y: 200 } })
+onEvent({ type: 'click', payload: { x: 150, y: 250 } })
+onEvent({ type: 'scroll', payload: { scrollTop: 300 } })
+
+console.log(logs)
+// Map {
+//   'click' => [
+//     { x: 100, y: 200 },
+//     { x: 150, y: 250 }
+//   ]
+//   'scroll' => [
+//     { scrollTop: 300 }
+//   ]
+// }
+```
+
+## ユースケース: キャッシュ、メモ化
+
+cache（Mapオブジェクト）にデータがあればそれを返し、なければデータを取得して返すようなキャッシュを実装するのに便利。
+
+`Map#getOrInsert`や`Map#getOrInsertComputed`の**コールバックでPromiseを返してもMapにPromiseが格納されるだけで、解決したあとの値が格納されるわけではない**点に注意が必要だ。
+```ts
+const cache = new Map()
+
+const getUser = async (id: string) => {
+  return cache.getOrInsertComputed(id, async (id: string) => {
+    const res = await fetch(`/api/users/${id}`)
+    const json = await res.json()
+    return json.user
+  })
+}
+
+const user = await getUser('0001')
+```
+
+
