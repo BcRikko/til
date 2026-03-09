@@ -1,0 +1,205 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-10"
+updatedDate: "2026-03-10"
+title: "innerHTMLを安全に扱うためのsetHTMLメソッド"
+author: ダーシノ
+description: "Element#innerHTMLは、文字列をHTMLとして解釈してDOMに反映するプロパティで、ユーザー入力などをそのまま反映させるとクロスサイトスクリプティング（XSS）攻撃のリスクがある。テキストノードであればNode#textContentのように安全に反映できるプロパティができたが、いまだにHTMLとしてそのまま使いたいユースケースもある。そこでFirefoxが先行してElement#setHTML()という安全に文字列をDOMに反映するための新しいメソッドを実装した。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[Element#innerHTML](https://developer.mozilla.org/ja/docs/Web/API/Element/innerHTML)は、文字列をHTMLとして解釈してDOMに反映するプロパティで、ユーザー入力などをそのまま反映させるとクロスサイトスクリプティング（XSS）攻撃のリスクがある。テキストノードであれば[Node#textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent)のように安全に反映できるプロパティができたが、いまだにHTMLとしてそのまま使いたいユースケースもある。
+
+そこでFirefoxが先行して[Element#setHTML()](https://developer.mozilla.org/en-US/docs/Web/API/Element/setHTML)という安全に文字列をDOMに反映するための新しいメソッドを実装した。
+
+<Baseline featureId={"sanitizer"} />
+
+## setHTMLUnsafe()とsetHTML()の違い
+
+`setHTML()`に似たようなメソッドで、全主要ブラウザで利用できる[Element#setHTMLUnsafe()](https://developer.mozilla.org/en-US/docs/Web/API/Element/setHTMLUnsafe)というメソッドがある。
+
+`setHTMLUnsafe()`は、ほぼ`Element#innerHTML`と同じで文字列をそのままDOMに反映するため、依然としてXXS攻撃のリスクがある。一方、`setHTML()`は、文字列を無害化してからDOMに反映するため、XXS対策ができる。
+
+```js
+const xxs = "<a href='javascript:alert(\"XSS!!\");'>クリックしてください。</a>"
+const safeLink = "<a href='https://example.com'>クリックしてください。</a>"
+
+
+// <a href='javascript:alert("XSS!!");'>クリックしてください。</a>
+unsafeElement.setHTMLUnsafe(xxs)
+
+// クリックしてください。
+safeElement.setHTML(xxs)
+// <a href='https://example.com'>クリックしてください。</a>
+safeElement.setHTML(safeLink)
+```
+
+
+## デモ
+
+以下のテキストをコピーして、入力欄に貼り付けてください。
+
+```html
+<!-- XXS -->
+<a href="javascript:alert('XSS!!');">クリックしてください。</a>
+
+<!-- Safe -->
+<a href="https://example.com">クリックしてください。</a>
+```
+
+<section id="demo">
+  <section id="demo-innerHTML">
+    <h3>innerHTMLの場合</h3>
+    <p>inputに入力されたタグがそのままDOMに反映される。</p>
+    <form>
+      <div>
+        <label for="name1">名前:</label>
+        <input type="text" id="name1" name="name" />
+      </div>
+
+      <button type="button">登録</button>
+        
+        
+      <output id="result1">(ここに出力される)</output>
+    </form>
+  </section>
+
+  <section id="demo-textContent">
+    <h3>textContentの場合</h3>
+    <p>inputに入力されたタグがテキストとして表示されるので、`<a href="...">クリックしてください</a>`のように表示される。</p>
+    <form>
+      <div>
+        <label for="name2">名前:</label>
+        <input type="text" id="name2" name="name" />
+      </div>
+
+      <button type="button">登録</button>
+        
+        
+      <output id="result2">(ここに出力される)</output>
+    </form>
+  </section>
+
+  <section id="demo-setHTMLUnsafe">
+    <h3>setHTMLUnsafeの場合（innerHTMLとほぼ同じ）</h3>
+    <p>inputに入力されたタグがそのままDOMに反映される。</p>
+    <form>
+      <div>
+        <label for="name3">名前:</label>
+        <input type="text" id="name3" name="name" />
+      </div>
+
+      <button type="button">登録</button>
+        
+        
+      <output id="result3">(ここに出力される)</output>
+    </form>
+  </section>
+
+  <section id="demo-setHTML">
+    <h3>setHTMLの場合（2026年3月時点ではFirefoxのみ）</h3>
+    <p>inputに入力されたタグが除外され、無害化されたテキストのみ（クリックしてください）だけが表示される。</p>
+    <form>
+      <div>
+        <label for="name4">名前:</label>
+        <input type="text" id="name4" name="name" />
+      </div>
+
+      <button type="button">登録</button>
+        
+        
+      <output id="result4">(ここに出力される)</output>
+    </form>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  button {
+    width: 4rem;
+  }
+
+  output {
+    border: solid 4px;
+    padding: 1rem;
+  }
+}
+`}</style>
+
+<script>{`
+{
+  const demo = document.querySelector('#demo-innerHTML')
+  const input = demo.querySelector('#name1')
+  const output = demo.querySelector('#result1')
+
+  demo.querySelector('button').addEventListener('click', () => {
+
+    const name = input.value.trim()
+    if (name) {
+
+      output.innerHTML = 'こんにちは、' + name + 'さん！'
+    } else {
+      output.textContent = '名前を入力してください。'
+    }
+  })
+}
+{
+  const demo = document.querySelector('#demo-textContent')
+  const input = demo.querySelector('#name2')
+  const output = demo.querySelector('#result2')
+
+  demo.querySelector('button').addEventListener('click', () => {
+
+    const name = input.value.trim()
+    if (name) {
+
+      output.textContent = 'こんにちは、' + name + 'さん！'
+    } else {
+      output.textContent = '名前を入力してください。'
+    }
+  })
+}
+{
+  const demo = document.querySelector('#demo-setHTMLUnsafe')
+  const input = demo.querySelector('#name3')
+  const output = demo.querySelector('#result3')
+
+  demo.querySelector('button').addEventListener('click', () => {
+
+    const name = input.value.trim()
+    if (name) {
+
+      output.setHTMLUnsafe('こんにちは、' + name + 'さん！')
+    } else {
+      output.textContent = '名前を入力してください。'
+    }
+  })
+}
+{
+  const demo = document.querySelector('#demo-setHTML')
+  const input = demo.querySelector('#name4')
+  const output = demo.querySelector('#result4')
+
+  demo.querySelector('button').addEventListener('click', () => {
+
+    const name = input.value.trim()
+    if (name) {
+
+      output.setHTML('こんにちは、' + name + 'さん！')
+    } else {
+      output.textContent = '名前を入力してください。'
+    }
+  })
+}
+`}</script>
