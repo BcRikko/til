@@ -1,0 +1,93 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-12"
+updatedDate: "2026-03-12"
+title: "HTMLInputElement#showPicker()でinput要素のメニューを表示する"
+author: ダーシノ
+description: "showPicker()でinput要素のDatePickerやSelect要素のドロップダウンメニューを表示するで紹介したHTMLInputElement#showPicker()でdatalist要素のドロップダウンメニューも表示できるようになった。執筆時点ではFirefox 149（beta）でサポートされていたので、もう少しで全主要ブラウザで利用可能になる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[showPicker()でinput要素のDatePickerやSelect要素のドロップダウンメニューを表示する](https://bcrikko.github.io/til/posts/2024-11-21/show-picker/)で紹介した`HTMLInputElement#showPicker()`で`datalist`要素のドロップダウンメニューも表示できるようになった。
+
+執筆時点では[Firefox 149（beta）](https://bcd-watch.igalia.com/weekly-completed/2026-03-09.html)でサポートされていたので、もう少しで全主要ブラウザで利用可能になる。
+
+<Baseline featureId={"show-picker-input"} />
+<Baseline featureId={"show-picker-select"} />
+
+
+```html
+<input id="datalist" list="datalist-options" />
+<datalist id="datalist-options">
+  <option value="op1">Option 1</option>
+  <option value="op2">Option 2</option>
+  <option value="op3">Option 3</option>
+</datalist>
+
+<button type="button" id="button">Show DatalistPicker</button>
+```
+
+```js
+const btn = document.getElementById('button');
+const datalist = document.getElementById('datalist');
+
+btn.addEventListener('click', () => {
+  try {
+    datalist.showPicker();
+  } catch(e) {
+    console.error(e);
+  }
+});
+```
+
+
+## デモ
+ 
+<section id="demo">
+  <div>
+    <input id="color" type="color" />
+    <button type="button" onclick="showPicker('color');">Show ColorPicker</button>
+  </div>
+
+  <div>
+    <input id="date" type="date" />
+    <button type="button" onclick="showPicker('date');">Show DatePicker</button>
+  </div>
+
+  <div>
+    <input id="file" type="file" />
+    <button type="button" onclick="showPicker('file');">Show FilePicker</button>
+  </div>
+
+  <div>
+    <input id="datalist" list="datalist-options" />
+    <datalist id="datalist-options">
+      <option value="op1">Option 1</option>
+      <option value="op2">Option 2</option>
+      <option value="op3">Option 3</option>
+    </datalist>
+    <button type="button" onclick="showPicker('datalist');">Show DatalistPicker</button>
+  </div>
+</section>
+
+<style>{`
+#demo {
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+function showPicker(inputId) {
+    const input = demo.querySelector('#' + inputId);
+    try {
+      input.showPicker()
+    } catch(e) {
+      console.error(e)
+    }
+  }
+`}</script>
