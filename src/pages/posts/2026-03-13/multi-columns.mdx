@@ -1,0 +1,116 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-13"
+updatedDate: "2026-03-13"
+title: "CSS multi-column layoutで新聞や論文のような段組みレイアウトをつくる"
+author: ダーシノ
+description: "CSS multi-column layoutは、コンテンツを新聞や論文のように複数段に分割したり、段数、幅、間隔、区切り線、分割などを制御する仕組みだ。Grid LayoutやFlexboxなどを使わずに自動的に段組みレイアウトをつくることができ、見出しや段落の制御が容易になる。ただし、コンテナーの高さや行数を固定すると文章が読みづらくなることがあるため、アクセシビリティの観点から注意が必要だ。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[CSS multi-column layout](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Multicol_layout)は、コンテンツを新聞や論文のように複数段に分割したり、段数、幅、間隔、区切り線、分割などを制御する仕組みだ。Grid LayoutやFlexboxなどを使わずに自動的に段組みレイアウトをつくることができ、見出しや段落の制御が容易になる。
+
+ただし、コンテナーの高さや行数を固定すると文章が読みづらくなることがあるため、アクセシビリティの観点から注意が必要だ。
+
+<Baseline featureId={"multi-column"} />
+<Baseline featureId={"column-span"} />
+<Baseline featureId={"column-fill"} />
+<Baseline featureId={"column-breaks"} />
+
+## columnsプロパティ
+
+- [columns: `<column-width> | <column-count>`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/columns)
+  - column-width: 1段あたりの幅を決定する
+  - column-count: コンテンツを何段に分けるか決定する
+- [column-rule: `<column-rule-width> || <column-rule-style> || <column-rule-color>`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-rule)
+  - column-rule-width: 区切り線の幅を決定する（border-widthと同じ）
+  - column-rule-style: 区切り線のスタイルを決定する（border-styleと同じ）
+  - column-rule-color: 区切り線の色を決定する（border-colorと同じ）
+- [column-gap](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-gap): 段と段の間隔を決定する
+- [column-fill](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-fill): コンテナーの高さに対して、テキストをどのように詰めるか決定する
+  - auto: テキストを上から順に段に分割する（デフォルト）
+  - balance: テキストを段の高さができるだけ均等になるように分割する
+- [column-span](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-span): 要素が複数段にまたがるか決定する
+  - none: 要素は1段に収まる（デフォルト）
+  - all: 要素はすべての段にまたがる
+
+
+```css
+.multi-columns {
+  columns: 3 20ic;
+  /* column-count: 3 */
+  /* column-width: 20ic */
+  column-gap: 4em;
+  column-rule: 2px solid #ccc;
+  /* column-rule-width: 2px */
+  /* column-rule-style: solid */
+  /* column-rule-color: #ccc */
+  column-fill: balance;
+  column-span: all;
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <input type="checkbox" id="vertical" checked/>
+  <label for="vertical">縦書きにする</label>
+
+  <input type="checkbox" id="span"/>
+  <label for="span">column-span: all</label>
+
+  <input type="checkbox" id="fill" checked/>
+  <label for="fill">column-fill: balance</label>
+
+  <section class="multi-columns">
+    <section class="column">
+      <h2>一.AIが生成したダミーテキスト</h2>
+      <p>これはレイアウト確認のためのダミーテキストです。AIによって生成されました。特定の意味を持たない文章が連続して配置されています。段落の幅や行間、文字サイズ、改行の位置などを確認する目的で使用されるため、内容自体に重要な意味はありません。文章は読みやすさよりも見た目のバランスを整えることを目的としており、適当な長さになるように構成されています。</p>
+    </section>
+    <section class="column">
+      <h2>二.ページ全体の見え方を確認する</h2>
+      <p>ここに配置されている文章も同様に、ページ全体の見え方を確認するために用意されたサンプルです。文字が並んだときの密度や段落のまとまり、余白との関係などを観察するために用いられます。デザイン作業では実際の本文がまだ用意されていない場合が多いため、このような仮の文章を入れてレイアウトの検証を行います。さらに文章が続きますが、内容は特定の主題を説明するものではありません。文字列が自然な日本語の形を保ちながらも、読み手に強い意味を与えないように構成されています。これにより、読者は内容ではなくレイアウトやタイポグラフィの見え方に集中することができます。段落の長さや行数が増えたときの表示の変化を確認するため、このようにある程度まとまった量の文章が配置されることがあります。</p>
+    </section>
+    <section class="column">
+      <h2>三.補助的なテキスト</h2>
+      <p>この段落もまた、ページ全体の構造を確認するための補助的なテキストです。見出しとの距離、段落間の余白、複数のブロックが並んだときのバランスなどを確認する際に役立ちます。実際のコンテンツが後から差し替えられることを前提としているため、ここに書かれている内容は仮のものです。文章の流れは自然ですが、特定の主張や結論を持たないように作られています。</p>
+    </section>
+    <section class="column">
+      <h2>四.最後に</h2>
+      <p>最後に、この文章も単に長さを調整するためのダミーテキストとして追加されています。ページの下部まで文字が続いた場合の見え方や、スクロールしたときの印象を確認する目的があります。実際の原稿が用意されたときには、この部分も別の文章に置き換えられることになります。</p>
+    </section>
+  </section>
+    
+</section>
+
+<style>{`
+#demo {
+  .multi-columns {
+    border: 4px solid;
+    width: 100%;
+    padding: 1em;
+    overflow: auto;
+    column-count: 2;
+    column-width: 30%;
+    column-gap: 4em;
+    column-rule: 2px solid #ccc;
+    column-fill: auto;
+  }
+
+  #vertical:checked ~ .multi-columns {
+    writing-mode: vertical-rl;
+  }
+  #span:checked ~ .multi-columns h2 {
+    column-span: all;
+  }
+  #fill:checked ~ .multi-columns {
+    column-fill: balance;
+  }
+}
+`}</style>
