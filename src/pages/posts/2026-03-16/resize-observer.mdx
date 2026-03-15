@@ -1,0 +1,173 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-16"
+updatedDate: "2026-03-16"
+title: "ResizeObserverを使ってCanvas要素の再レンダリングをする"
+author: ダーシノ
+description: "ResizeObserverは、要素サイズの変化を監視して変更が発生したらcallbackを呼び出すオブジェクトだ。Canvas APIは、Canvas要素のサイズ（widthやheight）が変更されても再描画しないため、正しく描画されない。そんなときにResizeObserverを使ってCanvas要素のサイズが変更されたら再描画する処理を実装できる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/ResizeObserver)は、要素サイズの変化を監視して変更が発生したらcallbackを呼び出すオブジェクトだ。
+
+Canvas APIは、Canvas要素のサイズ（widthやheight）が変更されても再描画しないため、正しく描画されない。そんなときにResizeObserverを使ってCanvas要素のサイズが変更されたら再描画する処理を実装できる。
+
+<Baseline featureId={"resize-observer"} />
+
+```js
+/**
+ * entries: ResizeObserverEntryの配列で、それぞれの変更後のサイズを取得できる
+ * observer: ResizeObserverオブジェクト自身の参照で、observer.disconnect()などの用土で使う
+ */
+const observer = new ResizeObserver((entries, observer) => {
+  for (const entry of entries) {
+    const { inlineSize: width, blockSize: height } = entry.contentBoxSize[0]
+    // ...
+  }
+})
+
+const canvas = document.getElementById('#canvas')
+observer.observe(canvas)
+```
+
+[ResiseObserverEntry](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry)は以下のプロパティを持っている。
+
+- [borderBoxSize](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize): border-boxサイズを含むオブジェクトの配列
+  - blockSize
+  - inlineSize
+- [contentBoxSize](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize): content-boxサイズを含むオブジェクトの配列
+  - blockSize
+  - inlineSize
+- [devicePixelContentBoxSize](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/devicePixelContentBoxSize): デバイスピクセル単位のサイズを含むオブジェクト
+  - blockSize
+  - inlineSize
+- [contentRect](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentRect): DOMRectReadOnlyのオブジェクト 
+- [target](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/target): 監視対象の要素
+
+## Canvas要素はリサイズしても再描画されない
+
+```html
+<div class="resizable">
+  <canvas id="canvas"></canvas>
+</div>
+```
+
+```js
+function render(canvas) {
+  const ctx = canvas.getContext('2d')
+  // 描画処理
+}
+
+const canvas = document.getElementById('#canvas')
+render(canvas)
+```
+
+## リサイズを監視してCanvas要素の再描画をする
+
+```html
+<div class="resizable">
+  <canvas id="canvas"></canvas>
+</div>
+```
+
+```js
+const canvas = document.getElementById('#canvas')
+
+const observer = new ResizeObserver((entries) => {
+  for (const entry of entries) {
+    const { inlineSize, blockSize } = entry.contentBoxSize[0]
+    canvas.width = inlineSize
+    canvas.height = blockSize
+    render(canvas)
+  }
+})
+observer.observe(canvas)
+```
+
+
+## デモ
+
+<section id="demo">
+  <section class="no-rerender">
+    <h3>リサイズしても再描画されない</h3>
+    <div class="resizable">
+      <canvas width="100" height="100"></canvas>
+    </div>
+  </section>
+
+
+  <section class="rerender">
+    <h3>ResizeObserverを使ってリサイズしたら再描画する</h3>
+    <div class="resizable">
+      <canvas width="100" height="100"></canvas>
+    </div>
+  </section>
+</section>
+
+
+<style>{`
+#demo {
+  display: grid;
+  direction: row;
+
+  gap: 2rem;
+  .resizable {
+    resize: both;
+    overflow: auto;
+    border: 4px solid;
+    height: 200px;
+    width: 200px;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
+`}</style>
+
+
+<script>{`
+function render(container, canvas) {
+  canvas.width = container.clientWidth
+  canvas.height = container.clientHeight
+
+  const ctx = canvas.getContext('2d')
+  const stripeWidth = 10;
+
+  for (let x = 0; x < canvas.width; x += stripeWidth * 2) {
+    ctx.fillStyle = 'lightblue';
+    ctx.fillRect(x, 0, stripeWidth, canvas.height);
+  }
+
+  ctx.fillStyle = 'black'
+  ctx.font = '20px sans-serif'
+  ctx.fillText('SIZE: ' + canvas.width + 'x' + canvas.height, 10, 30)
+}
+
+const demo = document.querySelector('#demo')
+
+const containerNoRerender = demo.querySelector('.no-rerender .resizable')
+const containerRerender = demo.querySelector('.rerender .resizable')
+
+const noRerenderCanvas = containerNoRerender.querySelector('canvas')
+const rerenderCanvas = containerRerender.querySelector('canvas')
+
+render(containerNoRerender, noRerenderCanvas)
+render(containerRerender, rerenderCanvas)
+
+const observer = new ResizeObserver((entries) => {
+  for (const entry of entries) {
+    const container = entry.target
+    const canvas = container.querySelector('canvas')
+    render(container, canvas)
+  }
+})
+
+observer.observe(containerRerender)
+`}</script>
