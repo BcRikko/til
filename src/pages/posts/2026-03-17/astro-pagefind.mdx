@@ -1,0 +1,153 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-17"
+updatedDate: "2026-03-17"
+title: "AstroとPagefindでサイト内検索を実装する"
+author: ダーシノ
+description: "当ブログも記事が増えてきた。GitHub上で検索できるけどより簡単な方法を提供するためにPagefindを導入した。Pagefindは、クライアントで動作するStaticな検索ライブラリ。Astroのような静的サイトジェネレーター（SSG）との相性がよく、ページをビルドしたあとにインデックスを生成し、クライアントでそれを使って検索を行う。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+当ブログも記事が増えてきた。GitHub上で検索できるけどより簡単な方法を提供するために[Pagefind](https://pagefind.app/)を導入した。
+
+## Pagefindとは
+
+[Pagefind](https://pagefind.app/)は、クライアントで動作するStaticな検索ライブラリ。
+
+Astroのような静的サイトジェネレーター（SSG）との相性がよく、ページをビルドしたあとにインデックスを生成し、クライアントでそれを使って検索を行う。
+
+## Pagefindを導入する
+
+### Pagefindをインストールする
+```sh
+$ npm install -D pagefind
+```
+
+```json
+{
+  "scripts": {
+    "build": "astro check && astro build",
+    "postbuild": "pagefind --site dist"
+  }
+}
+```
+
+### インデックスを生成する
+
+```sh
+$ npm run build
+> astro check && astro build
+> pagefind --site dist
+```
+
+`astro build`で生成されたファイルは`dist`ディレクトリに出力される。pagefindではその出力されたファイルを参照するため`pagefind --site dist`のように指定する。
+
+pagefindを実行すると、インデックスやクライアントで利用するJavaScriptやCSSファイルなどが生成される。
+
+```
+.
+├── dist
+│   ├── index.html
+│   ├── pagefind
+│   │   ├── pagefind.js
+│   │   ├── pagefind-ui.js  // 今回は使わない
+│   │   ├── pagefind-ui.css // 今回は使わない
+│   │   ├── ...
+│   │   └── index/...
+│   └── ...
+└── src
+```
+
+私のブログでは、検索UIを自分で実装したので`pagefind-ui.js`などは使わない。
+
+### 検索用コンポーネントを実装する
+
+pagefindが生成したインデックスを使って検索するために、検索用コンポーネントを実装する。
+
+```jsx
+// src/components/Search.astro
+<search>
+  <button popovertarget="dialog">検索する</button>
+
+  <dialog id="dialog" popover>
+    <form>
+      <label for="input">検索キーワード</label>
+      <input type="search" id="input" placeholder="..." />
+    </form>
+    <div id="results"></div>
+</search>
+
+// クライアントで実行するため`is:inline`をつける
+<script is:inline>
+document.addEventListener('DOMContentLoaded', async () => {
+  // distに出力されたpagefind.jsを読み込む
+  const pagefind = await import('/path/to/pagefind/pagefind.js');
+  const input = document.getElementById('input');
+  const result = document.getElementById('results');
+
+  input.addEventListener('input', async (e) => {
+    const query = e.target.value.trim()
+    const searched = await pagefind.search(query);
+    const data = await Promise.all(
+      searched.results.map((r) => r.data()),
+    );
+
+    // WARN: setHTML()は2026年3月現在ではFirefoxのみ利用可能
+    //       innsetHTMLを使う場合は、XSS攻撃に注意してください
+    result.setHTML(
+      data.map(d => {
+        return `
+          <div>
+            <a href="${d.url}">${d.meta.title}</a>
+            <p>${d.excerpt}</p>
+          </div>
+        `
+      }).join('')
+    )
+  });
+})
+</script>
+```
+
+### ローカルで確認する
+
+**ローカルで検索する場合はページ全体をビルドし、インデックスを作成してからでないと利用できない。**
+
+```sh
+$ npm run build
+> astro check && astro build
+> pagefind --site dist
+
+$ npm run preview
+```
+
+### 検索対象に含める、除外する
+
+`data-*`属性を使い、pagefindでインデックスするかどうか判定している。
+
+検索結果に含める場合は`data-pagefind-body`属性、除外する場合は`data-pagefind-ignore`属性をつける。
+
+```html
+<html>
+  <body>
+    <header>...</header>
+    <aside>...</aside>
+    <main data-pagefind-body>
+      <!-- ここに含まれるコンテンツが検索対象になる -->
+
+       <section id="demo" data-pagefind-ignore>
+         <!-- ここに含まれるコンテンツは検索対象から除外される -->
+      </section>
+    </main>
+    <footer>...</footer>
+  </body>
+</html>
+```
+
+## デモ
+
+当サイト上部にある「検索する」ボタンをクリックして操作してください。
