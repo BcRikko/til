@@ -1,0 +1,104 @@
+<search>
+  <button type="button" popovertarget="search-dialog">検索する</button>
+  <dialog id="search-dialog" popover>
+    <form>
+      <label for="search-input">検索キーワード</label>
+      <input id="search-input" type="search" />
+      <button
+        type="button"
+        popovertarget="search-dialog"
+        popovertargetaction="hide">閉じる</button
+      >
+    </form>
+    <output id="count"></output>
+    <ul id="search-results"></ul>
+  </dialog>
+</search>
+
+<template id="search-result-template">
+  <li>
+    <a class="link" href=""><h3 class="title"></h3></a>
+    <p class="content"></p>
+  </li>
+</template>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const pagefind = await import("/til/pagefind/pagefind.js");
+    const input = document.getElementById("search-input");
+    const results = document.getElementById("search-results");
+    const count = document.getElementById("count");
+
+    let timer;
+
+    input?.addEventListener("input", (e) => {
+      clearTimeout(timer);
+
+      timer = setTimeout(async () => {
+        const query = e.target.value.trim();
+
+        if (!query) {
+          return;
+        }
+
+        const search = await pagefind.search(query);
+        const resultsData = await Promise.all(
+          search.results.map((r) => r.data()),
+        );
+
+        results.replaceChildren();
+
+        count.textContent =
+          resultsData.length > 0
+            ? `${resultsData.length}件見つかりました！`
+            : "見つかりませんでした。";
+
+        for (const result of resultsData) {
+          const template = document.getElementById(
+            "search-result-template",
+          ).content;
+          const item = document.importNode(template, true);
+
+          const link = item.querySelector(".link");
+          const title = item.querySelector(".title");
+          const content = item.querySelector(".content");
+
+          link.href = result.url;
+          title.textContent = result.meta.title;
+
+          // TODO: 全主要ブラウザでsetHTML()が使えるようになったら修正する
+          if ("setHTML" in content) {
+            content.setHTML(result.excerpt);
+          } else {
+            content.innerHTML = result.excerpt;
+          }
+
+          results.appendChild(item);
+        }
+      }, 200);
+    });
+  });
+</script>
+
+<style>
+  search :is(button, input) {
+    background-color: transparent;
+    border-radius: 0.3em;
+    padding-inline: 0.5em;
+  }
+  #search-dialog {
+    border-radius: 0.5em;
+    max-width: 50ic;
+    padding: 2em;
+
+    #search-results {
+      max-height: 60vh;
+      overflow-y: auto;
+      list-style: none;
+    }
+  }
+
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+</style>

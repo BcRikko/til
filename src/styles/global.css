@@ -101,6 +101,12 @@ html {
   }
 }
 
+:where(input, button, select, optgroup, textarea) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
 :where(main > iframe) {
   width: 100%;
 }
