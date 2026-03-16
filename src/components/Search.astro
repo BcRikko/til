@@ -36,11 +36,6 @@
 
       timer = setTimeout(async () => {
         const query = e.target.value.trim();
-
-        if (!query) {
-          return;
-        }
-
         const search = await pagefind.search(query);
         const resultsData = await Promise.all(
           search.results.map((r) => r.data()),
