@@ -5,6 +5,7 @@ import Ads from "../components/Ads.astro";
 import SNS from "../components/SNS.astro";
 import Byline from "../components/Byline.astro";
 import Discover from "../components/Discover.astro";
+import Search from "../components/Search.astro";
 
 import "../styles/global.css";
 import "../styles/plugins.css";
@@ -15,10 +16,21 @@ interface Props {
   tags: string;
   pubDate: string;
   updatedDate: string;
+  /**
+   * pagefindのインデックスから除外する
+   */
+  "data-pagefind-ignore"?: boolean;
 }
 
-const { title, description, tags, pubDate, updatedDate, url } =
-  (Astro.props as any)?.frontmatter ?? Astro.props;
+const {
+  title,
+  description,
+  tags,
+  pubDate,
+  updatedDate,
+  url,
+  "data-pagefind-ignore": dataPagefindIgnore,
+} = (Astro.props as any)?.frontmatter ?? Astro.props;
 ---
 
 <!doctype html>
@@ -45,12 +57,26 @@ const { title, description, tags, pubDate, updatedDate, url } =
   <body>
     <header>
       <a href="/til">≪ Today I learned.</a>
-      <a href="/til/rss" target="_blank" aria-label="RSSフィードを購読する">
-        RSS購読
-      </a>
+
+      <div class="actions">
+        <a
+          class="rss-link"
+          href="/til/rss"
+          target="_blank"
+          aria-label="RSSフィードを購読する"
+        >
+          RSS購読
+        </a>
+
+        <Search />
+      </div>
     </header>
 
-    <main>
+    <main
+      {...dataPagefindIgnore === true
+        ? { "data-pagefind-ignore": true }
+        : { "data-pagefind-body": true }}
+    >
       <slot />
     </main>
 
@@ -75,6 +101,22 @@ const { title, description, tags, pubDate, updatedDate, url } =
   header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
+    .rss-link {
+      border-radius: 0.3em;
+      padding-inline: 0.5em;
+      border: 2px solid;
+      padding-block: 1px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
   }
   footer {
     text-align: center;
