@@ -14,11 +14,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.7",
-    "@astrojs/mdx": "^5.0.0",
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/mdx": "^5.0.1",
     "@astrojs/rss": "^4.0.17",
     "@astrojs/sitemap": "^3.7.1",
-    "astro": "^6.0.4",
+    "astro": "^6.0.5",
     "baseline-status": "^1.1.1",
     "canvas": "^3.2.1",
     "rehype-katex": "^7.0.1",
