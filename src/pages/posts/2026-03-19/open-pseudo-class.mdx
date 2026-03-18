@@ -1,0 +1,121 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-19"
+updatedDate: "2026-03-19"
+title: ":open擬似クラスで開いている要素を選ぶ"
+author: ダーシノ
+description: "いままで要素が開いている状態かどうかは、details[open]やdialog[open]のように属性セレクターを使って判定してきた。そのため、select要素やinput（カラーピッカー）のような入力フォームでは開いた状態をCSSから選択する方法がなく、JavaScriptでクラスを付け替える実装に頼るしかなかった。そこで登場したのが:open擬似クラス。 :open擬似クラスは開閉状態を持つ要素のうち、現在開いているものを選択するための新しいCSS擬似クラスだ。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+いままで要素が開いている状態かどうかは、`details[open]`や`dialog[open]`のように属性セレクターを使って判定してきた。そのため、select要素や`input[type="color"]`（カラーピッカー）のような入力フォームでは開いた状態をCSSから選択する方法がなく、JavaScriptでクラスを付け替える実装に頼るしかなかった。
+
+そこで登場したのが[:open擬似クラス](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:open)。 **`:open`擬似クラスは開閉状態を持つ要素のうち、現在開いているものを選択するための新しいCSS擬似クラスだ。**
+
+<Baseline featureId={"open-pseudo"} />
+
+## `:open`擬似クラスとは
+
+`:open`はopen状態にマッチする疑似クラスで、**開閉状態を意味的な状態として扱われる。そのため、`visibility: hidden`などで見えない状態にしていても、展開されていれば`:open`にマッチする。** 見た目ではなく「UIとして開いているか？」を基準に判定していることがポイントだ。
+
+```css
+dialog,
+select,
+input[type="color"] {
+  /* 閉じている状態 */
+}
+
+dialog:open,
+select:open,
+input[type="color"]:open {
+  /* 開いている状態 */
+}
+```
+
+## `:open`と`:has()`を組み合わせる
+
+`:open`は`:has()`と組み合わせることで、開いている要素そのものではなく、開いている要素を持つ親要素を選択できる。
+
+```html
+<div class="field">
+  <label>オプション</label>
+  <select>
+    <option>Option 1</option>
+    <option>Option 2</option>
+    <option>Option 3</option>
+  </select>
+</div>
+```
+
+```css
+.field:has(select:open) {
+  border: 4px solid blue;
+}
+```
+
+## 開閉アニメーションをつける
+
+`:open`で開いたときに要素に対してアニメーションをつけることもできる。
+
+```html
+<label for="font-color">文字色</label>
+<input id="font-color" type="color" />
+```
+
+```css
+@keyframes wiggle {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(3px); }
+  60%  { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+input[type="color"]:open {
+  animation: wiggle 200ms ease-out;
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  <section>
+    <label>オプション</label>
+    <select>
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+    </select>
+  </section>
+  <section>
+    <label for="font-color">文字色</label>
+    <input id="font-color" type="color" />
+  </section>
+</section>
+
+<style>{`
+#demo {
+  section:has(select:open) {
+    border: 4px solid lightcoral;
+    animation: wiggle 200ms ease-out;
+  }
+
+  input[type="color"]:open {
+    animation: wiggle 200ms ease-out;
+    outline: 2px solid lightcoral;
+    outline-offset: 2px;
+  }
+}
+
+@keyframes wiggle {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(5px); }
+  60%  { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+`}</style>
