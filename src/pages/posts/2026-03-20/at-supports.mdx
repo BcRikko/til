@@ -1,0 +1,103 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-20"
+updatedDate: "2026-03-20"
+title: "@supports（feature queries）でブラウザーのサポート状況によってスタイルを切り替える"
+author: ダーシノ
+description: "ブラウザがCSSの特定の機能をサポートしているか確認するために@supportsが提供されている。 @supportsはfeature queries（機能クエリー）と呼ばれ、プログレッシブエンハンスメントが実現できる。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+ブラウザがCSSの特定の機能をサポートしているか確認するために[@supports](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@supports)が提供されている。
+`@supports`はfeature queries（機能クエリー）と呼ばれ、[プログレッシブエンハンスメント](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement)が実現できる。
+
+<Baseline featureId={"supports"} />
+
+プロパティごとにチェックする場合は、`if(supports(...), ok, ng)` のような対応も可能。
+
+参考: [CSSでif\(\)が使えるようになる](https://bcrikko.github.io/til/posts/2024-07-12/css-if/)
+
+
+## 単一のプロパティとその値をテストする場合
+```css
+@supports (accent-color: red) {
+  input[type="checkbox"] {
+    accent-color: red;
+  }
+}
+
+@supports not (accent-color: red) {
+  input[type="checkbox"] {
+    appearance: none;
+
+    &:checked::before {
+      background-color: red;
+      color: white;
+      content: "\2713";
+    }
+  }
+}
+```
+
+
+## 複数のプロパティをテストする場合
+```css
+@supports (display: grid) and (not (display: subgrid)) {
+  /* ... */
+}
+
+@supports (display: grid) or (display: flex) {
+  /* ... */
+}
+```
+
+## セレクターをテストする場合
+
+```css
+@supports selector(col.selected||td) {
+  /* ... */
+}
+```
+
+
+## デモ
+
+<section id="demo">
+  `accent-color`プロパティをサポートしていないブラウザで表示するとフォールバック用のスタイルが適用される。
+  <label>
+    <input type="checkbox" checked />
+    <span>accent-color</span>
+  </label>
+</section>
+
+<style>{`
+#demo {
+  input[type="checkbox"] {
+    accent-color: red;
+  }
+
+  @supports not (accent-color: red) {
+    input[type="checkbox"] {
+      appearance: none;
+    }
+
+    input[type="checkbox"]:checked::before {
+      background-color: red;
+      color: white;
+      content: "✔";
+    }
+
+    label::after {
+      content: "（サポートされていません）";
+      color: red;
+      width: 1em;
+      height: 1em;
+    }
+  }
+}
+`}</style>
