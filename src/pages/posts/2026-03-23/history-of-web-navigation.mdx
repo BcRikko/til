@@ -1,0 +1,168 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-23"
+updatedDate: "2026-03-23"
+title: "Webナビゲーションの歴史"
+author: ダーシノ
+description: "Webのナビゲーションは単なる技術的な進化ではなく、ユーザー体験と開発モデルの変化とともに再設計されてきた。URLや履歴、画面状態をどのように一致させるかという問題への解答の変遷だ。"
+tags: ["Web", "JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+Webのナビゲーションは単なる技術的な進化ではなく、ユーザー体験と開発モデルの変化とともに再設計されてきた。URLや履歴、画面状態をどのように一致させるかという問題への解答の変遷だ。
+
+## Webの初期
+
+Webの初期は、文書閲覧システムとして設計された。
+
+ページごとにひとつのURLが割り当てられ、ユーザーはハイパーリンクをクリックしてページを移動していた。そのため、**ページ遷移の際は常にフルリロードが行われた。**
+
+```html
+<a href="./toc.html">Table of Contents</a>
+<a href="./about.html">About me</a>
+```
+
+## Ajaxの登場
+
+2000年代前半に[XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)が登場し、**URLはそのまま（ページ遷移しない）でページの一部を更新できるようになった。** しかし、画面の状態とURLと履歴が分離した。（代表的なサービス: Google Maps）
+
+そのため、**ブラウザの戻るボタンを押しても「前の状態」ではなく「前のページ」に戻ってしまったり、ページの閲覧履歴が正しく残らないなどの問題があった。**
+
+```js
+$.ajax({
+  url: 'http://api.example.com/maps/@12.345,67.890,15z',
+  type: 'GET'
+}).done(function(data) {
+  // ...
+});
+```
+
+## ハッシュルーティングによるハック
+
+2010年頃まで、ページの閲覧履歴を管理するために[ハッシュルーティング](https://developer.mozilla.org/en-US/docs/Glossary/Hash_routing)を使うようになった。
+
+またhashchangeイベントでハッシュ部分の変更を検知し、URLと画面の状態を一致させられるようになった。ただし、**ハッシュベースのURLはインデックスされにくかったり、サーバーのアクセスログに記録されないなどの問題があった。あくまでブラウザの技術をハックしたようなものであった。**
+
+### 本来のハッシュの使われ方
+```html
+ <a href="#section1">第1章</a>
+ <a href="#section2">第2章</a>
+
+<div>
+  <h2 id="section1">第1章</h2>
+  <p>...</p>
+</div>
+
+<div>
+  <h2 id="section2">第2章</h2>
+  <p>...</p>
+</div>
+ ```
+
+### ルーティングのためにハッシュを使う方法
+
+```js
+button.addEventListener('click', function() {
+  // http://example.com/#!/create
+  location.hash = '!/create';
+});
+
+window.addEventListener('hashchange', function() {
+  // ...
+});
+```
+
+## History APIの標準化
+
+URLと画面状態の不整合を解消するために[History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)が登場し、**2010年代前半にHTML5の一部として標準化が進められ、従来のナビゲーション機能（進む/戻る）に加え、JavaScriptから履歴操作が可能になった。**
+
+```js
+history.back();
+history.forward();
+history.go(-2);
+history.pushState({}, "", "/some-page");
+```
+
+## SPAの普及
+
+2010年代中頃からReactやVue.js、AngularJSなどSPAフレームワークが普及し、Webは当初の文書閲覧システムから、より高度な処理ができる複雑なWebアプリケーションになっていった。また、History APIを利用したルーティングライブラリなどが開発され、いままでの課題（URLと画面状態、履歴など）を解決するための手段が提供されるようになった。
+
+History APIは開発者のニーズをある程度満たしたものの、もともとは文書閲覧のために設計されたAPIのため、Webアプリケーションで扱うには不十分だった。
+
+## Navigation APIによるナビゲーションの再設計
+
+こうした歴史的背景と開発者のニーズを受けて登場したのが[Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)で、2026年にBaselineになった。
+
+<Baseline featureId={"navigation"} />
+
+**ナビゲーションに関するイベントやインターセプター（処理の前後にフックを仕込む）、履歴操作、状態管理などがNavigation APIとして提供され、これにより複雑なWebアプリケーションのナビゲーションをまとめて管理できるようになった。**
+
+細かな詳細は省くが以下のようなことができる。
+
+### `navigate`イベント
+
+同一オリジンのナビゲーションを捕捉するためのイベント。
+```js
+window.navigation.addEventListener('navigate', (event) => {
+  // ...
+});
+```
+
+### `intercept()`メソッド
+
+ブラウザのデフォルトのナビゲーションを差し替えるためのメソッド。
+```js
+window.navigation.addEventListener('navigate', (event) => {
+  const url = new URL(event.destination.url);
+
+  if (!event.canIntercept) return;
+
+  if (url.pathname.startsWith('/articles/')) {
+    event.intercept({
+      handler() {
+        // ここで描画処理を行う
+      }
+    });
+  }
+});
+```
+
+### 履歴エントリー
+
+履歴や状態のリストを取得できる。
+```js
+const current = window.navigation.currentEntry;
+// {
+//   id: string
+//   key: string
+//   index: number
+//   sameDocument: boolean
+//   url: string
+// }
+
+const entries = window.navigation.entries();
+for (const entry of entries) {
+  console.log(entry.url);
+}
+```
+
+### 状態管理
+
+ナビゲーションと一緒に状態を管理できる。
+
+```js
+window.navigation.navigate('/some-page', {
+  state: {
+    infoPaneOpen: true
+  },
+  info: {
+    animation: 'swipe-right'
+  }
+});
+``` 
+
+このようにNavigation APIを使うことで、統一的にナビゲーションの管理ができるようになった。ただし、Navigation APIはHistory APIを完全に置き換えるものではなく、より複雑化したWebアプリケーションに対応するためのものという位置づけになる。
