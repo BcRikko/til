@@ -20,7 +20,7 @@
     "@astrojs/sitemap": "^3.7.1",
     "astro": "^6.0.8",
     "baseline-status": "^1.1.1",
-    "canvas": "^3.2.1",
+    "canvas": "^3.2.2",
     "rehype-katex": "^7.0.1",
     "rehype-mermaid": "^3.0.0",
     "typescript": "^5.9.3"
