@@ -1,0 +1,60 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-03-25"
+updatedDate: "2026-03-25"
+title: ":heading擬似クラスと:heading()関数で見出しをまとめてスタイリングする"
+author: ダーシノ
+description: "ページのベースとなるスタイルをつくるときに、見出しを :is(h1, h2, h3, h4, h5, h6) { ... } のようにまとめてスタイルを当てることがある。それをシンプルかつ、詳細度を制御してスタイリングするために、:heading擬似クラスと:heading()関数という新しいCSSセレクターが検討されている。2026年3月の執筆時点では、Firefox NightlyやSafari TPのみで利用可能。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+ページのベースとなるスタイルをつくるときに、見出しを `:is(h1, h2, h3, h4, h5, h6) { ... }` のようにまとめてスタイルを当てることがある。
+
+それをシンプルかつ、詳細度を制御してスタイリングするために[:heading擬似クラス](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:heading)と[:heading()関数](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:heading_function)という新しいCSSセレクターが検討されている。
+
+2026年3月の執筆時点では、Firefox NightlyやSafari TPのみで利用可能。
+
+<Baseline featureId={"heading-selectors"} />
+
+## 従来の方法: `is()`や列挙
+
+`:is()`や`h1, h2, h3, h4, h5, h6`のように列挙してスタイルを当てていた。しかし、**どちらも要素セレクターになるため`0-0-1`の詳細度になり他のスタイルと競合しやすい。**
+
+```css
+:is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 800;
+  text-transform: capitalize;
+}
+```
+
+## `:heading`擬似クラス
+
+**`:heading`疑似クラスを使うと`0-1-0`の詳細度になる**ため、管理しやすくなる。また、見出しと判断されるものを一括して指定できるため、CSSセレクターがシンプルになる。
+
+```css
+:heading {
+  font-weight: 800;
+  text-transform: capitalize;
+}
+```
+
+## `:heading()`関数
+
+`:heading()`関数は、`:heading`に似ているが見出しレベルを指定してスタイルを当てることができる。**こちらも`:heading`同様に`0-1-0`の詳細度になる。**
+
+```css
+/* h1, h3, h5 */
+:heading(1, 3, 5) {
+  /* ... */
+}
+
+/* h2, h4, h6 */
+:heading(2, 4, 6) {
+  /* ... */
+}
+```
