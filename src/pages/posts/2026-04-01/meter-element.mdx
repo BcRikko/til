@@ -1,0 +1,227 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: " 2026-04-01"
+updatedDate: " 2026-04-01"
+title: "meter要素で自動的にメーターの色を変える"
+author: ダーシノ
+description: "progress要素に似た見た目のmeter要素がある。meter要素は、範囲内の数値を表すための要素で、highやlow属性を使うことで自動的にメーターの色を変えられる。progress要素は見た目が似ているが、タスクの進捗状況を表す要素なので、low/highのような範囲を指定するような属性はない。"
+tags: ["HTML", "CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[progress要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress)に似た見た目の[meter要素](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter)がある。
+
+meter要素は、範囲内の数値を表すための要素で、highやlow属性を使うことで自動的にメーターの色を変えられる。
+
+※progress要素は見た目が似ているが、タスクの進捗状況を表す要素なので、low/highのような範囲を指定するような属性はない。
+
+```html
+<meter
+  min="0"
+  max="100"
+  low="30"
+  high="70"
+  optimum="71"
+  value="50"
+>50点</meter>
+```
+
+<Baseline featureId={"meter"} />
+
+## 属性
+
+- min/max: メーターの最小値と最大値を指定する
+- high: 「高」とされる範囲の下限値。highを超えると「高」として扱う
+- low: 「低」とされる範囲の上限値。lowを下回ると「低」として扱う
+- optimum: この値がある範囲を「最適」として扱う
+  - high:80、low:30の場合、optimum:30だと「低」の範囲が最適として扱われる
+
+```txt
+            low          high
+    <-[low]->|<-[medium]->|<-[high]->
+min <--------+------------+---------> max
+       |           |
+       |         optimum: low-highの間が「最適」
+       |
+    optimum: lowの値以下が「最適」：
+```
+
+「最適」とされる範囲から離れるにつれ、緑→黄色→赤と自動的に色がわかる。
+
+## 色のカスタマイズ
+
+色のカスタマイズにはベンダープレフィックスのついた疑似クラスを使う。ただし、[`::-webkit-meter-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::-webkit-meter-bar)は非推奨、その他の擬似クラスも非標準機能であるため、利用には十分注意が必要。
+```css
+/**
+ * メーターの背景色
+ * @deprecated
+ */
+::-webkit-meter-bar {
+  background: white;
+}
+
+/**
+ * 「最適」とされる範囲
+ * @non-standard
+ */
+::-webkit-meter-optimum-value {
+  background: green;
+}
+
+/**
+ * 「最適」からひとつ外れた範囲
+ * @non-standard
+ */
+::-webkit-meter-suboptimum-value {
+  background: yellow;
+}
+
+/**
+ * 「最適」からふたつ外れた範囲
+ * @non-standard
+ */
+::-webkit-meter-even-less-good-value {
+  background: red;
+}
+```
+
+
+## デモ
+
+0〜100において、0〜30がlow、31〜70がmedium、71〜100がhighとする場合。
+
+<section id="demo">
+  <section class="card">
+    ### optimum:30
+    <div>
+      <label>0%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="0"></meter>
+    </div>
+    <div>
+      <label>29%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="29"></meter>
+    </div>
+    <div>
+      <label>30%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="30"></meter>
+    </div>
+    <div>
+      <label>31%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="31"></meter>
+    </div>
+    <div>
+      <label>69%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="69"></meter>
+    </div>
+    <div>
+      <label>70%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="70"></meter>
+    </div>
+    <div>
+      <label>71%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="71"></meter>
+    </div>
+    <div>
+      <label>100%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="30" value="100"></meter>
+    </div>
+  </section>
+  <section class="card">
+    ### optimum:70
+    <div>
+      <label>0%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="0"></meter>
+    </div>
+    <div>
+      <label>29%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="29"></meter>
+    </div>
+    <div>
+      <label>30%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="30"></meter>
+    </div>
+    <div>
+      <label>31%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="31"></meter>
+    </div>
+    <div>
+      <label>69%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="69"></meter>
+    </div>
+    <div>
+      <label>70%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="70"></meter>
+    </div>
+    <div>
+      <label>71%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="71"></meter>
+    </div>
+    <div>
+      <label>100%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="70" value="100"></meter>
+    </div>
+  </section>
+  <section class="card">
+    ### optimum:71
+    <div>
+      <label>0%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="0"></meter>
+    </div>
+    <div>
+      <label>29%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="29"></meter>
+    </div>
+    <div>
+      <label>30%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="30"></meter>
+    </div>
+    <div>
+      <label>31%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="31"></meter>
+    </div>
+    <div>
+      <label>69%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="69"></meter>
+    </div>
+    <div>
+      <label>70%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="70"></meter>
+    </div>
+    <div>
+      <label>71%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="71"></meter>
+    </div>
+    <div>
+      <label>100%</label>
+      <meter min="0" max="100" low="30" high="70" optimum="71" value="100"></meter>
+    </div>
+  </section>
+</section>
+
+<style>{`
+#demo {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1em;
+
+  .card {
+    padding: .5em 1em;
+    border: solid 4px;
+
+    label {
+      display: inline-block;
+      text-align: right;
+      width: 3ic;
+      margin-inline-end: .5em;
+    }
+   }
+  meter {
+    height: 30px;
+  }
+
+}
+`}</style>
