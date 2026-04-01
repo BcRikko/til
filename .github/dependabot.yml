@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "daily"
       time: "02:00"
-    cooldonw:
+    cooldown:
       default-days: 7
     groups:
       astro-deps:
@@ -23,5 +23,5 @@ updates:
     schedule:
       interval: "daily"
       time: "02:00"
-    cooldonw:
+    cooldown:
       default-days: 7
