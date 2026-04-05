@@ -1,8 +1,8 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2023-04-07"
-updatedDate: "2023-04-07"
-title: "inert属性で一括非活性"
+updatedDate: "2026-04-06"
+title: "inert属性で一括非活性する/inert属性の用途と注意点"
 author: ダーシノ
 description: "inert属性が全主要ブラウザで利用可能になった。"
 tags: ["HTML"]
@@ -28,3 +28,43 @@ inert属性をつけた要素の子孫要素に対し、一括でクリック不
 ```
 
 ※上記コードはあくまでサンプルコードで、実際に`<body inert>`をするとローディングマスクが表示されていることを伝えられないので適用範囲には注意すること。
+
+---
+
+## 追記: 2026-04-06 inert属性の用途と注意点
+
+要素を非活性にする際に、一般的に使用される属性は[`disabled`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled)だ。
+
+しかし、disabled属性はフォーム要素（buttonやinputなど）にしか適用できないため、リンク（a要素）の非活性化には利用できない。その点、inert属性を使用すればどんな要素であっても非活性にできる。ただし、注意点もある。
+
+### inert属性の注意点
+
+- inert属性は、視覚的な変化を伴わないため、`[inert] { ... }`のような属性セレクターで非活性状態のスタイルを指定する必要がある
+- inert属性は、単純な非活性化ではなくアクセシビリティツリーからも削除される
+  - 要素の存在自体をないものとして扱うならOK
+    - 有償コンテンツで無償ユーザーの利用は制限している場合など
+  - 要素の存在を利用者に伝えたいときはNG
+    - 読み込み中や権限不足などで非活性にするときにメニュー自体は残っていることを利用者に伝えたい場合など
+
+
+### リンク（a要素）の非活性化（無効化）
+
+disabled属性やinert属性は使えないため、aria-disabled属性を使用する。
+
+```html
+<nav class="menu-list">
+  <div class="menu-item">
+    <a href="/home">ホーム</a>
+  </div>
+  <div class="menu-item" aria-disabled="true">
+    <a href="/billing">請求</a>
+  </div>
+</nav>
+```
+
+```css
+[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+```
