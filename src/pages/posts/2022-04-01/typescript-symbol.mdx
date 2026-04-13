@@ -1,0 +1,97 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2022-04-01"
+updatedDate: "2022-04-01"
+title: "TypeScriptの型で使われる-?や-readonlyの意味"
+author: ダーシノ
+description: "TypeScriptの型パズルを見ていると-?や-readonlyという記号を見かける。非常にググラビリティが悪い。この-という記号は、続く?やreadonlyを除外するという役割がある。公式ドキュメントではreadonly mapped type modifiers and readonly arrays |TypeScript 3.4で軽く触れられている程度。"
+tags: ["TypeScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+TypeScriptの型パズルを見ていると`-?`や`-readonly`という記号を見かける。非常にググラビリティが悪い。
+
+この`-`という記号は、続く`?`や`readonly`を除外するという役割がある。
+
+公式ドキュメントでは[readonly  mapped type modifiers and  readonly  arrays | TypeScript 3.4](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#readonly-mapped-type-modifiers-and-readonly-arrays)で軽く触れられている程度。
+
+
+## `Required<T>`を使う場合
+
+`?`というオプショナルな状態を除外するために`Required<T>`を使うと以下のようになる。
+```ts
+type Item = {
+    optional?: string
+    require: string,
+    children: {
+        optional?: string
+        require: string 
+    }
+}
+
+// children は optional のまま
+type RequiredItem = Required<Item>
+```
+ネストされたオブジェクトに対しては`Required<T>`が適用されない。
+
+## `DeepRequired<T>`を使う場合
+
+ネストされたオブジェクトに再帰的に`Required<T>`を適用することもできる。ただし、以下のようにchildrenが`Required<{...}>`という形になってしまう。
+```ts
+type DeepRequired<T> = T extends object
+  ? Required<{ [K in keyof T]: DeepRequired<T[K]> }>
+  : T
+
+type RequiredAll = DeepRequired<Item>
+// {
+//     optional: string;
+//     require: string;
+//     children: Required<{
+//         optional?: string | undefined;
+//         require: string;
+//     }>;
+// }
+```
+
+## `-?`を使う場合
+
+`-?`を使って`?`（オプショナル）を除外すると、`Required<T>`が現れないプレーンなオブジェクトの型になる。
+
+```ts
+type DeepRequired<T> = T extends object
+  ? { [K in keyof T]-?: DeepRequired<T[K]> }
+  : T
+type RequiredAll = DeepRequired<Item>
+// {
+//     optional: string;
+//     require: string;
+//     children: {
+//         optional: string;
+//         require: string;
+//     };
+// }
+```
+
+## `-readonly`の場合
+
+`-readonly`も同様に`readonly`を除外するために使える。
+
+```ts
+type Item = {
+  readonly val: string
+}
+
+type Editable<T> = T extends object
+  ? { -readonly [K in keyof T]: Editable<T[K]> }
+  : T
+
+type EditableAll = Editable<Item>
+// {
+//   val: string
+// }
+```
+
+
