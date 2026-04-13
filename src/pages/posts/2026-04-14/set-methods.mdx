@@ -1,0 +1,160 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-04-14"
+updatedDate: "2026-04-14"
+title: "集合メソッドを使った検索処理の最適化"
+author: ダーシノ
+description: "検索処理を実装する際、よくあるのが複数の条件を指定したときに、AND検索にするか、OR検索にするか。その検索条件をArray#every()やArray#some()の代わりにSet#isSubsetOf()やSet#isSupersetOf()、Set#isDisjointFrom()のような集合メソッドを使うことでよりわかりやすく、高速に実装できる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[ECMAScript Stage 4 になった仕様](https://bcrikko.github.io/til/posts/2024-04-18/ecmascript-stage4/)や[ES2025で追加される新しいSetメソッドを使ってfilter実装を簡素化する](https://bcrikko.github.io/til/posts/2024-06-07/new-set-methods/)を実業務で使う機会があったので紹介する。
+
+<Baseline featureId={"set-methods"} />
+
+検索処理を実装する際、よくあるのが複数の条件を指定したときにAND検索にするか、OR検索にするか。その検索処理を実装するには[`Array#every()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)や[`Array#some()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)、[`Array#includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)を使うのだが、2重ループになるためコードの可読性が落ちてしまう。
+
+Arrayの代わりに[`Set#isSubsetOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/isSubsetOf)や[`Set#isSupersetOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/isSupersetOf)、[`Set#isDisjointFrom()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/isDisjointFrom)のような集合メソッドを使うことでよりわかりやすく、高速に実装できる。
+
+
+## AND条件
+
+### Arrayメソッドをつかった場合
+
+Arrayメソッドを使う場合は、`Array#every()`と`Array#includes()`のメソッドを使う。言語的には`items.fruits`を主語にしたいが、実装するにしても構造的に難しい。
+```js
+// 検索条件
+const targetFruits = ['りんご', 'いちご']
+
+// 検索対象
+const items = [
+  { fruits: ['りんご', 'いちご', 'みかん'] }, 
+  { fruits: ['りんご', 'みかん', 'ぶどう'] },
+  { fruits: ['いちご', 'みかん', 'ぶどう'] },
+  { fruits: ['みかん', 'ぶどう'] },
+]
+
+// [ { fruits: ['りんご', 'いちご', 'みかん'] } ]
+items.filter(item => (
+  // targetFruitsが主語になっている
+  targetFruits.every(target => (
+    item.fruits.includes(target)
+  ))
+))
+```
+
+### Setの集合メソッドを使った場合
+
+Setの集合メソッドを使う場合は、部分集合（または包含関係）を表す`Set#isSupersetOf()`や`Set#isSubsetOf()`を使う。また、`isSupersetOf`と`isSubsetOf`は対の関係なので、入れ替えることもできる。
+
+```js
+// 検索条件
+const targetFruits = new Set(['りんご', 'いちご'])
+
+// 検索対象
+const items = [
+  { fruits: new Set(['りんご', 'いちご', 'みかん']) }, 
+  { fruits: new Set(['りんご', 'みかん', 'ぶどう']) },
+  { fruits: new Set(['いちご', 'みかん', 'ぶどう']) },
+  { fruits: new Set(['みかん', 'ぶどう']) },
+]
+
+items.filter(item => item.fruits.isSupersetOf(targetFruits))
+
+// 主語を入れ替えることも可能
+items.filter(item => targetFruits.isSubsetOf(item.fruits))
+```
+
+<figure>
+  <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="70" r="60" fill="none" stroke="black" />
+    <text font-size="0.5rem" x="150" y="33" text-anchor="middle">item.fruits</text>
+
+    <circle cx="150" cy="70" r="30" fill="lightblue" stroke="black" />
+    <text font-size="0.5rem" x="150" y="73" text-anchor="middle">targetFruits</text>
+  </svg>
+  <figcaption>`fruits.isSupersetOf(targetFruits)`</figcaption>
+</figure>
+
+
+
+## OR条件
+
+### Arrayメソッドをつかった場合
+
+Arrayメソッドを使う場合は、`Array#some()`と`Array#includes()`のメソッドを使う。AND条件よりも実装は簡単で、`every`と`some`を入れ替えるだけでよい。
+
+```js
+// 検索条件
+const targetFruits = ['りんご', 'いちご']
+
+// 検索対象
+const items = [
+  { fruits: ['りんご', 'いちご', 'みかん'] }, 
+  { fruits: ['りんご', 'みかん', 'ぶどう'] },
+  { fruits: ['いちご', 'みかん', 'ぶどう'] },
+  { fruits: ['みかん', 'ぶどう'] },
+]
+
+/**
+ * [
+ *    { fruits: ['りんご', 'いちご', 'みかん'] }, 
+ *    { fruits: ['りんご', 'みかん', 'ぶどう'] },
+ *    { fruits: ['いちご', 'みかん', 'ぶどう'] },
+ * ]
+ */
+items.filter(item => (
+  item.fruits.some(target => (
+    targetFruits.includes(target)
+  ))
+))
+```
+
+### Setの集合メソッドを使った場合
+
+Setの集合メソッドを使う場合は、空集合を表す`Set#isDisjointFrom()`を使う。OR条件の場合、Setオブジェクトでは論理型（boolean型）を返すメソッドがない。（※）そのため少なくともひとつは一致することを表現するため、`isDisjointFrom()`を反転して使用する。
+
+※共通部分（`Set#inersection()`）はあるが、boolean型ではなくSetオブジェクトを返すため、`set.size > 0`みたいな処理になる。
+
+```js
+// 検索条件
+const targetFruits = new Set(['りんご', 'いちご'])
+
+// 検索対象
+const items = [
+  { fruits: new Set(['りんご', 'いちご', 'みかん']) }, 
+  { fruits: new Set(['りんご', 'みかん', 'ぶどう']) },
+  { fruits: new Set(['いちご', 'みかん', 'ぶどう']) },
+  { fruits: new Set(['みかん', 'ぶどう']) },
+]
+
+items.filter(item => item.fruits.isDisjointFrom(targetFruits) === false)
+
+// 主語を入れ替えることも可能
+items.filter(item => targetFruits.isSubsetOf(item.fruits))
+```
+
+<figure>
+  <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="clip">
+        <circle cx="100" cy="70" r="60" />
+      </clipPath>
+    </defs>
+
+    <circle cx="100" cy="70" r="60" fill="none" stroke="black" />
+    <text font-size="0.5rem" x="60" y="73" text-anchor="middle">item.fruits</text>
+
+    <circle cx="160" cy="70" r="60" fill="none" stroke="black" />
+    <text font-size="0.5rem" x="200" y="73" text-anchor="middle">targetFruits</text>
+
+    <circle cx="160" cy="70" r="60" fill="lightblue" clip-path="url(#clip)" />
+  </svg>
+  <figcaption>`fruits.isDisjointFrom(targetFruits) === false`</figcaption>
+</figure>
+
