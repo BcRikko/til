@@ -111,6 +111,10 @@ html {
   width: 100%;
 }
 
+:where(figcaption) {
+  text-align: center;
+}
+
 @media (prefers-reduced-motion) {
   :where(*, *::before, *::after) {
     animation-duration: 0s !important;
