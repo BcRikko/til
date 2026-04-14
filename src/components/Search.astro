@@ -29,48 +29,42 @@
     const results = document.getElementById("search-results");
     const count = document.getElementById("count");
 
-    let timer;
+    input?.addEventListener("input", async (e) => {
+      const query = e.target.value.trim();
+      const search = await pagefind.search(query);
+      const resultsData = await Promise.all(
+        search.results.map((r) => r.data()),
+      );
 
-    input?.addEventListener("input", (e) => {
-      clearTimeout(timer);
+      results.replaceChildren();
 
-      timer = setTimeout(async () => {
-        const query = e.target.value.trim();
-        const search = await pagefind.search(query);
-        const resultsData = await Promise.all(
-          search.results.map((r) => r.data()),
-        );
+      count.textContent =
+        resultsData.length > 0
+          ? `${resultsData.length}件見つかりました！`
+          : "見つかりませんでした。";
 
-        results.replaceChildren();
+      for (const result of resultsData) {
+        const template = document.getElementById(
+          "search-result-template",
+        ).content;
+        const item = document.importNode(template, true);
 
-        count.textContent =
-          resultsData.length > 0
-            ? `${resultsData.length}件見つかりました！`
-            : "見つかりませんでした。";
+        const link = item.querySelector(".link");
+        const title = item.querySelector(".title");
+        const content = item.querySelector(".content");
 
-        for (const result of resultsData) {
-          const template = document.getElementById(
-            "search-result-template",
-          ).content;
-          const item = document.importNode(template, true);
+        link.href = result.url;
+        title.textContent = result.meta.title;
 
-          const link = item.querySelector(".link");
-          const title = item.querySelector(".title");
-          const content = item.querySelector(".content");
-
-          link.href = result.url;
-          title.textContent = result.meta.title;
-
-          // TODO: 全主要ブラウザでsetHTML()が使えるようになったら修正する
-          if ("setHTML" in content) {
-            content.setHTML(result.excerpt);
-          } else {
-            content.innerHTML = result.excerpt;
-          }
-
-          results.appendChild(item);
+        // TODO: 全主要ブラウザでsetHTML()が使えるようになったら修正する
+        if ("setHTML" in content) {
+          content.setHTML(result.excerpt);
+        } else {
+          content.innerHTML = result.excerpt;
         }
-      }, 200);
+
+        results.appendChild(item);
+      }
     });
   });
 </script>
