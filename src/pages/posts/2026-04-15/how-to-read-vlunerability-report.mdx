@@ -1,0 +1,128 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-04-15"
+updatedDate: "2026-04-15"
+title: "脆弱性レポートの読み方"
+author: ダーシノ
+description: "昨今、npmパッケージの深刻な脆弱性報告が増えてきた。「危険だからアップデートしなきゃ」と思うだけでしっかりレポートを読めていなかった。これを機にちゃんと読めるようになろうと思ったので調べたことをまとめていく。GitHubで公開されているレポートの中でも、直近で一番インパクトが大きかったaxiosのレポート:GHSA-fvcv-3m26-pcqxを参考に読み解いていく。"
+tags: ["Knowledge"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+昨今、npmパッケージの深刻な脆弱性報告が増えてきた。
+
+「危険だからアップデートしなきゃ」と思うだけでしっかりレポートを読めていなかった。これを機にちゃんと読めるようになろうと思って調べたことをまとめていく。
+
+
+GitHubで公開されているレポートの中でも、直近で一番インパクトが大きかった[axiosのレポート:GHSA-fvcv-3m26-pcqx](https://github.com/axios/axios/security/advisories/GHSA-fvcv-3m26-pcqx)を参考に読み解いていく。
+
+## 脆弱性の識別子と管理団体
+
+識別子にはいくつか種類がある。
+
+### CVE
+
+**共通脆弱性識別子（Common Vulnerabilities and Exposures）は、公開された脆弱性に対して識別子を付与して共通で参照して利用できる。**
+
+アメリカ政府の支援を受けた非営利団体[MITRE Corporation](https://www.mitre.org/)が管理、運営している。`CVE-2026-xxxxx`のように採番され、同じ脆弱性をどのツールでも使用できる。
+
+### GHSA
+
+**[GitHub Security Advisory](https://github.com/advisories)が独自に提供する脆弱性情報のIDで、主にGitHubで公開されているパッケージの脆弱性を含むバージョンとパッチバージョン、攻撃方法などがまとめられている。**
+
+`GHSA-xxxx-xxxx-xxxx`のように採番され、CVEと関連づけて管理されることが多い。axiosの件では、`GHSA-fvcv-3m26-pcqx`と`CVE-2026-40175`が紐づけられている。
+
+### CWE
+
+共通脆弱性タイプ一覧（Common Weakness Enumeration）は、前者の2つとは性質が異なり、**脆弱性の種類を識別するための共通基準。** CVE同様にMITRE Corporationが中心となり仕様を策定した。
+
+たとえば[CWE-79](https://cwe.mitre.org/data/definitions/79.html)であればクロスサイトスクリプティング、[CWE-89](https://cwe.mitre.org/data/definitions/89.html)であればSQLインジェクションといった具合に管理されている。
+
+
+## 脆弱性の深刻度（CVSS）
+
+**共通脆弱性評価システム（Common Vulnerability Scoring System）は、脆弱性の深刻度を0.0〜10.0の範囲で示す共通指標。** スコアは攻撃のしやすさや影響範囲など複数の観点を組み合わせて算出される。
+
+深刻度の目安
+- 0.1〜3.9: Low
+- 4.0〜6.9: Medium
+- 7.0〜8.9: High
+- 9.0〜10.0: Critical
+
+### 評価基準
+
+- **基本評価基準（Base Metrics）**
+  - 脆弱性そのものの本質的リスクを評価
+  - 機密性、完全性、可用性に対する影響
+- **現状評価基準（Temporal Metrics）**
+  - 脆弱性を突くための具体的な攻撃手段の有無や対応状況を評価
+  - Proof of Conceptや攻撃ツールが存在すると優先度が高まる
+  - 時間経過で変化するスコア
+- **環境評価基準（Environmental Metrics）**
+  - 利用環境も含めた最終的な脆弱性の深刻度を評価
+
+[axiosの脆弱性レポート](https://github.com/axios/axios/security/advisories/GHSA-fvcv-3m26-pcqx)では、CVSS v3 base metricsとして以下のようにスコアが算出されている。
+
+- AV: Attack Vector/攻撃元区分
+  - N: Network/ネットワーク
+  - A: Adjacent/隣接ネットワーク
+  - L: Local/ローカル
+  - P: Physical/物理
+- AC: Attack Complexity/攻撃の複雑さ
+  - L: Low/低い
+  - H: High/高い
+- Privileges Required: PR/必要な特権レベル
+  - N: None/なし
+  - L: Low/低い
+  - H: High/高い
+- UI: User Interaction/ユーザー関与レベル
+  - N: None/なし
+  - R: Required/必要
+- S: Scope/影響範囲
+  - U: Unchanged/変更なし
+  - C: Changed/変更あり（影響が外部に広がる）
+- C: Confidentiality/情報漏えいの可能性
+  - N: None/なし
+  - L: Low/低い
+  - H: High/高い
+- I: Integrity/情報改ざんの可能性
+  - N: None/なし
+  - L: Low/低い
+  - H: High/高い
+- A: Availability/可用性への影響
+  - N: None/なし
+  - L: Low/低い
+  - H: High/高い
+
+axiosの脆弱性では`CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H`のように報告されているため、分解すると以下のような判定になる。
+
+- 攻撃元区分: ネットワーク
+- 攻撃の複雑さ: 低い
+- 必要な特権レベル: なし
+- ユーザー関与: なし
+- スコープ: 変更あり
+- 情報漏洩: 高い
+- 情報改ざん: 高い
+- 可用性への影響: 高い
+
+※執筆時点での最新基準は[CVSSv4.0](https://www.first.org/cvss/calculator/4.0)
+
+
+## 参考サイト
+
+### 公式サイト
+- [CVE: Common Vulnerabilities and Exposures](https://www.cve.org/)
+- [CWE \- Common Weakness Enumeration](https://cwe.mitre.org/index.html)
+- [GitHub Advisory Database](https://github.com/advisories)
+
+### 解説記事
+- [共通脆弱性識別子CVE概説 \| IPA 独立行政法人 情報処理推進機構](https://www.ipa.go.jp/security/vuln/scap/cve.html)
+- [共通脆弱性タイプ一覧CWE概説 \| IPA 独立行政法人 情報処理推進機構](https://www.ipa.go.jp/security/vuln/scap/cwe.html)
+- [共通脆弱性評価システムCVSS概説 \| IPA 独立行政法人 情報処理推進機構](https://www.ipa.go.jp/security/vuln/scap/cvss.html)
+
+### 脆弱性報告書
+- [Unrestricted Cloud Metadata Exfiltration via Header Injection Chain · Advisory · axios/axios](https://github.com/axios/axios/security/advisories/GHSA-fvcv-3m26-pcqx)
+- [NVD \- CVE\-2026\-40175](https://nvd.nist.gov/vuln/detail/CVE-2026-40175)
