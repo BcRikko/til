@@ -6,7 +6,6 @@ html {
 
   color: #333333;
   background-color: #fafafa;
-  overflow-wrap: anywhere;
 }
 
 *, *::before, *::after {
@@ -17,6 +16,7 @@ html {
   padding-inline: 0.5ic;
   max-inline-size: 40ic;
   margin-inline: auto;
+  overflow-wrap: anywhere;
 }
 
 :where(h1, h2, h3, h4, h5, h6) {
