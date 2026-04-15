@@ -6,6 +6,7 @@ html {
 
   color: #333333;
   background-color: #fafafa;
+  overflow-wrap: anywhere;
 }
 
 *, *::before, *::after {
