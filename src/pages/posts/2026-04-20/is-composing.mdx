@@ -1,0 +1,93 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-04-20"
+updatedDate: "2026-04-20"
+title: "IME利用者のEnterが暴発しないようにisComposingで防ぐ"
+author: ダーシノ
+description: "海外製Webサービスを利用すると、日本語変換の確定時（Enter押下時）に入力途中のデータがSubmitされてしまうことが多々ある。GitHubのIssue/PRのタイトルしかり、ChatGPTの入力欄しかり。Enterでフォームを送信するのはWebの標準的な挙動だが、IME利用者（主に日本/韓国/中国語話者など）にとって非常に不便なので変換確定時のEnterのイベントを無効化する処理が必要になる。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+海外製Webサービスを利用すると、日本語変換の確定時（Enter押下時）に入力途中のデータがSubmitされてしまうことが多々ある。GitHubのIssue/PRのタイトルしかり、ChatGPTの入力欄しかり。
+
+Enterでフォームを送信するのはWebの標準的な挙動だが、IME利用者（主に日本/韓国/中国語話者など）にとって非常に不便なので変換確定時のEnterのイベントを無効化する処理が必要になる。
+
+そんなときに使えるのが[KeyboardEvent.isComposing](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing)や[Element#compositionstart](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)イベント、[Element#compositionend](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionend_event)イベントだ。
+
+```html
+<form>
+  <label for="title">Title</label>
+  <input id="title" type="text" />
+</form>
+```
+
+```js
+document
+  .querySelector('#title')
+  .addEventListener('keydown', e => {
+    if (e.code !== 'Enter') {
+      return
+    }
+
+    // 変換中のEnterを無効化
+    if (e.isComposing) {
+      e.preventDefault()
+      return
+    }
+    
+    submit(e.target.value)
+  })
+```
+
+また、`compositionstart`や`compositionend`イベントを利用することで、変換中かどうかをフラグ管理できる。IME利用中はUIを変えることもできる。
+
+```js
+let isComposing = false
+const input = document.querySelector('#title')
+input.addEventListener('compositionstart', () => {
+  isComposing = true
+})
+input.addEventListener('compositionend', () => {
+  isComposing = false
+})
+```
+
+
+## デモ
+
+<section id="demo">
+  <form>
+    <div>
+      <label for="title">Title</label>
+      <input id="title" type="text" />
+    </div>
+    <output id="output"></output>
+  </form>
+</section>
+
+<style>{`
+#demo {
+}
+`}</style>
+
+<script>{`
+const demo = document.querySelector('#demo')
+const output = demo.querySelector('#output')
+demo.querySelector('#title').addEventListener('keydown', e => {
+  if (e.code !== 'Enter') {
+    return
+  }
+
+  e.preventDefault()
+  if (e.isComposing) {
+    output.textContent = '変換中のEnterは無効化されました'
+    return
+  }
+  
+  output.textContent = '送信されました: ' + e.target.value
+})
+`}</script>
