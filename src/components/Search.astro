@@ -29,7 +29,7 @@
     const results = document.getElementById("search-results");
     const count = document.getElementById("count");
 
-    input?.addEventListener("input", async (e) => {
+    async function search(e) {
       const query = e.target.value.trim();
       const search = await pagefind.search(query);
       const resultsData = await Promise.all(
@@ -65,6 +65,15 @@
 
         results.appendChild(item);
       }
+    }
+
+    input?.addEventListener("input", (e) => {
+      if (e.isComposing) return;
+      search(e);
+    });
+
+    input?.addEventListener("compositionend", (e) => {
+      search(e);
     });
   });
 </script>
