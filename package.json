@@ -18,7 +18,7 @@
     "@astrojs/mdx": "^5.0.3",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.1.5",
+    "astro": "^6.1.6",
     "baseline-status": "^1.1.1",
     "canvas": "^3.2.3",
     "rehype-katex": "^7.0.1",
