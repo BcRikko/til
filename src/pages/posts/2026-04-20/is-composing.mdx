@@ -2,7 +2,7 @@
 layout: ../../../layouts/Layout.astro
 pubDate: "2026-04-20"
 updatedDate: "2026-04-20"
-title: "IME利用者のEnterが暴発しないようにisComposingで防ぐ"
+title: "IME利用者のkeydownイベントが暴発しないようにisComposingで防ぐ"
 author: ダーシノ
 description: "海外製Webサービスを利用すると、日本語変換の確定時（Enter押下時）に入力途中のデータがSubmitされてしまうことが多々ある。GitHubのIssue/PRのタイトルしかり、ChatGPTの入力欄しかり。Enterでフォームを送信するのはWebの標準的な挙動だが、IME利用者（主に日本/韓国/中国語話者など）にとって非常に不便なので変換確定時のEnterのイベントを無効化する処理が必要になる。"
 tags: ["JavaScript"]
@@ -12,9 +12,9 @@ import Header from '../../../components/Header.astro'
 
 <Header {...frontmatter} />
 
-海外製Webサービスを利用すると、日本語変換の確定時（Enter押下時）に入力途中のデータがSubmitされてしまうことが多々ある。GitHubのIssue/PRのタイトルしかり、ChatGPTの入力欄しかり。
+海外製Webサービスを利用すると、日本語変換の確定時（Enter押下時）に入力途中のデータがSubmitされてしまうことが多々ある。GitHubのIssue/PRのタイトルしかり、ChatGPTの入力欄しかり。Enterでフォームを送信するのはWebの標準的な挙動だが、IME利用者（主に日本/韓国/中国語話者など）にとって非常に不便なので変換確定時のEnterのイベントを無効化する処理が必要になる。
 
-Enterでフォームを送信するのはWebの標準的な挙動だが、IME利用者（主に日本/韓国/中国語話者など）にとって非常に不便なので変換確定時のEnterのイベントを無効化する処理が必要になる。
+他にも、Amazonの検索フォームもEnterではなくkeydownイベントでサジェストを表示するため、変換候補の選択で矢印キーを使うと裏側に表示されているサジェスト一覧のカーソルが動いて確定（Enter）で検索処理が暴発する。
 
 そんなときに使えるのが[KeyboardEvent.isComposing](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing)や[Element#compositionstart](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)イベント、[Element#compositionend](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionend_event)イベントだ。
 
