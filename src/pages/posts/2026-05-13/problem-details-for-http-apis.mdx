@@ -1,0 +1,218 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-05-13"
+updatedDate: "2026-05-13"
+title: "RFC 7807/RFC 9457 Problem Details for HTTP APIsを元にしたAPIエラーレスポンス"
+author: ダーシノ
+description: "REST APIなどでエラーを返す際に、独自レスポンスを採用してしまうとクライアント側でAPI間の差異を吸収するコードが必要になる。そのため、HTTP APIsにおける標準的なエラーレスポンスを採用することが推奨される。そのエラーレスポンスは、RFC 7807 Problem Details for HTTP APIs（2016年）とRFC 9457（2023年）で定義されている。"
+tags: ["Knowledge", "Web"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+REST APIなどでエラーを返す際に、独自レスポンスを採用してしまうとクライアント側でAPI間の差異を吸収するコードが必要になる。そのため、HTTP APIsにおける標準的なエラーレスポンスを採用することが推奨される。
+
+**そのエラーレスポンスは、[RFC 7807 Problem Details for HTTP APIs（2016年）](https://datatracker.ietf.org/doc/html/rfc7807)と[RFC 9457（2023年）](https://datatracker.ietf.org/doc/html/rfc9457)で定義されている。**
+
+※RFC 7807からアップデートされたものがRFC 9457なので、基本的にはRFC 9457を参照する。
+
+## Problem Details for HTTP APIsの背景
+
+REST APIの普及に伴い、多くのAPIでエラーレスポンスのフォーマットがバラバラになった。
+
+```json
+// API A
+{
+  "message": "Unauthorized",
+  "errors": [
+    {
+      "field": "username"
+    }
+  ]
+}
+```
+
+```json
+// API B
+{
+  "code": 401,
+  "error": "権限なし"
+}
+```
+
+このように**フォーマットが異なると、クライアント（フロントエンド含む）の実装が煩雑になったり、SDKライブラリを提供しづらかったり、共通のエラーハンドリングができなかったり、という問題があった。**
+
+また、HTTPステータスコードだけでは情報が不足するケースもある。たとえば`400 Bad Request`でも、バリデーションエラーなのか、Bodyのシンタックスエラーなのか、ビジネスルール違反なのか、複数の意味が持ててしまう。そこでHTTPステータスコードに加えて、マシンリーダブルなエラーフォーマットの標準化のためにRFC 7807が策定された。
+
+現在では互換性を保ちながら`type`のURIの考え方や拡張フィールド、多言語対応などが整理されたRFC 9457が最新仕様となっている。
+
+※以降、特別言及がなければRFC 9457を参照して説明する。
+
+## エラーフィールドの種類と意味
+
+RFCで定義されているエラーフィールドは以下の通り。
+```json
+{
+  "type": "エラー種別を識別するURI",
+  "title": "短い概要",
+  "status": "HTTPステータスコード",
+  "detail": "エラーの詳細な説明",
+  "instance": "エラーのインスタンスを識別するURI"
+}
+```
+
+```ts
+type ProblemDetails = {
+  /**
+   * エラー種別を識別するURI
+   * 例: https://example.com/problems/invalid-token
+   * @default "about:blank" 汎用エラータイプ
+   */
+  type?: string
+
+  /**
+   * HTTPステータスコード
+   */
+  status: number
+
+  /**
+   * 短い概要（UI表示用）
+   * 多言語化される可能性があるため、条件分岐には使用しない
+   */
+  title: string
+
+  /**
+   * 詳細な説明（UI表示用）
+   * 多言語化される可能性があるため、条件分岐には使用しない
+   */
+  detail?: string
+
+  /**
+   * 個別の問題インスタンスを識別するURI
+   * 例: request id / trace idなど
+   */
+  instance?: string
+
+  /**
+   * RFC 9457 Extension Member
+   */
+  [key: string]: unknown
+
+  /**
+   * RFC 9457 Extension Member の具体例
+   */
+  errors?: Array<{
+    pointer: string
+    code: string
+    message: string
+  }>
+}
+```
+
+### `type` URI
+
+**`type`はエラーの種別を表すURIで、クライアントがエラーを識別するために使用される。** また、RFC 9457からはdereference可能（参照可能）であることが望ましいとされており、ドキュメントのURIを返すこともできるようになった。
+
+URIを使う理由は、グローバルなコンフリクトを避けるためやドキュメントへのリンクを提供するためなどがある。
+
+なお`type`フィールドが省略された場合は、汎用エラータイプとして暗黙的に`about:blank`が使用される。
+
+```json
+{
+  "type": "https://example.com/problems/invalid-token",
+  ...
+}
+```
+
+### `title` / `detail`
+
+**`title`と`detail`はエラーの内容を表現する。** `Accept-Language`ヘッダーに基づいてローカライズされた文字列を返すことがあるため、条件分岐のキーワードとしての利用は推奨されていない。主にUI表示用のフィールドとして扱う。
+
+```http
+Accept-Language: ja
+```
+```json
+{
+  "title": "無効なトークン",
+  "detail": "トークンの期限が切れています。新しいトークンを取得してください。",
+  ...
+}
+```
+
+エラー種別による条件分岐が必要な場合は、`type`フィールドを用いる。
+```js
+// BAD: Accept-Languageによって多言語対応されるため、バグの温床になる
+if (error.title === "無効なトークン") {
+  // ...
+}
+
+// GOOD
+if (error.type === "https://example.com/problems/invalid-token") {
+  // ...
+}
+```
+
+### `instance`
+
+**`instance`はエラーの個別の発生事象（Problem Instance）を識別するためのURIで、任意フィールドである。** `type`はエラーの種類、`instance`は個別の発生事象を識別するために使われる。
+
+たとえば、ログ追跡に使うためのリクエストIDやサポート問い合わせ時に使えるエラーコードのように使う。ただし、内部構造や情報漏洩に当たる情報を含めないように注意する必要がある。
+
+```json
+// ログ追跡用のリクエストIDを含める
+{
+  "type": "https://example.com/problems/invalid-token",
+  "instance": "/problems/1234-abcd-xxxx-xxxx",
+  ...
+}
+```
+
+```json
+{
+  "type": "https://example.com/problems/invalid-token",
+  "instance": "/problems/xxxxxxxxxx",
+  ...
+}
+```
+
+
+## エラーメッセージの多言語対応
+
+RFC 9457では、**エラーメッセージの多言語対応のために`Accept-Language`ヘッダーの利用が推奨されている。** 多言語対応するフィールドは`title`と`detail`で、`type`や`instance`は識別子として扱うため多言語対応しない。
+
+```http
+Accept-Language: ja
+```
+```json
+{
+  "type": "https://example.com/problems/invalid-email",
+  "title": "無効なメールアドレス",
+  "detail": "メールアドレスの形式が正しくありません。正しい形式のメールアドレスを入力してください。",
+  ...
+}
+```
+
+## バリデーションエラーの設計
+
+**RFC 9457では、独自のExtension Memberを追加できる**ため、`errors`のようなバリデーションを表現するフィールドを追加できる。
+
+```json
+{
+  "type": "https://example.com/problems/validation-error",
+  "status": 400,
+  "title": "バリデーションエラー",
+  "detail": "入力値に誤りがあります。",
+  "errors": [
+    {
+      "pointer": "#/email",
+      "message": "メールアドレスの形式が正しくありません。"
+    },
+    {
+      "pointer": "#/password",
+      "message": "パスワードは8文字以上である必要があります。"
+    }
+  ]
+}
+```
