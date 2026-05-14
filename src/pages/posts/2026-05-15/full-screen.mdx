@@ -9,7 +9,6 @@ tags: ["JavaScript"]
 ---
 
 import Header from '../../../components/Header.astro'
-import Baseline from '../../../components/Baseline.astro'
 
 <Header {...frontmatter} />
 
@@ -55,7 +54,10 @@ try {
 - none: キーボードロックなし（デフォルト）
 - browser: ブラウザやOSが使う特定のキーをロックする
 
-ただし、執筆時点（2026年5月）では[Firefox 151](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/151)でのみサポートされている。FirefoxでkeyboardLockオプションを指定するとフルスクリーン時に「Exit Full Screen (Press and hold esc)」と表示される。
+ただし、執筆時点（2026年5月）では[Firefox 151](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/151)でのみサポートされている。Chrome系は[Keyboard Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/lock)で対応が必要。
+
+
+FirefoxでkeyboardLockオプションを指定するとフルスクリーン時に「Exit Full Screen (Press and hold esc)」と表示される。
 
 ![localhost is now full screen. Exit Full Screen (Press and hold esc)と表示されている](./_keyboardlock.png)
 
