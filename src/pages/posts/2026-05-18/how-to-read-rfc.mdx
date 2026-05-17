@@ -1,0 +1,114 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-05-18"
+updatedDate: "2026-05-18"
+title: "RFC文書を効率よく読むための基礎知識"
+author: ダーシノ
+description: "インターネット技術の多くはRFC（Request for Comments）によって仕様が定義されている。しかし、はじめて読む人にとっては要点がわかりづらい、キーワードの意味が曖昧、別のRFCの参照が大量にでてくるなど、RFCを読むのは難しい。ただ、ドキュメントとして形式化されているのでコツさえ掴めば読みやすくなる。"
+tags: ["Knowledge", "Web"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+インターネット技術の多くはRFC（Request for Comments）によって仕様が定義されている。しかし、はじめて読む人にとっては要点がわかりづらい、キーワードの意味が曖昧、別のRFCの参照が大量にでてくるなど、RFCを読むのは難しい。
+
+実際に[RFC 7807/RFC 9457 Problem Details for HTTP APIsを元にしたAPIエラーレスポンス](https://bcrikko.github.io/til/posts/2026-05-13/problem-details-for-http-apis/)の記事を書くために読んだときも苦労した。
+
+ただ、**ドキュメントとして形式化されているのでコツさえ掴めば読みやすくなる。**
+
+## RFC（Request for Comments）とは
+
+RFCはRequest for Comments（コメント募集）の略で、インターネット技術に関する仕様や標準、運用方法、ベストプラクティス、研究的提案をまとめた文書シリーズのこと。
+
+**すべてのドキュメントが最新で完璧なもの、というわけではなくアップデートが重ねられ別のRFCドキュメントとして公開されることもある。**（例: [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) → [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)）
+
+### 古いドキュメントに注意
+
+RFCのヘッダーやサイドメニューに**Obsoletesという項目がある場合、現在見ているRFCが古くなっている可能性がある。** ObsoletesにはアップデートされたRFCドキュメントの番号があるため、新しいドキュメントから読むようにする。
+
+ただし、新しいドキュメントが古いドキュメントを完全に置き換えるわけではないため、必要に応じて古いドキュメントも参照する。
+
+## BCP（Best Current Practice）
+
+RFCの中で、**現時点で最適とされる運用方法やルールはBCP（Best Current Practice）としてまとめられている。** BCPの内容（参照しているRFC番号）は更新されるが、BCP自体の番号は変わらない。（例: [BCP 14](https://www.rfc-editor.org/info/bcp14)）
+
+## RFCドキュメントの構成
+
+構成を理解すれば、重要度なところ、読み飛ばして問題ないところがわかるようになる。
+
+仕様に関するセクションもあるが、**「Abstract」「Status of This Memo」「仕様本体」「References: Normative References」、ドキュメントによっては「Appendix」も含めて読んでおけば十分理解できる。**
+
+多くのドキュメントは以下のような構成になっている。
+
+1. **Abstract（重要）**
+   - このドキュメントに何が書かれているか短く説明されている
+   - まずはここを読んで全体像を把握する
+2. **Status of This Memo（重要）**
+   - RFCの立場/状態を示している
+     - Proposed Standard: 標準化提案
+     - Internet Standard: 成熟した標準
+     - Informational: 情報
+     - Experimental: 実験的
+     - Best Current Practice（BCP）: 推奨される運用方法
+   - 時代によってStatusの段階もアップデートされているため古いRFCと新しいRFCでは段階が異なることがある
+     - [RFC 2026: The Internet Standards Process](https://www.rfc-editor.org/rfc/rfc2026)
+     - [RFC 6410: Reducing the Standards Track to Two Maturity Levels](https://www.rfc-editor.org/rfc/rfc6410)
+3. Copyright Notice
+   - 著作権に関する注意事項
+   - 読まなくても大丈夫
+4. Introduction
+   - 背景や目的、用語定義などが中心に書かれているため読み飛ばしても良い
+   - ただし、RFCによっては前提条件が含まれている
+5. **References（一部重要）**
+   - RFCが別のRFCを参照している
+   - **Normative References**: 仕様理解するために必要な前提知識
+   - Informative References: 補足説明なので重要度は低い
+6. **Appendix（ドキュメントによっては重要）**
+   - サンプルコードや設計理由などの付録的な内容
+   - **古いRFCでは、Appendixに後方互換性や実装例が置かれていることがある**
+7. Acknowledgements
+   - ドキュメント作成に協力した人の名前が列挙されている
+   - 読まなくても大丈夫
+8. Author's Address
+   - ドキュメント作成者の連絡先
+   - 読まなくても大丈夫
+
+
+## 要求レベルのキーワード
+
+仕様書内にでてくるMUST、SHOULD、MAYなどのキーワードは、[RFC 2119 \- Key words for use in RFCs to Indicate Requirement Levels](https://datatracker.ietf.org/doc/html/rfc2119)で定められている。また、[RFC 8174 \- Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words](https://datatracker.ietf.org/doc/html/rfc8174)では、RFC 2119で定められたキーワードは大文字で書かれるべきとされている。
+
+これらのRFCは[BCP 14](https://www.rfc-editor.org/info/bcp14)としてまとめられている。
+
+それぞれの要求レベルは以下のとおり。
+
+|キーワード|意味|強制力|
+|---|---|---|
+|**MUST**|必須|絶対やる|
+|**MUST NOT**|禁止|絶対やらない|
+|REQUIRED|MUSTと同義|絶対やる|
+|SHALL|MUSTに近い|やるべき|
+|SHALL NOT|MUST NOTに近い|すべきでない|
+|**SHOULD**|強く推奨|原則やる|
+|**SHOULD NOT**|非推奨|原則やらない|
+|RECOMMENDED|SHOULDと同義|原則やる|
+|NOT RECOMMENDED|SHOULD NOTと同義|原則やらない|
+|**MAY**|任意|必要ならやる|
+|OPTIONAL|MAYと同義|必要ならやる|
+
+いくつかキーワードがあるが、**MUST、MUST NOT、SHOULD、SHOULD NOT、MAYの5つを覚えておけば十分で、これらのキーワードを目印に読むことで重要な部分を見逃さずに済む。**
+
+ただし、RFCの中では技術解説や歴史、設計理由、注意事項のみで要求レベルなしのドキュメントも混在しているため、MUSTやSHOULD、MAYでページ内検索してあたりをつけてから読み始めると良いだろう。
+
+## RFCは全部読む必要はない
+
+以下のような手順で効率的にRFCを読むことができる。
+
+1. Abstractを読んで全体像を把握する
+2. Status of This Memoを読んでRFCの立場/状態を理解する
+3. MUSTやSHOULDで検索して重要な部分を見つける
+4. 重要な部分を中心に読む
+5. 必要に応じてNormative References、Appendixを読む
+
