@@ -1,0 +1,78 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-06-04"
+updatedDate: "2026-06-04"
+title: "text-indent: each-line/hangingをつかったテキストレイアウト"
+author: ダーシノ
+description: "text-indentで段落の文字下げをするで、段落先頭のも字下げレイアウトの方法を紹介した。現在では、さらにeach-lineとhangingという値もサポートされ、雑誌風や小説風のレイアウトが可能になった。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+[text\-indentで段落の文字下げをする](https://bcrikko.github.io/til/posts/2024-11-08/text-indent/)で、段落先頭のも字下げレイアウトの方法を紹介した。現在では、さらに`each-line`と`hanging`という値もサポートされ、雑誌風や小説風のレイアウトが可能になった。
+
+<Baseline featureId={"text-indent"} />
+
+```css
+p {
+  text-indent: 1ic; /** 1文字分の字下げ */
+
+  text-indent: 1ic each-line;
+  text-indent: 1ic hanging;
+}
+```
+
+**`each-line`は、強制改行に続くあとの行も先頭業と同様にも字下げする。** ただし、横幅いっぱいになり折り返しした場合は文字下げしない。書籍（小説など）でよく使われるレイアウトになる。
+
+**`hanging`は、インデントされる行が逆になり先頭業以外の行を文字下げする。** `text-indent: -1ic;`との違いは、ネガティブな値を指定するとコンテナ要素からはみ出すのに対し、`1ic hanging`はコンテナ内で文字下げるする点。
+
+
+## デモ
+
+<section id="demo">
+  <section class="each-line">
+    <h3>each-line</h3>
+    <p>吾輩は猫である。名前はまだ無い。</p>
+    <p>どこで生れたかとんと見当がつかぬ。<br />（強制改行）何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。吾輩はここで始めて人間というものを見た。しかもあとで聞くとそれは書生という人間中で一番獰悪な種族であったそうだ。</p>
+  </section>
+  <section class="hanging">
+    <h3>hanging</h3>
+    <p>吾輩は猫である。名前はまだ無い。</p>
+    <p>どこで生れたかとんと見当がつかぬ。<br />（強制改行）何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。吾輩はここで始めて人間というものを見た。しかもあとで聞くとそれは書生という人間中で一番獰悪な種族であったそうだ。</p>
+  </section>
+
+</section>
+
+<style>{`
+#demo {
+  section {
+    border: 4px solid;
+    padding: 1em;
+  }
+
+  .each-line p {
+    text-indent: 2ic each-line;
+  }
+
+  .hanging p {
+    text-indent: 2ic hanging;
+  }
+
+  p {
+    position: relative;
+  }
+  p::before {
+    content: "　";
+    width: 4px;
+    position: absolute;
+    top: 0;
+    left: -4px;
+    height: 100%;
+    background: #dd9172;
+  }
+}
+`}</style>
