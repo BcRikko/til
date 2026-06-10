@@ -1,0 +1,69 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-06-11"
+updatedDate: "2026-06-11"
+title: "Math.sumPrecise()で数値配列の合計を取得する"
+author: ダーシノ
+description: "JavaScriptにおいて配列の数値の合計を求めるには、以下のようにArray#reduce()を使っていた。ただし、桁数の大きい数値や浮動小数点数を扱うと、計算の途中結果を格納する際に丸め処理によって精度の問題を引き起こすことがある。例えば、以下のようなケースだ。この問題を解決するために、Math.sumPrecise()が使える。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import Baseline from '../../../components/Baseline.astro'
+
+<Header {...frontmatter} />
+
+JavaScriptにおいて配列の数値の合計を求めるには、以下のように`Array#reduce()`を使っていた。
+
+```js
+const nums = [1, 2, 3]
+const total = nums.reduce((total, n) => total + n, 0)
+
+console.log(total) // 6
+```
+
+ただし、桁数の大きい数値や浮動小数点数を扱うと、計算の途中結果を格納する際に丸め処理によって精度の問題を引き起こすことがある。例えば、以下のようなケースだ。
+
+```js
+const nums = [0.1, 0.2, 0.3]
+const total = nums.reduce((total, n) => total + n, 0)
+
+console.log(total) // 0.6000000000000001
+```
+
+この問題を解決するために、[Math.sumPrecise()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sumPrecise)が使える。
+`Array#reduce()`は便利な反面、何でもできてしまう（filter、map、forEachなど）ので、厄介なコードになりやすいため、個人的には`Math.sumPrecise()`を推したい。
+
+<Baseline featureId={"math-sum-precise"} />
+
+```js
+const nums = [0.1, 0.2, 0.3]
+const total = Math.sumPrecise(nums)
+
+console.log(total) // 0.6
+```
+
+```js
+function getPriceFrom(item: Item): number {
+  // 商品のJANコードから価格を取得する処理
+}
+
+const cart: Item[] = [
+  { jan: '1000000000001', name: '商品A' },
+  { jan: '1000000000002', name: '商品B' },
+  { jan: '1000000000003', name: '商品C' },
+]
+
+const prices = cart.map(getPriceFrom)
+const total = Math.sumPrecise(prices)
+```
+
+
+ただし、以下のような浮動小数点の精度の問題は完全には解決できない場合があるので注意が必要だ。
+
+```js
+const nums = [0.1, 0.2]
+const total = Math.sumPrecise(nums)
+
+console.log(total) // 0.30000000000000004
+```
