@@ -3,6 +3,7 @@ html {
   font-size: 1.25rem;
   line-height: 2;
   letter-spacing: 0.05em;
+  text-autospace: normal;
 
   color: #333333;
   background-color: #fafafa;
