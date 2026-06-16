@@ -30,5 +30,6 @@
     "eslint-config-bcrikko": "^2.1.0",
     "pagefind": "^1.5.2",
     "playwright": "^1.60.0"
-  }
+  },
+  "packageManager": "pnpm@11.5.0"
 }
