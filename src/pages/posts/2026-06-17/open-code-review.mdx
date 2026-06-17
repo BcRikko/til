@@ -1,7 +1,7 @@
 ---
 layout: ../../../layouts/Layout.astro
 pubDate: "2026-06-17"
-updatedDate: "2026-06-17"
+updatedDate: "2026-06-18"
 title: "OpenCodeReview + さくらのAI Engineでコードレビューを自動化する"
 author: ダーシノ
 description: "OpenCodeReviewは、Alibabaが公開しているAIレビューツールだ。LLM Providerを自由に選択できるため、無料枠で利用できるさくらのAI Engineを使う。なお、さくらのAI Engineのアクセストークン取得方法は、Claude Code + さくらのAI EngineではじめるAgentic Codingを参照してほしい。"
@@ -96,3 +96,22 @@ $ ocr review --from main --to feat/your-branch > review.txt
 出力されたレビュー結果を、Claude CodeやGitHub Copilot Agentに渡すことで、自動的に修正してくれる。
 
 ただし、**リポジトリの環境設定をすべて読み込んでレビューするわけではないため、Linterルールやコーディングガイドラインを無視した指摘がある。そのため、修正箇所は1件ずつ目視で確認し、コミットするかどうかの判断が必要になる。**
+
+
+## 追記: 2026-06-18
+
+実際業務でも使おうとしてみたのだが、いかんせん実行時間が長い上にリポジトリの環境設定を読み込んでくれないため不必要な指摘が多く、現状ではあまり実用的ではなかった。高性能なコーディング特化型のAIモデルを活用できる環境であれば、有効に使えるだろう。
+
+結果、私の環境ではgit/ghコマンドとGitHub Copilot CLIを使ったコードレビューが使いやすかった。
+
+```sh
+# PullRequestの差分をレビューする場合
+$ gh pr diff > git.diff
+
+# コミット前に差分をレビューする場合
+$ git diff > git.diff
+
+
+# GitHub Copilot CLIでレビューと修正を行う
+$ copilot -i "git.diffはgit diffの結果です。変更箇所をレビューし、必要に応じて修正してください。"
+```

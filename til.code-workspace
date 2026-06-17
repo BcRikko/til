@@ -33,6 +33,7 @@
       "**/2024-*": true,
       "**/2025-*": true
     },
-    "editor.wordWrap": "on"
+    "editor.wordWrap": "on",
+    "editor.fontSize": 16
   }
 }
