@@ -1,3 +1,24 @@
+:root {
+  color-scheme: light dark;
+
+  /* Color Palette */
+  --black: #333333;
+  --black-soft: #444444;
+  --white: #fafafa;
+  --white-soft: #eeeeee;
+  --yellow: #ffff00;
+  --turquoise: #40E0D0;
+
+  /* Color Tokens */
+  --text-color: light-dark(var(--black), var(--white));
+  --bg-color: light-dark(var(--white), var(--black));
+  --bg-color-soft: light-dark(var(--white-soft), var(--black-soft));
+  --highlight-color: light-dark(
+    rgb(from var(--yellow) r g b / 0.5),
+    rgb(from var(--turquoise) r g b / 0.5)
+  );
+}
+
 html {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 1.25rem;
@@ -5,8 +26,8 @@ html {
   letter-spacing: 0.05em;
   text-autospace: normal;
 
-  color: #333333;
-  background-color: #fafafa;
+  color: var(--text-color);
+  background-color: var(--bg-color);
 }
 
 *, *::before, *::after {
@@ -43,7 +64,7 @@ html {
 :where(code) {
   font-style: italic;
   padding: 0 0.2em;
-  background-color: #eeeeee;
+  background-color: var(--bg-color-soft);
 }
 :where(pre) > :where(code) {
   font-family: Menlo, Monaco, 'Courier New', monospace;
@@ -58,7 +79,7 @@ html {
   padding-block: 1em;
   padding-inline: 0.5em;
   border-left: 8px solid #CACACA;
-  background-color: #eeeeee;
+  background-color: var(--bg-color-soft);
   margin-trim: block; /* Only Safari */
 }
 :where(blockquote :first-child) {
@@ -75,6 +96,7 @@ html {
 :where(table) {
   inline-size: 100%;
   overflow-x: auto;
+  margin-block: 1.5em;
 }
 :where(th, td) {
   padding: 0.3em;
@@ -84,7 +106,7 @@ html {
   thead tr,
   tr:nth-child(2n)
  ) {
-  background-color: #eeeeee;
+  background-color: var(--bg-color-soft);
 }
 
 :where(img) {
@@ -93,7 +115,7 @@ html {
 }
 
 :where(strong) {
-  text-decoration: underline solid rgba(255, 255, 0, 0.5) 0.6ic;
+  text-decoration: underline solid var(--highlight-color) 0.6ic;
   text-decoration-skip-ink: none;
   text-underline-offset: -0.3ic;
   font-weight: 600;
