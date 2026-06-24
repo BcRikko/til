@@ -10,6 +10,7 @@ tags: ["CSS"]
 
 import Header from '../../../components/Header.astro'
 import Baseline from '../../../components/Baseline.astro'
+import DemoArea from '../../../components/DemoArea.astro'
 
 <Header {...frontmatter} />
 
@@ -86,13 +87,9 @@ if (dark) {
 
 ユーザーに内容を伝える必要がある画像の場合は、picture要素やimg要素を使うのが良いだろう。
 
-
-## デモ
-
-<section id="demo">
+<DemoArea title="light-dark()のデモ" id="demo">
   <div class="background">light-dark(image, image)</div>
-
-</section>
+</DemoArea>
 
 <style>{`
 #demo {

@@ -10,6 +10,7 @@ tags: ["関連するタグ"]
 
 import Header from '../../../components/Header.astro'
 import Baseline from '../../../components/Baseline.astro'
+import DemoArea from '../../../components/DemoArea.astro'
 
 <Header {...frontmatter} />
 
@@ -18,10 +19,9 @@ import Baseline from '../../../components/Baseline.astro'
 ここにテキスト
 
 
-## デモ
-
-<section id="demo">
-</section>
+<DemoArea title="light-dark()のデモ" id="demo">
+  <p>ここにデモの内容を記述</p>
+</DemoArea>
 
 <style>{`
 #demo {
