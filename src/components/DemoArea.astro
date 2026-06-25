@@ -18,13 +18,16 @@ const { id, title } = Astro.props;
     <h2 class="title">{title}</h2>
   </header>
 
-  <section class="body" id={id}>
-    <slot />
+  <section class="body">
+    <div id={id}>
+      <slot />
+    </div>
   </section>
 </section>
 
 <style>
   .demo-browser {
+    contain: layout;
     border-radius: 8px;
     margin-block: 1.5em;
     box-shadow: 0 8px 8px 4px rgb(from var(--text-color) r g b / 0.2);
@@ -74,6 +77,8 @@ const { id, title } = Astro.props;
     }
 
     .body {
+      overflow: auto;
+      overscroll-behavior: contain;
       padding: 0.2em;
       border-radius: 0 0 8px 8px;
     }
