@@ -1,0 +1,222 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-06-26"
+updatedDate: "2026-06-26"
+title: "ResizeObserverとSpacerでFloating UIがコンテンツを隠すのを防ぐ"
+author: ダーシノ
+description: "position: fixed;を使ったFloating UIは、画面内に常に要素を表示できる一方、ページ下部のコンテンツやボタンを覆い隠してしまうことがある。あらかじめ固定の余白を確保しておくのもひとつの方法ではあるが、ダイナミックな要素の場合に対応できなかったり、単純にページ下部に余計な余白が生まれてしまったりする。そこで Spacerコンポーネントを配置し、その高さをResizeObserverで動的に変更する方法をオススメしたい。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+import DemoArea from '../../../components/DemoArea.astro'
+
+<Header {...frontmatter} />
+
+`position: fixed;`を使ったFloating UIは、画面内に常に要素を表示できる一方、ページ下部のコンテンツやボタンを覆い隠してしまうことがある。
+
+あらかじめ固定の余白を確保しておくのもひとつの方法ではあるが、ダイナミックな要素の場合に対応できなかったり、単純にページ下部に余計な余白が生まれてしまったりする。
+
+そこで **Spacerコンポーネントを配置し、その高さを[ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/ResizeObserver)で動的に変更する方法をオススメしたい。**
+
+※Spacerコンポーネントとは、余白確保のために設置するレイアウト用の空要素のこと。（参考:[コンポーネント指向時代のmargin戦略 / Rethinking the relationship between Components and Margins](https://speakerdeck.com/bcrikko/rethinking-the-relationship-between-components-and-margins)）
+
+
+## よくあるFloating UIがメインコンテンツを隠す例:
+
+```html
+<main>
+  <form>
+    ...
+    <button type="submit">購入する</button>
+  </form>
+</main>
+
+<aside class="cart-viewer">
+  <h3>カートの料金</h3>
+  <p>合計金額: 1000円</p>
+  <button type="button">カートの詳細を表示する</button>
+</aside>
+```
+
+```css
+.cart-viewer {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+```
+
+<DemoArea title="Floating UIがメインコンテンツを隠す例" id="bad-example">
+  <main class="example-main">
+    <p class="dummy">ここにメインコンテンツが表示される</p>
+    <svg viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dummy-svg">
+      <rect width="100%" height="100%" fill="#fafafa" />
+      <rect width="100%" height="100%" fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke" />
+      <line x1="0" y1="0" x2="100%" y2="100%" stroke="#b3b3b3" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+      <line x1="100%" y1="0" x2="0" y2="100%" stroke="#b3b3b3" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+    </svg>
+
+    <form>
+      <div class="btn-group">
+        <button class="btn is-secondary" type="button">キャンセル</button>
+        <button class="btn is-primary" type="submit">購入する</button>
+      </div>
+    </form>
+  </main>
+
+  <aside class="cart-viewer">
+    <details>
+      <summary>計 6,000円</summary>
+
+      <dl>
+        <dt>りんご</dt>
+        <dd>1,000円</dd>
+        <dt>みかん</dt>
+        <dd>2,000円</dd>
+        <dt>ぶどう</dt>
+        <dd>3,000円</dd>
+      </dl>
+    </details>
+  </aside>
+</DemoArea>
+
+
+## ResizeObserverを使ってFloating UI分の余白を確保する
+
+Floating UIが固定高ならpadding/marginなどで確保するだけでよいが、カートの詳細表示やバリデーションメッセージなど動的に高さが変わる場合は、固定値では対応がしづらい。そのため、ResizeObserverとSpacerコンポーネントを使う。
+
+**メインコンテンツ下部にSpacerコンポーネントを設置し、Floating UI分の高さを確保してページ末尾にスクロールできる余白を追加する。Floating UIの高さが変わったときはResizeObserverで高さを取得して、Spacerの高さを更新する。**
+
+```html
+<main>
+  ...
+  <div class="floating-spacer" aria-hidden="true"></div>
+</main>
+
+<aside class="cart-viewer">
+  ...
+</aside>
+```
+```css
+.floating-spacer {
+  /* JavaScriptで更新する */
+  height: 0;
+}
+```
+
+```js
+const target = document.querySelector('.cart-viewer');
+const spacer = document.querySelector('.floating-spacer');
+
+function updateHeight(entries) {
+  const height = entries[0].borderBoxSize[0].blockSize;
+  // height + padding/margin分の余白
+  spacer.style.height = `${height + 40}px`;
+}
+
+// Floating UIの高さが変わったときに、その高さをspacerに反映する
+const resizeObserver = new ResizeObserver(updateHeight);
+resizeObserver.observe(target);
+```
+
+こうすることで、Floating UIの下に隠れていたコンテンツも、スクロールすれば表示や操作ができるようになる。
+
+<DemoArea title="ResizeObserverを使ってスクロール分の余白を確保する" id="better-example">
+  <main class="example-main">
+    <p class="dummy">ここにメインコンテンツが表示される</p>
+    <svg viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dummy-svg">
+      <rect width="100%" height="100%" fill="#fafafa" />
+      <rect width="100%" height="100%" fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke" />
+      <line x1="0" y1="0" x2="100%" y2="100%" stroke="#b3b3b3" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+      <line x1="100%" y1="0" x2="0" y2="100%" stroke="#b3b3b3" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+    </svg>
+
+    <form>
+      <div class="btn-group">
+        <button class="btn is-secondary" type="button">キャンセル</button>
+        <button class="btn is-primary" type="submit">購入する</button>
+      </div>
+    </form>
+    <div class="floating-spacer" aria-hidden="true">Spacer</div>
+  </main>
+
+  <aside class="cart-viewer">
+    <details>
+      <summary>計 6,000円</summary>
+
+      <dl>
+        <dt>りんご</dt>
+        <dd>1,000円</dd>
+        <dt>みかん</dt>
+        <dd>2,000円</dd>
+        <dt>ぶどう</dt>
+        <dd>3,000円</dd>
+      </dl>
+    </details>
+  </aside>
+
+</DemoArea>
+
+<script>{`
+const target = document.querySelector('#better-example .cart-viewer');
+const spacer = document.querySelector('#better-example .floating-spacer');
+
+function updateHeight(entries) {
+  const height = entries[0].borderBoxSize[0].blockSize;
+  spacer.style.height = (height + 40) + 'px';
+  spacer.textContent = 'Spacer: ' + spacer.style.height;
+}
+
+const resizeObserver = new ResizeObserver(updateHeight);
+resizeObserver.observe(target);
+`}</script>  
+
+<style>{`
+#bad-example, #better-example {
+  height: 20rem;
+
+  .example-main {
+    max-inline-size: 28ic;
+    margin-inline: auto;
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+  }
+  .btn {
+    border-radius: 4px;
+
+    &.is-primary {
+      color: var(--bg-color);
+      background-color: var(--text-color);
+    }
+    &.is-secondary {
+      color: var(--text-color);
+      background-color: var(--bg-color);
+    }
+  }
+
+  .cart-viewer {
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    width: 50%;
+    min-width: 200px;
+
+    padding: 0.5em 1em;
+    border: 2px solid;
+    border-radius: 4px;
+    box-shadow: 0 6px 10px 4px rgb(from var(--text-color) r g b / 0.4);
+    background-color: var(--bg-color);
+  }
+
+  .floating-spacer {
+    background-color: #f5ddd5;
+    padding: 0.5em 1em;
+  }
+}
+
+`}</style>
