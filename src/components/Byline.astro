@@ -29,5 +29,5 @@ const byline = {
 <script
   is:inline
   type="application/ld+json"
-  set:html={JSON.stringify(byline)}
+  set:html={JSON.stringify(byline).replace(/</g, "\\u003c")}
 />
