@@ -3,8 +3,12 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -17,8 +21,26 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v7.0.0
+
+      - name: Get Playwright version
+        id: playwright-version
+        run: |
+          VERSION=$(sed -n 's/.*playwright@\([0-9.]*\).*/\1/p' pnpm-lock.yaml | head -n 1)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: Install, build, and upload your site
         uses: withastro/action@v6.1.1
+        with:
+          package-manager: pnpm@11.5.0
 
   deploy:
     needs: build
