@@ -1,0 +1,172 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-07-13"
+updatedDate: "2026-07-13"
+title: "CSS ModulesでSassのmixinを使う（composes）"
+author: ダーシノ
+description: "昨今のCSSの進化によって、Sass（SASS/SCSS）を選択する必然性が以前より小さくなった。しかし、SassからCSSに移行するときにポイントとなるのがmixinの扱いだ。バニラCSSでもSassの@functionや@mixin使えるようにしようという動きはあるものの、まだ利用できる環境は整っていない。そこでCSS ModulesのCompositionという機能を使う。"
+tags: ["CSS"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+昨今のCSSの進化によって、Sass（SASS/SCSS）を選択する必然性が以前より小さくなった。しかし、SassからCSSに移行するときにポイントとなるのがmixinの扱いだ。
+
+```scss
+@mixin text-m-normal {
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+@mixin text-m-tight {
+  font-size: 1.5rem;
+  line-height: 1.5;
+
+}
+
+@mixin bold {
+  font-weight: bold;
+}
+```
+```scss
+.section-title {
+  @include text-m-normal;
+  @include bold;
+}
+
+.section-subtitle {
+  @include text-m-tight;
+}
+```
+
+## CSS ModulesのCompositionを使う
+
+[バニラCSSでもSassの`@function`や`@mixin`使えるようにしよう](https://bcrikko.github.io/til/posts/2024-03-06/css-function-mixin/)という動きはあるものの、まだ利用できる環境は整っていない。そこでCSS Modulesの[Composition](https://github.com/css-modules/css-modules/blob/master/docs/composition.md)という機能を使う。
+
+ただし、従来の`@mixin`とは異なり、クラス名を付与するだけなのでいくつか課題はある。詳細は後述する。
+
+### CSS Modulesとコンポーネント
+```css
+/* mixin.module.css */
+.text-m-normal {
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+.text-m-tight {
+  font-size: 1.5rem;
+  line-height: 1.5;
+
+}
+
+.bold {
+  font-weight: bold;
+}
+```
+
+```css
+.section-title {
+  composes: text-m-normal from "@/styles/mixin.module.css";
+  composes: bold from "@/styles/mixin.module.css";
+}
+.section-subtitle {
+  composes: text-m-normal from "@/styles/mixin.module.css";
+}
+
+/**
+ * mixin.cssをmain.tsxなどでimportしている場合
+ * utilitiesスタイルのようなグローバルスタイルを使う場合は`from global`を使うのが良い
+ */
+.section-title {
+  composes: text-m-normal from global;
+  composes: bold from global;
+}
+```
+
+```tsx
+import styles from "./index.module.css";
+
+export default function Index() {
+  return (
+    <div>
+      <h1 className={styles["section-title"]}>タイトル</h1>
+      <h2 className={styles["section-subtitle"]}>サブタイトル</h2>
+    </div>
+  );
+}
+```
+
+### ビルド後のHTML
+
+composesを使うとCSSが展開されるのではなく、クラス名が付与される。
+
+#### CSS Modulesから読み込んだ場合
+
+`from "@/styles/mixin.module.css"`のようにCSS Modulesから読み込んだ場合は、ハッシュ化されたユニークなクラス名が付与される。そのため、ビルド結果によっては、同じスタイルを持つクラスが複数生成される可能性がある。
+
+```html
+<div>
+  <h1 class="section-title-xxx1 text-m-normal-xxx3 bold-xxx5">タイトル</h1>
+  <h2 class="section-subtitle-xxx2 text-m-normal-xxx4">サブタイトル</h2>
+</div>
+
+<style>
+.text-m-normal-xxx3 {
+  /* .text-m-normal-xxx4と同じスタイル */
+}
+.text-m-normal-xxx4 {
+  /* .text-m-normal-xxx3と同じスタイル */
+}
+</style>
+```
+
+#### from globalを使った場合
+
+`from global`のようにグローバルから読み込んだ場合は、グローバルスタイルに定義されているクラス名をそのまま付与する。Utilitiesクラスとして運用する場合は、`from global`で読み込むほうが重複を避けやすい。
+```html
+<!-- composesのfromでglobalを選んだ場合 -->
+<div>
+  <h1 class="section-title-xxx1 text-m-normal bold">タイトル</h1>
+  <h2 class="section-subtitle-xxx2 text-m-normal">サブタイトル</h2>
+</div>
+```
+
+## 注意点
+
+### 複数のcomposesで同一プロパティを上書きできない
+
+ビルド後のHTMLを見てわかるように、クラス名を単に付与するだけなので、複数のcomposesを使う場合に同じプロパティを上書きしようとすると、適切にスタイルが反映されない場合がある。
+
+> When composing multiple classes from different files, the order of appliance is undefined. Do not define different values for the same property in multiple class names from different files when they are composed in a single class.
+>
+> [css\-modules/docs/composition\.md at master · css\-modules/css\-modules](https://github.com/css-modules/css-modules/blob/master/docs/composition.md#composing-from-other-files)
+
+その場合は、composesを使わずにスタイルを上書きするか、`@layer utilities { ... }`のようにカスケードレイヤーを管理したり、詳細度を調整してりしてスタイルを適用する必要がある。
+
+```css
+@layer utilities {
+  .text-m-normal {
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+  .text-m-tight {
+    font-size: 1.5rem;
+    line-height: 1.5;
+  }
+}
+```
+
+### CSSセレクターはネストしない
+
+CSS Nestingが使えるようになった現在、詳細度やスコープ管理のためにCSSセレクターをネストすることがある。ただし、composesを使う場合は、ビルド時にエラーになる可能性があるのでフラットに保っておくのが無難だ。
+
+
+### 完全に@mixinを代替できない
+
+条件分岐やループ、レスポンシブ用のメディアクエリ、関数などはComposition機能で代替できないため、別の方法で実現する必要がある。
+
+JavaScriptを使ったり、直接CSSに書いたり、[@function](https://developer.mozilla.org/ja/docs/Web/CSS/Reference/At-rules/@function)や[@custom-media](https://developer.mozilla.org/ja/docs/Web/CSS/Reference/At-rules/@custom-media)などの実験的な機能を使ったり、Sassをそのまま移行するにはまだまだ時間がかかりそうだ。
+
+そのため、CSS ModulesのComposition機能は、TypographyやUtilitiesのようなスタイルを共通化するためなど用途を限定して使うのが良いだろう。
