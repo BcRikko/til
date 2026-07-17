@@ -38,7 +38,7 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install, build, and upload your site
-        uses: withastro/action@v6.1.1
+        uses: withastro/action@v6.1.2
         with:
           package-manager: pnpm@11.5.0
 
