@@ -1,0 +1,107 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-08-05"
+updatedDate: "2026-08-05"
+title: "AIコーディングを効率的に行うためのローカル環境最適化"
+author: ダーシノ
+description: "日常的にAIコーディングを行う上で、重要になるのがいかに早いサイクルを回せるかである。AI Agentがコードを書き、Linterを実行し、テストを実行し、さらに修正を加えるという一連のサイクルを行う中で見えてきた課題は、Linter実行やテスト実行に時間がかかるという点だ。"
+tags: ["AI"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+日常的にAIコーディングを行う上で、重要になるのがいかに**早いサイクルを回せるか**である。
+
+AI Agentがコードを書き、Linterを実行し、テストを実行し、さらに修正を加えるという一連のサイクルを行う中で見えてきた課題は、Linter実行やテスト実行に時間がかかるという点だ。
+
+実行する際に、AIによっては`package.json`に記載されているnpm scriptsを参照するため、全体実行を前提としたscriptsしか用意されていない場合、変更箇所が1ファイルだけでもプロジェクト全体を対象にLintやテストが実行されてしまう。
+
+よくあるnpm scriptsの例として、以下のようなものがある。
+
+```json
+{
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "test": "vitest run --reporter dot --mode dev"
+  }
+}
+```
+
+意外と見落としがちな設定だが、上記のようなnpm scriptsではAI AgentがLintやテストを実行する際にすべてのファイルを対象に実行してしまうため、時間がかかってしまう。
+
+## 実行対象が絞れていない
+
+### 対象が絞れていない
+
+npm scriptsに`{ "lint": "eslint ." }`のように設定されている場合、`.`が含まれているため、対象パスを追加してもプロジェクト全体が対象になる。
+
+また、`pnpm run`に`--`で追加の引数を渡しても、正しく引き継がれずに対象ファイルにしていできないこともある。
+
+```sh
+# AI AgentによるLinterの実行
+
+$ pnpm run lint -- path/to/target
+
+> eslint --max-warnings 0 . path/to/target
+#                        ^^^ プロジェクト全体が対象になる
+
+$ pnpm run test -- path/to/target
+
+> vitest run --reporter dot --mode dev --
+#                                     ^^^^ 引数が引き継がれていない
+```
+
+
+
+### ファイルベースルーティングで対象が指定できない
+
+フロントエンドのプロジェクトでは、ファイルベースルーティングを採用することがある。
+
+たとえば、`src/pages/posts/$id/index.tsx`のようにディレクトリ名に`$`を含む場合があると、シェルでは`$id`を環境変数として解釈されるため、パス自体が無効になり、結果的にプロジェクト全体を対象に実行される。
+
+```sh
+
+$ pnpm run lint -- path/to/resource/$id/index.tsx
+
+> eslint --max-warnings 0 .
+#                           ^^^ パスが環境変数として解釈されて消える
+```
+
+```sh
+# AI Agentによるテストの実行
+
+$ pnpm run test -- path/to/resource/$id/index.test.tsx
+
+> vitest run --reporter dot --mode dev --
+#                                     ^^^^ パスが環境変数として解釈されて消える
+```
+
+## AGENTS.mdで実行方法を定義する
+
+AGENTS.mdを作成し、AI Agentが対象を絞って実行できるようにする。
+
+AIモデルや利用しているAgentツールによっては多少の差異はあるものの、以下のような実行方法を定義しておくと、AI Agentの実行時間や消費トークンを節約できる。
+
+```md
+## テストの実行
+- テストを実行する際は、可能な限り対象を絞って行う
+  - 明示的な指示がない限り、テストスイート全体は実行しない
+- コマンドラインでパスを指定する場合は、必ずシングルクォート (`'`) で囲む
+  - このプロジェクトではファイルベースルーティングを採用しており、ディレクトリ名に `$` を含む
+  - シェルでは `$` が環境変数として解釈されるため
+- テスト対象を指定する際は `--` を使用しない
+  - 実行形式は `pnpm run test 'path/to/target'` とする
+  - `--` を付けると、テスト対象のパスが正しく渡されないため
+
+
+## Linterの実行
+- Linterを実行する際は、可能な限り対象を絞って行う
+  - 明示的な指示がない限り、全体に対して実行しない
+- `pnpm run eslint`や`pnpm run stylelint`は`.`が含まれているためすべてのファイルが対象になるため使わない
+- コマンドラインでパスを指定する場合は、必ずシングルクォート (`'`) で囲む
+- テスト対象を指定する際は `--` を使用しない
+- ESLintを実行する場合は、`pnpm exec eslint --max-warnings 0 --fix 'path/to/target'`のように実行する
+- Stylelintを実行する場合は、`pnpm exec stylelint --fix 'path/to/**/*.css'`のように実行する
+```
