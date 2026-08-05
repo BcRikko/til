@@ -15,10 +15,10 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
-    "@astrojs/mdx": "^7.0.4",
+    "@astrojs/mdx": "^7.0.5",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.1.4",
+    "astro": "^7.1.5",
     "baseline-status": "^1.1.1",
     "canvas": "^3.2.3",
     "rehype-katex": "^7.0.1",
