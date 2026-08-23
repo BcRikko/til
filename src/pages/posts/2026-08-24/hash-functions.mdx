@@ -1,0 +1,220 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-08-24"
+updatedDate: "2026-08-24"
+title: "フロントエンド領域で使われるハッシュ関数"
+author: ダーシノ
+description: "ハッシュ関数はセキュリティの文脈で使われることが多いが、フロントエンド領域ではさまざまな場所で利用されている。たとえば、クラス名の生成やファイルの識別子、キャッシュキーなどだ。"
+tags: ["Web", "Security"]
+---
+
+import Header from '../../../components/Header.astro'
+import DemoArea from '../../../components/DemoArea.astro'
+
+<Header {...frontmatter} />
+
+
+ハッシュ関数はセキュリティの文脈で使われることが多いが、フロントエンド領域ではさまざまな場所で利用されている。たとえば、クラス名の生成やファイルの識別子、キャッシュキーなどだ。
+
+## ハッシュ関数とは
+
+任意のデータから一定の長さの値を生成する関数で、以下のような特徴がある。
+
+- 入力が同じであれば、出力も同じになる
+- 1文字変更するだけで、出力が大きく変化する
+
+### ハッシュ関数の実装例
+
+以下は、FNV-1aというハッシュ関数の実装例だ。
+
+<DemoArea title="ハッシュ関数のデモ" id="hash-demo">
+  <div class="field">
+    <label for="hash-input">入力: </label>
+    <input type="text" id="hash-input" />
+    <button type="button" id="exec">ハッシュ値を計算する</button>
+  </div>
+
+  <output id="hash-output">hash...</output>
+
+  <script>{`
+    const hash= (input) => {
+      let hash = 0x811c9dc5
+
+      for (let i = 0; i < input.length; i++) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 0x01000193);
+      }
+
+      return hash >>> 0;
+    }
+
+    const input = document.querySelector('#hash-input');
+    const output = document.querySelector('#hash-output');
+    const execButton = document.querySelector('#exec');
+
+    execButton.addEventListener('click', () => {
+      const value = input.value;
+      const hashValue = hash(value);
+      output.textContent = hashValue;
+    });
+  `}</script>
+
+  <style>{`
+  #hash-demo {
+    padding: 1rem;
+
+    display: grid;
+    gap: 1rem;
+
+    .field {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    #hash-output {
+      border: dashed 4px #ccc;
+      padding: 0.5em 1em;
+    }
+  `}
+  </style>
+</DemoArea>
+
+```js
+// 例: FNV-1a
+function hash(input) {
+  let hash = 0x811c9dc5;
+
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+
+  return hash >>> 0;
+}
+```
+
+## フロントエンド領域で使われるハッシュ関数
+
+### CSSクラス名の生成
+
+CSS Modulesや一部のCSS-in-JSライブラリでは、クラス名の衝突を避けるために、ファイル名やクラス名などをもとにハッシュ値を生成し、識別子の一部として利用している。
+
+```css
+.my-class {
+  color: red;
+}
+/**
+ * ↓ 変換
+ */
+.my-class__a1b2c3 {
+  color: red;
+}
+```
+
+
+CSS Modulesのビルドで使われる[lightningcss#css_modules.rs](https://github.com/parcel-bundler/lightningcss/blob/master/src/css_modules.rs#L538-L549)の実装は、以下のようにハッシュ関数を使ってクラス名の一部を生成している。
+
+```rs
+pub(crate) fn hash(s: &str, at_start: bool) -> String {
+  // Rust標準のDefaultHasherを使ってハッシュ化
+  let mut hasher = DefaultHasher::new();
+  s.hash(&mut hasher);
+  // 下位32bitだけ取り出す
+  let hash = hasher.finish() as u32;
+
+  // バイト列に変換し、エンコードして文字化する
+  let hash = ENCODER.encode(&hash.to_le_bytes());
+  if at_start && matches!(hash.as_bytes()[0], b'0'..=b'9') {
+    // 先頭が数字の場合は、頭にアンダースコアを付与する
+    format!("_{}", hash)
+  } else {
+    hash
+  }
+}
+```
+
+### データのキャッシュ
+
+長い入力データから短い識別子を生成したい場合に、キーとしてハッシュを使うことがある。
+
+```ts
+/**
+ * 検索条件からキャッシュキーを生成する
+ */
+function createCacheKey(params: unknown): string {
+  const source = JSON.stringify(params)
+  return hash(source)
+}
+
+/**
+ * 検索リクエストを実行し、結果をキャッシュする
+ */
+async function search(params: SearchParams): Promise<SearchResult> {
+  const cacheKey = createCacheKey(params)
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+
+  const result = await fetchSearchResult(params)
+  cache.set(cacheKey, result)
+  return result
+}
+```
+
+キーとなりうる要素が少ない場合は、そのまま`Map.set(JSON.stringify(params), result)`のようにしても良い。ハッシュ関数を使って固定長のキーを生成することで、キャッシュが管理しやすくなる。
+
+※ただし、ハッシュ化には計算コストや値の衝突が起きる可能性があるため、元の値をそのままキーとして利用するほうが良い場合もある。
+
+## ハッシュ関数の分類
+
+### 非暗号学的ハッシュ
+
+非暗号学的ハッシュは、暗号学的な安全性を目的とせず、軽量で高速な処理が求められるときに利用される。代表的なハッシュ関数は以下のとおり。
+
+- FNV-1a
+- MurmurHash
+- xxHash
+
+### 暗号学的ハッシュ
+
+暗号学的ハッシュは、主にセキュリティ用途で用いられ、改ざん検知や署名などに利用される。代表的なハッシュ関数は以下のとおり。
+
+- SHA-256
+- SHA-512
+- SHA-3
+
+## ハッシュ関数の特徴と用途
+
+### FNV-1a
+
+FNV-1a（Fowler-Noll-Vo）は、軽量な非暗号的ハッシュ関数で、XOR演算と乗算を繰り返して値を生成する関数である。
+
+FNV-1とFNV-1aの違いは、XOR演算と乗算の順序が異なる点だ。
+
+実装がシンプルで高速なため、簡易的な識別子の生成などに使われる。ただし、衝突耐性は低いため、セキュリティ用途には向かない。
+
+### MurmurHash
+
+MurmurHashは、FNVよりも分散性が高い非暗号学的ハッシュ関数である。
+
+FNVと比較して、実装は複雑になるが、一般的な入力に対する分布の良さから、クラス名生成やキャッシュキー生成などに使われる。
+
+### xxHash
+
+xxHashは、高速な処理を目的とした非暗号学的ハッシュ関数である。バージョンにより特徴は異なるが、一般的に高速性と分布の良さを両立することを目的として設計されている。
+
+[webpack](https://github.com/webpack/webpack/blob/fc90789fdf089a5de71671f8d10155fcd32dc027/package.json#L220)のビルド時のハッシュ計算でもxxHashが採用されている。
+
+高速なため、ビルドキャッシュやチャンクID生成などに使われる。
+
+### SHA-256 / SHA-512
+
+SHA-256やSHA-512は、暗号学的ハッシュ関数である。
+
+衝突耐性が高く、改ざん検知や署名対象のデータをハッシュ化する用途などセキュリティ用途で使われる。
+
+Web標準として[Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)が提供されているので、ブラウザからも利用しやすくなっている。
+
+※使い方を間違えると脆弱性に繋がるため、セキュリティの専門家に相談することが推奨される。
+
+
