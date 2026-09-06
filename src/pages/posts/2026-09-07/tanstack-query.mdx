@@ -1,0 +1,478 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-09-07"
+updatedDate: "2026-09-07"
+title: "TanStack Query"
+author: ダーシノ
+description: "Reactを使ったWebアプリケーションの開発では、React Hooksを使えばAPIリクエストまわり実装できる。この記事では、TanStack Queryの全体像を理解しながら、基本的な使い方を紹介する。"
+tags: ["JavaScript", "React"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+Reactを使ったWebアプリケーションの開発では、React Hooksを使えばAPIリクエストまわり実装できる。
+
+たとえば以下のような実装だ。
+```ts
+function useUser(id: string) {
+  const [user, setUser] = useState<User | null>(null)
+  const [isPending, setIsPending] = useState(true)
+
+  const fetchUser = async (id: string) => {
+    try {
+      setIsPending(true)
+      const res = await client.get(`/api/users/${id}`)
+
+      setUser(res.data)
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUser(id)
+  }, [id])
+
+  return { data: user, isPending }
+}
+
+// コンポーネント
+
+const user = useUser("123456")
+
+if (user.isPending) {
+  return <div>Loading...</div>
+}
+
+return (
+  // type user.data = User | null
+  <h1>ようこそ、{user.data.name!}さん</h1>
+)
+```
+
+## なぜTanStack Queryを使うのか？
+
+アプリケーションの規模が大きくなると、単純なデータ取得だけではなく、ローディングやキャッシュの管理、状態管理などが煩雑になる。TanStack Queryを使うことで、そういった面倒くさい状態管理をライブラリに任せられる。
+
+```ts
+const { data: user, isPending } = useQuery(
+  queryKey: ['user', id],
+  queryFn: () => client.get(`/api/users/${id}`),
+)
+
+// コンポーネント
+if (isPending) {
+  return <div>Loading...</div>
+}
+
+return (
+  // type user = User
+  <h1>ようこそ、{user.name}さん</h1>
+)
+```
+
+この記事では、TanStack Queryの全体像を理解しながら、基本的な使い方を紹介する。
+
+
+## TanStack Queryの全体像
+
+TanStack Queryが提供するAPIは、主に以下のとおり。ただし、すべて理解しなくても重要な部分だけを使えば、十分に便利に使える。
+
+### 基本
+
+| API                | 用途                          |
+| ------------------ | --------------------------- |
+| `useQuery`         | サーバーからデータを取得する              |
+| `useMutation`      | サーバー上のデータを作成・更新・削除する        |
+| `useQueryClient`   | Query Clientを取得し、キャッシュを操作する |
+| `useQueries`       | 複数のQueryをまとめて実行する           |
+| `useSuspenseQuery` | React Suspenseと組み合わせてデータを取得する   |
+
+### Queryの再取得やキャッシュ操作
+
+useQueryClient()から取得したclientに対して使う。よく使うAPIは以下のとおり。
+
+| メソッド                | 用途                        |
+| ------------------- | ------------------------- |
+| `invalidateQueries` | Queryを「古い」とマークし、再取得を促す    |
+| `setQueriesData`    | 複数Queryのキャッシュを更新する        |
+| `removeQueries`     | Queryをキャッシュから削除する         |
+
+### Mutation関連
+
+| API           | 用途                      |
+| ------------- | ----------------------- |
+| `useMutation` | データの作成・更新・削除            |
+| `mutate`      | Mutationを実行する           |
+| `mutateAsync` | MutationをPromiseとして実行する |
+| `reset`       | Mutationの状態をリセットする      |
+
+### 状態確認
+
+| API             | 用途                   |
+| --------------- | -------------------- |
+| `useIsFetching` | 現在実行中のQuery数を取得する    |
+| `useIsMutating` | 現在実行中のMutation数を取得する |
+
+
+## `useQuery`: APIからデータを取得する
+
+`useQuery`メソッドを使うことで、データ取得の管理ができる。
+
+- parameters
+  - queryKey
+    - 取得するデータを識別するためのキー
+    - キャッシュは`queryKey`単位で管理される
+    - 検索条件が異なる場合は別のキーとして扱う必要がある
+  - queryFn
+    - 実際にデータを取得するための関数
+- returns
+  - data
+    - 取得したデータが格納される
+  - status
+    - クエリの状態を表す文字列
+    - `pending` | `success` | `error`
+    - `isPending` | `isSuccess` などのプロパティも提供されている
+  - error
+    - 取得に失敗した場合のエラー情報が格納される
+    - `isError`プロパティも提供されている
+
+```ts
+/**
+ * APIリクエストの実装例
+ */
+async function fetchUsers(): Promise<User[]> {
+  const res = await client.get('/api/users')
+  return res.data
+}
+
+/**
+ * TanStack Queryのキー
+ * NOTE: Queryを識別するためのキーで、同じqueryKeyを使うとキャッシュが共有される。
+ */
+const UserKeys = {
+  all: ['users'] as const,
+  detail: (userId: string) => [...UserKeys.all, userId] as const,
+  status: (userId: string) => [...UserKeys.detail(userId), 'status'] as const,
+}
+
+/**
+ * ユーザー一覧を取得するQuery
+ */
+function useUsersQuery() {
+  return useQuery({
+    queryKey: UserKeys.all,
+    queryFn: fetchUsers,
+  })
+}
+
+/**
+ * ユーザーを取得するQuery
+ */
+function useUserQuery(userId: string) {
+  return useQuery({
+    queryKey: UserKeys.detail(userId),
+    queryFn: () => fetchUser(userId),
+  })
+}
+```
+
+```ts
+// Queryの利用
+const query = useUsersQuery()
+
+if (query.isSuccess) {
+  return (
+    <ul>
+      {query.data.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+## キャッシュの仕組み
+
+`useQuery`で紹介した`queryKey`をもとに、取得したデータはキャッシュされ管理されている。そのため、別コンポーネントで同じQueryを利用した場合は、既存のキャッシュを利用できる。
+
+ただし、キャッシュされたデータが古くなっている場合は、再取得する必要がある。
+
+### `useQuery#staleTime`
+
+`staleTime`はキャッシュされたデータが「古い」とみなされるまでの時間を指定する。
+
+たとえば、`staleTime: 1000 * 60 * 5`と指定した場合は、5分間はFreshな状態として扱われる。
+```ts
+useQuery({
+  queryKey: UserKeys.all,
+  queryFn: fetchUsers,
+  staleTime: 1000 * 60 * 5, // 5 minutes
+})
+```
+
+デフォルトでは、0ミリ秒が指定されており、取得したデータはすぐにStaleとして扱われる。重要なのは「即座に削除される」という意味ではなく、「古くなったため、再取得できる状態」を意味している。
+
+Stale状態のデータは以下のようなタイミングで再取得される可能性がある。
+
+- コンポーネントが再度マウントされたとき
+- ウィンドウがフォーカスされたとき
+- ネットワーク接続が復活したとき
+
+
+### `useQuery#gcTime`
+
+`gcTime`は利用されていないキャッシュを保持する時間を指定する。
+
+たとえば、あるコンポーネントがアンマウントされると、その中で利用していたQueryを参照するObserverがいなくなる。その際、Queryは無効になり、`gcTime`で指定された時間まではキャッシュを保持し続け、時間が過ぎるとキャッシュから削除される。
+```ts
+useQuery({
+  queryKey: UserKeys.all,
+  queryFn: fetchUsers,
+  gcTime: 1000 * 60 * 10, // 10 minutes
+})
+```
+
+## データの再取得
+
+`staleTime`や`gcTime`を指定することで、自動的にキャッシュの有効期限を管理できるが、その時間に関わらず`refetch()`メソッドを使うと手動でデータの再取得ができる。
+
+```ts
+const { data, refetch } = useQuery({ ... })
+
+return (
+  <button onClick={() => refetch()}>
+    データを再取得する
+  </button>
+)
+```
+
+基本的にデータの再取得は手動で管理する必要はない。`invalidateQueries()`メソッドを使うことで、データを無効化し、次回の取得時に再取得させることができる。この仕組みは、後述する`useMutation()`などを使ったデータ更新後に特に重要になる。
+
+```ts
+const queryClient = useQueryClient()
+
+queryClient.invalidateQueries({ queryKey: UserKeys.all })
+```
+
+## `useQueries`: 複数のQueryをまとめて実行する
+
+`useQueries`を使うことで、複数のQueryをまとめて実行できる。
+
+たとえば、複数のIDを使ってそれぞれユーザーの詳細情報を取得する場合は、以下のように実装できる。
+
+```ts
+function useUserQueries(userIDs: string[]) {
+  return useQueries({
+    queries: userIDs.map((userID) => ({
+      queryKey: UserKeys.detail(userID),
+      queryFn: () => fetchUser(userID),
+    })),
+  })
+}
+
+const queries = useUserQueries(['100001', '100002', '100003'])
+
+queries.map(q => {
+  if (q.isPending) {
+    return <div>Loading...</div>
+  }
+
+  return <div>{q.data.name}</div>
+})
+```
+
+
+## `useMutation`: データの作成・更新・削除
+
+`useMutation`メソッドを使うことで、データの作成・更新・削除の管理ができる。
+
+作成や更新、削除を行った場合はキャッシュされているデータが古くなるため、`invalidateQueries()`メソッドを使ってキャッシュを無効化する。
+
+//denaito
+
+### Createリクエスト
+
+```ts
+function useCreateUserMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (user: User) => client.post('/api/users', user),
+    onSuccess: () => {
+      // データ作成後にQueryを無効化し、再取得させる
+      queryClient.invalidateQueries({ queryKey: UserKeys.all })
+    },
+    onError: (error) => {
+      // エラーハンドリング
+    },
+  })
+}
+```
+
+```ts
+// Mutationの利用
+const mutation = useCreateUserMutation()
+
+function handleClick() {
+  mutation.mutate({
+    name: '新しいユーザー',
+    email: 'newuser@example.com',
+  })
+}
+```
+
+### Update/Deleteリクエスト
+
+```ts
+function useUpdateUserMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (user: User) => client.put(`/api/users/${user.id}`, user),
+    onSuccess: () => {
+      // mutationの場合、キャッシュされたデータが自動で更新されないのでQueryを無効化し、再取得させる
+      queryClient.invalidateQueries({ queryKey: UserKeys.all })
+      queryClient.invalidateQueries({ queryKey: UserKeys.detail(user.id) })
+    },
+    onError: (error) => {
+      // エラーハンドリング
+    },
+  })
+}
+```
+
+```ts
+// Mutationの利用
+const mutation = useUpdateUserMutation()
+
+async function handleClick() {
+  try {
+    const res = await mutation.mutateAsync({
+      id: '123456',
+      name: '更新されたユーザー',
+      email: 'updateduser@example.com',
+    })
+  } catch (e) {
+    // エラーハンドリング
+  }
+}
+```
+
+
+
+## QueryClientによるキャッシュ操作
+
+TanStack Queryでは、QueryClientがQuery Cacheを管理している。`useQueryClient()`を使うことで、QueryClientを取得できる。
+
+```ts
+import { useQueryClient } from '@tanstack/react-query'
+const queryClient = useQueryClient()
+```
+
+### `invalidateQueries`: Queryを古い状態にする
+
+以下のようなQueryがあるとする。
+
+- ['users']
+- ['users', '100001']
+- ['users', '100002']
+
+よく使われるシーンは、前章でも説明したとおりMutationが成功したあとだ。`invalidateQueries()`を実行することで、次回`users:100001`のデータを取得しようとしたときに、Queryが古いと判断され、新しいデータを取得することができる。
+
+```ts
+queryClient.invalidateQueries({ queryKey: ['users'] })
+
+try {
+  await mutation.mutateAsync({
+    id: '100001',
+    name: '更新されたユーザー',
+    email: 'updateduser@example.com'
+  })
+
+  queryClient.invalidateQueries({ queryKey: ['users', '100001'] })
+}
+```
+
+### `setQueryData`: キャッシュを直接更新する
+
+`invalidateQueries()`は、Queryを「古い」とマークするだけで、キャッシュには古いデータが残っている。更新するにはAPIリクエストなどが必要だ。
+
+他方、`setQueryData()`は、キャッシュを直接更新するため、更新したデータを即座時反映できる。サーバーの変更結果がすでにわかっているときに有効だ。
+
+```ts
+const newUser = await mutation.mutateAsync({
+  id: '100001',
+  name: '更新されたユーザー',
+  email: 'updateduser@example.com'
+})
+
+queryClient.setQueryData(['users', '100001'], newUser)
+```
+
+### `removeQueries`: Queryをキャッシュから削除する
+
+`removeQueries()`は、指定したQueryをキャッシュから削除する。たとえば、ログアウト時にユーザー情報を削除したい場合などに有効だ。
+
+```ts
+queryClient.removeQueries({
+  queryKey: UserKeys.all,
+})
+```
+
+データが変更された場合は`invalidateQueries()`、サーバーから新しいデータが返ってきた場合は`setQueryData()`、キャッシュそのものを削除したい場合は`removeQueries()`のように使い分ける。
+
+## React Suspense/ErrorBoundaryとの連携
+
+### useQueryを使う場合
+
+`useQuery`では、コンポーネント側でロード状態の処理を行う。
+
+```tsx
+const { data, isPending, error } = useQuery({ ... })
+
+if (isPending) {
+  return <Loader />
+}
+
+if (error) {
+  return <Error />
+}
+
+return <div>{data}</div>
+```
+
+### useSuspenseQueryを使う場合
+
+`useSuspenseQuery`を使うことで、React Suspenseの仕組みを利用できる。
+
+```tsx
+function MyComponent() {
+  const { data } = useSuspenseQuery({ ... })
+
+  // コンポーネント内ではLoading/Errorの状態を直接扱う必要はない
+  return <div>{data}</div>
+}
+```
+
+```tsx
+function DataBoundary({ children }: FC<PropsWithChildren<Props>>) {
+  return (
+    <ErrorBoundary fallback={<Error />}>
+      <Suspense fallback={<Loader />}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
+<DataBoundary>
+  <MyComponent />
+</DataBoundary>
+```
+
+useSuspenseQueryでデータ取得イベントが発生した場合、Suspenseの仕組みでLoadingコンポーネントが表示される。
+
+また、エラーが発生した場合は、ErrorBoundaryの仕組みでErrorコンポーネントが表示される。
