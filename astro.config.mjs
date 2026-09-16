@@ -1,5 +1,6 @@
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
+import { unified } from '@astrojs/markdown-remark'
 import { defineConfig } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
 import rehypeMermaid from 'rehype-mermaid'
@@ -20,13 +21,11 @@ export default defineConfig({
       type: 'shiki',
       excludeLangs: ['mermaid', 'math'],
     },
-    rehypePlugins: [
-      (...args) => rehypeKatex({
-        ...args,
-        output: 'mathml',
-        strict: false,
-      }),
-      rehypeMermaid,
-    ],
+    processor: unified({
+      rehypePlugins: [
+        [rehypeKatex, { output: 'mathml', strict: false }],
+        rehypeMermaid,
+      ],
+    }),
   },
 })
