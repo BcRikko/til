@@ -31,7 +31,7 @@
     "eslint": "^10.8.1",
     "eslint-config-bcrikko": "^2.1.0",
     "pagefind": "^1.5.2",
-    "playwright": "^1.62.1"
+    "playwright": "^1.63.0"
   },
   "packageManager": "pnpm@11.5.0"
 }
