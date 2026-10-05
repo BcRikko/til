@@ -1,0 +1,106 @@
+---
+layout: ../../../layouts/Layout.astro
+pubDate: "2026-10-05"
+updatedDate: "2026-10-05"
+title: "Iterator#chunks()でイテレータを配列のチャンクに分割する"
+author: ダーシノ
+description: "Iterator.prototype.chunksメソッドのProposalがStage 4になった。イテレーターを引数で指定したchunkSizeごとに配列に分割したイテレーターヘルパーオブジェクト（≒イテレーター）を返す。"
+tags: ["JavaScript"]
+---
+
+import Header from '../../../components/Header.astro'
+
+<Header {...frontmatter} />
+
+[Iterator.prototype.chunksメソッドのProposal](https://github.com/tc39/proposal-iterator-chunking)がStage 4になった。
+
+- 参考: [Agenda for the 116th meeting of Ecma TC39. Sep. 2026](https://github.com/tc39/agendas/blob/main/2026/09.md)
+- [Iterator\.prototype\.chunks\(\) \| MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/chunks)
+
+イテレーターを引数で指定したchunkSizeごとに配列に分割したイテレーターヘルパーオブジェクト（≒イテレーター）を返す。
+
+
+```js
+const iterator = [1,2,3,4,5,6,7,8,9].values()
+
+const chunks = iterator.chunks(3)
+for (const chunk of chunks) {
+  console.log(chunk) // [1, 2, 3], [4, 5, 6], [7, 8, 9]
+}
+```
+
+## MDNのサンプルコード
+
+```js
+function* fibonacci() { /* フィボナッチ数列を返すジェネレーター */ }
+
+/**
+ * 数列を5つずつのチャンクに分割する
+ * [
+ *   [1, 1, 2, 3, 5],
+ *   [8, 13, 21, 34, 55],
+ *   [89, 144, 233, 377, 610],
+ *   [987, 1597, 2584, 4181, 6765],
+ *   [10946	17711	28657	46368	75025],
+ *   ...
+ * ]
+ */
+const rows = fibonacci().chunks(5);
+
+/**
+ * fibonacciジェネレーターはwhile(true)で無限に値を生成するので、
+ * Iterator#take(3)で、最初の3チャンク（15個の値）のみを取得する
+ */
+for (const row of rows.take(3)) {
+  console.log(row.join("\t"));
+  /**
+   * 1  1   2   3   5
+   * 8  13  21  34  55
+   * 89 144 233 377 610
+  */
+}
+```
+
+次に、実際のユースケースとして、Canvas APIを利用した画像処理を考えてみる。
+
+## Before: chunks化しない場合
+
+```js
+const canvas = document.createElement('canvas')
+const ctx = canvas.getContext('2d')
+
+const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+// imageData.dataは、ピクセルごとにr,g,b,aの順で並んでいる
+
+for (let i = 0; i < imageData.data.length; i += 4) {
+  const r = imageData.data[i]
+  const g = imageData.data[i + 1]
+  const b = imageData.data[i + 2]
+  const a = imageData.data[i + 3]
+  
+  // ピクセルごとの処理
+}
+
+for (let i = 0;)
+```
+
+## After: chunks化した場合
+
+```js
+const canvas = document.createElement('canvas')
+const ctx = canvas.getContext('2d')
+
+const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+// imageData.dataは、ピクセルごとにr,g,b,aの順で並んでいる
+
+const itr = imageData.data.values()
+
+const pixels = itr.chunks(4)
+// 1px（[r,g,b,a]）ごとにチャンク化されるので、[[r,g,b,a], [r,g,b,a], ...]の形になる
+
+for (const [r, g, b, a] of pixels) {
+  // ピクセルごとの処理
+  console.log({ r, g, b, a })
+}
+```
+
